@@ -8,14 +8,14 @@
 *The output folder must already exist
 
 ### Example
-
+)
 The following will extract all files from `Title.arc` and put its contents into the folder called `title`, do not include a `/` after the folder name
 
 `igArchiveExtractor Title.arc title`
 
 ## Building
 ### Prerequisites
-* Mac OS: make and g++ installed (can be done with brew
+* Mac OS: make and g++ installed (can be done with brew)
 * Linux: make and g++ installed (can be done with sudo apt-get)
 * Windows: mingw installed (mingw32 for 32bit building, mingw64 for 64bit building)
 
