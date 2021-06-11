@@ -15,11 +15,10 @@ uint32_t iAE_LoadFile(char* filePath, iAE_File* output)
 	iAE_SetNumberOfFiles(&temp);
 	
 	iAE_PopulateDescHeaderArray(&temp);
-	printf("%08X\n", temp.localFileHeaders[0]);
-	printf("%08X\n", temp.localFileHeaders[10]);
 	temp.nameTableStartAddress = iAE_GetNameTableStartAddr(temp);
 	sortArrayDescs(temp.localFileHeaders, temp.numberOfFiles);
 	*output = temp;
+	return 0;
 }
 
 int iAE_SetNumberOfFiles(iAE_File* file)
@@ -27,7 +26,7 @@ int iAE_SetNumberOfFiles(iAE_File* file)
 	if(file->fs == NULL) return -1;
 	if(iAE_CheckFileHeader(*file))
 	{
-		int res = fseek(file->fs, 0x0C, SEEK_SET);
+		fseek(file->fs, 0x0C, SEEK_SET);
 		uint32_t numFiles = 0;
 		fread(&numFiles, 0x04, 0x01, file->fs);
 		if(isBigEndian())
@@ -46,7 +45,7 @@ bool iAE_CheckFileHeader(iAE_File file)
 {
 	if(file.fs == NULL) return -1;
 
-	int res = fseek(file.fs, 0x00, SEEK_SET);
+	fseek(file.fs, 0x00, SEEK_SET);
 
 	uint32_t magicNumber = 0;
 	fread(&magicNumber, 0x04, 0x01, file.fs);
@@ -61,25 +60,36 @@ bool iAE_CheckFileHeader(iAE_File file)
 	}
 		
 }
-uint32_t iAE_GetFileStartAddr(iAE_File file, uint32_t fileNo)
+uint32_t iAE_SetHeaderValues(iAE_File* file, uint32_t fileNo)
+{
+	if(file->fs == NULL) return -1;
+
+	uint32_t startingAddress = iAE_GetFileDescsEndingAddr(*file) - ((file->numberOfFiles - fileNo) * 12) + 1;
+	uint32_t readBuffer;
+	fseek(file->fs, startingAddress, SEEK_SET);
+	fread(&readBuffer, 0x04, 0x01, file->fs);
+	file->localFileHeaders[fileNo].startingAddress = readBuffer;
+	fread(&readBuffer, 0x04, 0x01, file->fs);
+	file->localFileHeaders[fileNo].size = readBuffer;
+	return 0;
+}
+uint32_t iAE_GetFileSize(iAE_File file, uint32_t fileNo)
 {
 	if(file.fs == NULL) return -1;
 
-	uint32_t startingAddress = iAE_GetFileDescsEndingAddr(file) - ((file.numberOfFiles - fileNo) * 12) + 1;
-	fseek(file.fs, startingAddress, SEEK_SET);
-	unsigned char readBuffer[0x04];
-	memset(readBuffer, 0x00, 0x04);
-	fread(readBuffer, 0x01, 0x04, file.fs);
-	return ucharArrToU32(readBuffer);
+	uint32_t size = 0;
+
+	fseek(file.fs, file.localFileHeaders[fileNo].startingAddress + 0x04, SEEK_SET);
+	fread(&size, 0x04, 0x01, file.fs);
+
+	return size;
 }
 uint32_t iAE_PopulateDescHeaderArray(iAE_File* file)
 {
-	printf("pop %d\n", file->numberOfFiles);
 	file->localFileHeaders = (iAE_FileDescHeader*)malloc(sizeof(iAE_FileDescHeader) * file->numberOfFiles);
 	for (size_t i = 0; i < file->numberOfFiles; i++)
 	{
-		//printf("pop i: %d\n", i);
-		file->localFileHeaders[i].startingAddress = iAE_GetFileStartAddr(*file, i);
+		iAE_SetHeaderValues(file, i);
 		file->localFileHeaders[i].index = i;
 	}
 	return 0;
@@ -99,8 +109,6 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 		endingAddr = file.localFileHeaders[fileNo + 1].startingAddress;
 	}
 
-	printf("extracting %08X to %08X\n", file.localFileHeaders[fileNo].startingAddress, endingAddr);
-
 	unsigned char readBuffer[0x40];
 	memset(readBuffer, 0x00, 0x40);
 
@@ -117,12 +125,17 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 	{
 		fseek(file.fs, i, SEEK_SET);
 		int readres = fread(readBuffer, 0x01, 0x40, file.fs);
+		if(readres < 64)
+		{
+			printf("fread failed with error %d", errno);
+			break;
+		}
 		int writeres = fwrite(readBuffer, 0x01, 0x40, outputfs);
-		/*printf("read %d bytes\n", readres);
-		printf("wrote %d bytes\n", writeres);*/
+		//printf("read %d bytes\n", readres);
+		//printf("wrote %d bytes\n", writeres);
 		if(writeres < 64)
 		{
-			printf("error occured: %d", errno);
+			printf("fwrite failed with error %d", errno);
 			break;
 		}
 	}

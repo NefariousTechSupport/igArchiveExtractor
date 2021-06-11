@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	{
 		itoa(i, fileNumber, 10);
 		sprintf(outputPath, "%s%s%s%s", argv[iterator], "/", fileNumber, ".dat");
-		printf("%s\n", outputPath);
+		printf("extracting file %d to path \"%s\"... ", (int)i, outputPath);
 		iAE_ExtractFile(file, i, outputPath);
 	}
 	

@@ -6,7 +6,7 @@
 typedef struct
 {
     uint32_t startingAddress;
-    uint32_t unknown;
+    uint32_t size;
     uint32_t index;
 } iAE_FileDescHeader;
 
@@ -22,7 +22,8 @@ typedef struct
 uint32_t iAE_LoadFile(char* filePath, iAE_File* output);
 int iAE_SetNumberOfFiles(iAE_File* file);
 bool iAE_CheckFileHeader(iAE_File file);
-uint32_t iAE_GetFileStartAddr(iAE_File file, uint32_t fileNo);
+uint32_t iAE_SetHeaderValues(iAE_File* file, uint32_t fileNo);
+uint32_t iAE_GetFileSize(iAE_File file, uint32_t fileNo);
 uint32_t iAE_PopulateDescHeaderArray(iAE_File* file);
 uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath);
 uint32_t iAE_GetFileDescsEndingAddr(iAE_File file);

@@ -7,7 +7,7 @@ bool isBigEndian()
 	int num = 1;
 	return *(char *)&num != 1;
 }
-bool sortArrayDescs(iAE_FileDescHeader headers[], uint32_t length)
+void sortArrayDescs(iAE_FileDescHeader headers[], uint32_t length)
 {
 	bool sorted = true;
 	do
