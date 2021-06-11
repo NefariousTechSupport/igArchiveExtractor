@@ -23,14 +23,12 @@ int main(int argc, char** argv)
 	iAE_LoadFile(argv[iterator], &file);
 
 	char outputPath[255];
-	char fileNumber[127];
 
 	iterator++;
 
 	for (size_t i = 0; i < file.numberOfFiles; i++)
 	{
-		itoa(i, fileNumber, 10);
-		sprintf(outputPath, "%s%s%s%s", argv[iterator], "/", fileNumber, ".dat");
+		sprintf(outputPath, "%s/%d.dat", argv[iterator], (int)i);
 		printf("extracting file %d to path \"%s\"... ", (int)i, outputPath);
 		iAE_ExtractFile(file, i, outputPath);
 	}
