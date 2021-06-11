@@ -8,7 +8,7 @@
 *The output folder must already exist
 
 ### Example
-)
+
 The following will extract all files from `Title.arc` and put its contents into the folder called `title`, do not include a `/` after the folder name
 
 `igArchiveExtractor Title.arc title`
