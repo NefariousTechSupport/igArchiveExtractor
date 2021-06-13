@@ -15,7 +15,7 @@ The following will extract all files from `Title.arc` and put its contents into 
 
 ## Building
 ### Prerequisites
-* Mac OS: make and g++ installed (can be done with brew
+* Mac OS: make and g++ installed (can be done with brew)
 * Linux: make and g++ installed (can be done with sudo apt-get)
 * Windows: mingw installed (mingw32 for 32bit building, mingw64 for 64bit building)
 
