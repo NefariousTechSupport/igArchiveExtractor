@@ -18,7 +18,6 @@ int main(int argc, char** argv)
 	int iterator = 1;
 
 	iAE_File file;
-	//FILE* fs = fopen("C:\\Users\\jaska\\Emulators\\cemu_1.22.12\\mlc01\\usr\\title\\00050000\\10142d00\\content\\level\\Title.arc", "rb");
 
 	iAE_LoadFile(argv[iterator], &file);
 
@@ -29,7 +28,7 @@ int main(int argc, char** argv)
 	for (size_t i = 0; i < file.numberOfFiles; i++)
 	{
 		sprintf(outputPath, "%s/%d.dat", argv[iterator], (int)i);
-		printf("extracting file %d to path \"%s\"... ", (int)i, outputPath);
+		printf("extracting file %d of size %08X to path \"%s\"... ", (int)i, file.localFileHeaders[i].size, outputPath);
 		iAE_ExtractFile(file, i, outputPath);
 	}
 	

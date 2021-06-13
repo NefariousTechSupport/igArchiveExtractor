@@ -98,16 +98,7 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 {
 	fseek(file.fs, 0x00, SEEK_END);
 
-	uint32_t endingAddr = 0x00;
-
-	if(fileNo == file.numberOfFiles - 1)
-	{
-		endingAddr = file.nameTableStartAddress;
-	}
-	else
-	{
-		endingAddr = file.localFileHeaders[fileNo + 1].startingAddress;
-	}
+	uint32_t endingAddr = file.localFileHeaders[fileNo].startingAddress + file.localFileHeaders[fileNo].size;
 
 	unsigned char readBuffer[0x40];
 	memset(readBuffer, 0x00, 0x40);
@@ -121,9 +112,10 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 		return 1;
 	}
 
-	for (uint32_t i = file.localFileHeaders[fileNo].startingAddress; i < endingAddr; i += 64)
+	fseek(file.fs, file.localFileHeaders[fileNo].startingAddress, SEEK_SET);
+	uint32_t i = 0;
+	for (; i < file.localFileHeaders[fileNo].size - 0x40; i += 0x40)
 	{
-		fseek(file.fs, i, SEEK_SET);
 		int readres = fread(readBuffer, 0x01, 0x40, file.fs);
 		if(readres < 64)
 		{
@@ -131,18 +123,24 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 			break;
 		}
 		int writeres = fwrite(readBuffer, 0x01, 0x40, outputfs);
-		//printf("read %d bytes\n", readres);
-		//printf("wrote %d bytes\n", writeres);
+
 		if(writeres < 64)
 		{
 			printf("fwrite failed with error %d", errno);
 			break;
 		}
 	}
+	//printf("remaining = %08X - %08X = %08X\n", file.localFileHeaders[fileNo].size, i, file.localFileHeaders[fileNo].size - i);
+	if(0x40 >= file.localFileHeaders[fileNo].size - i && file.localFileHeaders[fileNo].size - i > 0)
+	{
+		fread(readBuffer, 0x01, file.localFileHeaders[fileNo].size - i, file.fs);
+		fwrite(readBuffer, 0x01, file.localFileHeaders[fileNo].size - i, outputfs);
+	}
 	fclose(outputfs);
 	printf("extracted\n");
 	return 0;
 }
+
 
 uint32_t iAE_GetFileDescsEndingAddr(iAE_File file)
 {
