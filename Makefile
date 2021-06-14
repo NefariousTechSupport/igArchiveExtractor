@@ -15,7 +15,7 @@ BUILD		=	build
 SOURCES		=	source
 INCLUDES	=	include
 CPPFLAGS	=	-Wall -g
-LDFLAGS		=	-static-libgcc -static-libstdg++ -static
+LDFLAGS		=	-static-libgcc -static-libstdc++ -static
 
 # -----------------------------------------------------------------------------
 # Builds lists of the files to be put into the compiler
