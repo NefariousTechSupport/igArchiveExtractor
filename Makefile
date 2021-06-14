@@ -29,4 +29,4 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
 all:
 	"$(GPP)" -c $(SOURCE) $(INCLUDE) $(CPPFLAGS)
-	"$(GPP)" -o $(TARGET) $(OFILES)
+	"$(GPP)" -o $(TARGET) $(OFILES) $(LDFLAGS)
