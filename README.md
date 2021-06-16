@@ -21,7 +21,7 @@ The following will extract all files from `Title.arc` and put its contents into 
 
 ### How to Build
 * `cd` to the repo's root folder
-* run `make` on mac os and linux, run `mingw32-make` or `mingw64-make` on windows depending on the bittage you desire
+* run `make osx` on mac os, run `make` and linux, and run `mingw32-make` or `mingw64-make` on windows depending on the bitness you desire
 
 ## To Do
 
