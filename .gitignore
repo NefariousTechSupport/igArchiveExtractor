@@ -4,3 +4,7 @@
 output
 *.arc
 *.bld
+*.zip
+igArchiveExtractor
+Makefile-PSL1GHT
+build

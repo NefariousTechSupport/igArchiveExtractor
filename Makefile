@@ -10,11 +10,12 @@ GPP			=	g++
 # INCLUDES : The folder containing the header files
 # CPPFLAGS : The optional compiler flags to use
 # -----------------------------------------------------------------------------
-TARGET		=	igArcExtractor
+TARGET		=	igArchiveExtractor
 BUILD		=	build
 SOURCES		=	source
 INCLUDES	=	include
-CPPFLAGS	=	-Wall -g
+CPPFLAGS	=	-Wall -O2
+LDFLAGS		=	-static-libgcc -static-libstdc++ -static
 
 # -----------------------------------------------------------------------------
 # Builds lists of the files to be put into the compiler
@@ -28,4 +29,4 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
 all:
 	"$(GPP)" -c $(SOURCE) $(INCLUDE) $(CPPFLAGS)
-	"$(GPP)" -o $(TARGET) $(OFILES)
+	"$(GPP)" -o $(TARGET) $(OFILES) $(LDFLAGS)
