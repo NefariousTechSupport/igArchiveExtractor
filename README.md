@@ -26,7 +26,4 @@ The following will extract all files from `Title.arc` and put its contents into 
 ## To Do
 
 * Add support for Wii files of SSA as well as SG, and STT
-* Add in nametable support
-* Compile versions for other versions to be added to the release (shouldn't be hard)
-* Comment the code
 * Stop using bubble sort for sorting the headers
