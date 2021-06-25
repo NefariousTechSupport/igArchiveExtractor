@@ -10,7 +10,5 @@
 
 //Check if the system is big endian
 bool isBigEndian();
-//Sort array headers based on their starting addresses (to be deprected)
-void sortArrayDescs(iAE_FileDescHeader headers[], uint32_t length);
 //Make folders in the specified path
 void makeFolders(char* filepath);

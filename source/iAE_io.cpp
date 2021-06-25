@@ -15,33 +15,37 @@ uint32_t iAE_LoadFile(char* filePath, iAE_File* output)
 {
 	iAE_File temp;													//Temporary container for the file data
 	temp.fs = fopen(filePath, "rb");								//Open a file handle
-	iAE_SetNumberOfFiles(&temp);									//Read and assign the number of files
+	temp.version = iAE_ReadVersion(temp);							//Read and assign the version number
+	if(temp.version == 0xFF)										//If unsupported version
+	{
+		fclose(temp.fs);
+		return -1;
+	}
+	temp.numberOfFiles = iAE_GetNumberOfFiles(temp);				//Read and assign the number of files
 	
 	iAE_PopulateDescHeaderArray(&temp);								//Fill the data for the local file headers
 	temp.nameTableStartAddress = iAE_GetNameTableStartAddr(temp);	//Get the number of files in this archive
-	//sortArrayDescs(temp.localFileHeaders, temp.numberOfFiles);	//Sort the files based on their starting addresses (to be deprecated)
 	*output = temp;													//Set the output variable
 	return 0;
 }
 
-//Set the number of files
-int iAE_SetNumberOfFiles(iAE_File* file)
+//Gets the number of files
+uint32_t iAE_GetNumberOfFiles(iAE_File file)
 {
-	if(file->fs == NULL) return -1;									//If the file handle's not assigned then return -1
-	if(iAE_CheckFileHeader(*file))									//Check if the file's magic number is genuine
+	if(file.fs == NULL) return -1;									//If the file handle's not assigned then return -1
+	if(iAE_CheckFileHeader(file))									//Check if the file's magic number is genuine
 	{
-		fseek(file->fs, 0x0C, SEEK_SET);							//Go to address 0x0C in the file
+		fseek(file.fs, locations[file.version][IAE_FILE_LOCATION_NUMBER_OF_FILES], SEEK_SET);			//Go to the address of the number of files in the file
 		uint32_t numFiles = 0;										//Variable to read the number of files into
-		fread(&numFiles, 0x04, 0x01, file->fs);						//Read the number of files into the variable (byte order must be reversed for big endian)
+		fread(&numFiles, 0x04, 0x01, file.fs);						//Read the number of files into the variable (byte order must be reversed for big endian)
 		if(isBigEndian())
 		{
-			file->numberOfFiles = invertByteOrder_u32(numFiles);
+			return invertByteOrder_u32(numFiles);
 		}
 		else
 		{
-			file->numberOfFiles = numFiles;
+			return numFiles;
 		}
-		return 0;
 	}
 	else return -2;
 }
@@ -51,7 +55,7 @@ bool iAE_CheckFileHeader(iAE_File file)
 {
 	if(file.fs == NULL) return -1;					//If the file handle's not assigned then return -1
 
-	fseek(file.fs, 0x00, SEEK_SET);					//go to address 0x00 in the file
+	fseek(file.fs, locations[file.version][IAE_FILE_LOCATION_MAGIC_NUMBER], SEEK_SET);	//go to address 0x00 in the file
 
 	uint32_t magicNumber = 0;						//The variable to read the magic number into
 	fread(&magicNumber, 0x04, 0x01, file.fs);		//Read the magic number into the variable
@@ -71,11 +75,14 @@ uint32_t iAE_SetHeaderValues(iAE_File* file, uint32_t fileNo)
 {
 	if(file->fs == NULL) return -1;											//If the file handle's not assigned then return -1
 
-	uint32_t startingAddress = iAE_GetFileDescsEndingAddr(*file) - ((file->numberOfFiles - fileNo) * 12) + 1;		//Read the local file header's starting address
+	uint32_t startingAddress = iAE_GetFileDescsStartingAddr(*file);			//Read the local file header's starting address
 	uint32_t readBuffer;													//The variable to read into
-	fseek(file->fs, startingAddress, SEEK_SET);								//Go to the local file header's starting address, aka where the local file header contains data on where the file would actually start
+
+	fseek(file->fs, startingAddress + locations[file->version][IAE_FILE_LOCATION_LENGTH_OF_LOCAL_HEADER] * fileNo + locations[file->version][IAE_FILE_LOCATION_LOCAL_START], SEEK_SET);			//Go to where the local file header contains data on where the file would actually start
 	fread(&readBuffer, 0x04, 0x01, file->fs);								//Read into the read buffer
 	file->localFileHeaders[fileNo].startingAddress = readBuffer;			//Set the starting address
+
+	fseek(file->fs, startingAddress + locations[file->version][IAE_FILE_LOCATION_LENGTH_OF_LOCAL_HEADER] * fileNo + locations[file->version][IAE_FILE_LOCATION_LOCAL_SIZE], SEEK_SET);			//Go to where the local file header contains data on where the file would actually start
 	fread(&readBuffer, 0x04, 0x01, file->fs);								//Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
 	file->localFileHeaders[fileNo].size = readBuffer;						//Set the size
 	return 0;
@@ -112,14 +119,14 @@ uint32_t iAE_ExtractFile(iAE_File file, uint32_t fileNo, const char* outputPath)
 		int readres = fread(readBuffer, 0x01, 0x40, file.fs);					//Read the file
 		if(readres < 64)														//If less than 64 bytes were read then an error occured
 		{
-			printf("fread failed with error %d", errno);						//Print the error code
+			printf("fread failed with error %d\n", errno);						//Print the error code
 			goto ExitExtract;
 		}
 		int writeres = fwrite(readBuffer, 0x01, 0x40, outputfs);				//Write to the output file
 
 		if(writeres < 64)														//If less than 64 bytes were written then an error occured
 		{
-			printf("fwrite failed with error %d", errno);						//Print the error code
+			printf("fwrite failed with error %d\n", errno);						//Print the error code
 			goto ExitExtract;
 		}
 	}
@@ -135,33 +142,14 @@ ExitExtract:
 }
 
 //Returns the end of the local file headers
-uint32_t iAE_GetFileDescsEndingAddr(iAE_File file)
+uint32_t iAE_GetFileDescsStartingAddr(iAE_File file)
 {
-	uint64_t readBuffer = 0;						//The buffer to read into
-	uint32_t position = 0;							//The current position
-
-	for (; position < 800; position += 8)			//Loop over the first 800 bytes
-	{
-		fseek(file.fs, position, SEEK_SET);			//Go to the position
-		fread(&readBuffer, 0x08, 0x01, file.fs);	//Read 8 bytes
-		if(readBuffer == 0xFFFFFFFFFFFFFFFF)		//Check if it equals that number
-		{
-			break;									//Exit the loop
-		}
-	}
-	unsigned char currByte = 0x00;
-	do
-	{
-		fseek(file.fs, position--, SEEK_SET);		//Go to the position where the files end
-		fread(&currByte, 0x01, 0x01, file.fs);		//Read the byte
-	} while(currByte == 0xFF);						//Check if the byte is 0xFF
-	position += 5;									//Add 5 to the position in order to get to the end of the local headers
-	return position;								//Return this position
+	return locations[file.version][IAE_FILE_LOCATION_UNKNOWN_2_STARTING_LOCATION] + file.numberOfFiles * locations[file.version][IAE_FILE_LOCATION_UNKNOWN_2_LENGTH];
 }
 //Get the start of the nametable's address
 uint32_t iAE_GetNameTableStartAddr(iAE_File file)
 {
-	fseek(file.fs, 0x20, SEEK_SET);								//Go to address 0x20
+	fseek(file.fs, locations[file.version][IAE_FILE_LOCATION_NAMETABLE_SIZE], SEEK_SET);	//Go to the nametable's size's location
 
 	uint32_t nameTableSize;
 
@@ -201,7 +189,23 @@ uint32_t iAE_FindName(iAE_File file, uint32_t fileNo, std::string* output)
 	}
 
 	*output = outputss.str();						//The conversion's done this way to avoid the str() being destroyed before you can get the c_str()
-	//*output = (char*)temp.c_str();
 
 	return 0;
+}
+uint8_t iAE_ReadVersion(iAE_File file)
+{
+	if(file.fs == NULL) return -1;					//If the file's handle is not assigned, return -1
+	fseek(file.fs, 0x04, SEEK_SET);					//Go to address 0x04
+	uint32_t rawVersion;
+	fread(&rawVersion, 0x04, 0x01, file.fs);		//Read 4 bytes and output to the raw version number
+	switch(rawVersion)
+	{
+		case IAE_FILE_VER_SSA_WIIU:	return 0x00;
+		//case IAE_FILE_VER_SSA_WII:	return 0x01;
+		//case IAE_FILE_VER_SG:			return 0x02;
+		case IAE_FILE_VER_STT:		return 0x03;
+		default:
+			printf("Version %04X is unsupported\n", rawVersion);
+			return 0xFF;						//Return 255, signifies error
+	}
 }

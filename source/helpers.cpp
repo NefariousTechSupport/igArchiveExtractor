@@ -17,29 +17,6 @@ bool isBigEndian()
 	return *(char *)&num != 1;
 }
 
-//Sorts the files in the archive in order of increasing starting addresses (Yes this uses bubble sort, but don't fret as this function will be removed in a later release)
-void sortArrayDescs(iAE_FileDescHeader headers[], uint32_t length)
-{
-	bool sorted = true;
-	do
-	{	
-		sorted = true;
-		for (size_t i = 0; i < length - 1; i++)
-		{
-			if(headers[i].startingAddress > headers[i + 1].startingAddress)
-			{
-				iAE_FileDescHeader a = headers[i];
-				iAE_FileDescHeader b = headers[i + 1];
-
-				headers[i + 1] = a;
-				headers[i] = b;
-
-				sorted = false;
-			}
-		}
-	} while (!sorted);
-}
-
 //Creates the folders in the specified filepath
 void makeFolders(char* filepath)
 {
