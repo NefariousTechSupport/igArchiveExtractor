@@ -1,0 +1,10 @@
+the igae file format :)
+
+ Address  |   Size   | desc/"value"
+------------------------------------------------------------------
+   0x00   |   0x04   | "IGAE"
+   0x04   |   0x04   | Version Number of IGA file
+   0x08   |   0x04   | Number of Files (A)
+   0x0C   |   0x04   | Length of Nametable (B)
+   0x14   |   A*04   | Copy of the unknown but important data
+ A*4+0x10 |    B     | Copy of Nametable

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "iAE_io.h"
+#include "IGAE.h"
 #include <stdint.h>
 
 //Invert byte order for a 32 bit value

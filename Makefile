@@ -4,17 +4,19 @@
 GPP			=	g++
 
 # -----------------------------------------------------------------------------
-# TARGET   : The final output file
+# IGAE     : The final output file for igae
+# IGAR     : The final output file for igar
 # BUILD    : The folder where .o files go (not implemented)
 # SOURCES  : The folder(s) containing the c++ sources
 # INCLUDES : The folder containing the header files
 # CPPFLAGS : The optional compiler flags to use
 # -----------------------------------------------------------------------------
-TARGET		=	igArchiveExtractor
+IGAE		=	igArchiveExtractor
+IGAR		=	igArchiveRepacker
 BUILD		=	build
 SOURCES		=	source
 INCLUDES	=	include
-CPPFLAGS	=	-Wall -O2
+CPPFLAGS	=	-Wall -g														# g is used as using O0, O1, or O2 results in false incorrect magic number errors, this'll be fixed in a later release
 LDFLAGS		=	-static-libgcc -static-libstdc++ -static
 
 # -----------------------------------------------------------------------------
@@ -25,11 +27,13 @@ export SOURCE	:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
 #export OFILES	:=	$(foreach dir,$(BUILD),$(notdir $(wildcard $(dir)/*.o)))
 export OFILES	:=	$(foreach dir,$(SOURCE),./$(basename $(notdir $(dir))).o)
 export OBJECTS	:=	$(foreach dir,$(OFILES),-o $(dir))
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/$(IGAE)
 
 all:
 	"$(GPP)" -c $(SOURCE) $(INCLUDE) $(CPPFLAGS)
-	"$(GPP)" -o $(TARGET) $(OFILES) $(LDFLAGS)
+	"$(GPP)" -o $(IGAE) $(OFILES) $(LDFLAGS)
 osx:
 	"$(GPP)" -c $(SOURCE) $(INCLUDE) $(CPPFLAGS)
-	"$(GPP)" -o $(TARGET) $(OFILES)
+	"$(GPP)" -o $(IGAE) $(OFILES)
+debug:
+	@echo $(SOURCE)
