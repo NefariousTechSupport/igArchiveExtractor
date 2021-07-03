@@ -9,3 +9,4 @@ igArchiveExtractor
 Makefile-PSL1GHT
 build
 .DS_Store
+*.pak

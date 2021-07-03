@@ -3,15 +3,13 @@
 
 ## Usage
 
-`igArchiveExtractor [input .arc file] [output folder]`
-
-*The output folder must already exist
+`igArchiveExtractor -i [input .arc file] -o [output folder]`
 
 ### Example
 
 The following will extract all files from `Title.arc` and put its contents into the folder called `title`, do not include a `/` after the folder name
 
-`igArchiveExtractor Title.arc title`
+`igArchiveExtractor -i Title.arc -o title`
 
 ## Building
 ### Prerequisites
@@ -25,5 +23,5 @@ The following will extract all files from `Title.arc` and put its contents into 
 
 ## To Do
 
-* Add support for Wii files of SSA as well as SG, and STT
-* Stop using bubble sort for sorting the headers
+* Add support for SG
+* Figure out bld files (known as pak files on ssf and ssc)
