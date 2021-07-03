@@ -1,9 +1,10 @@
 #include <string.h>
 #include <iostream>
+#include <cstdlib>
 
 #include "IGAR.h"
 
-#define IGAR_BLOCK_SIZE 0x20
+#define IGAR_BLOCK_SIZE 0x04
 
 void IGAR_GenerateFile(IGAE_File file, char* output)
 {
@@ -17,6 +18,11 @@ void IGAR_GenerateFile(IGAE_File file, char* output)
 	fseek(file.fs, locations[file.version][IGAE_LOCATION_UNKNOWN_1], SEEK_SET);
 	fread(&unknown1, 0x04, 0x01, file.fs);
 	fwrite(&unknown1, 0x04, 0x01, fs);
+
+	uint32_t unknown2;
+	fseek(file.fs, 0x08, SEEK_SET);
+	fread(&unknown2, 0x04, 0x01, file.fs);
+	fwrite(&unknown2, 0x04, 0x01, fs);
 
 	fwrite(&file.numberOfFiles, 0x04, 0x01, fs);
 	fwrite(&file.nameTableLength, 0x04, 0x01, fs);
@@ -56,24 +62,25 @@ int IGAR_RebuildArchive(char* input, char* output)
 	fread(&readBuffer, 0x04, 0x01, ifs);
 	ifile.rawVersion = readBuffer;
 
-	if(ifile.rawVersion != IGAE_VER_SSA_WIIU)
+	ifile.version = IGAE_ReadVersion(ifile, &ifile.rawVersion, false);
+
+	if(ifile.version == 0xFF)
 	{
 		printf("rebuilding file of version %08X is not supported\n", ifile.rawVersion);
 		return -1;
 	}
 
-	fseek(ifs, 0x08, SEEK_SET);
-	fread(&readBuffer, 0x04, 0x01, ifs);
-	ifile.unknown = readBuffer;
-
 	fseek(ifs, 0x0C, SEEK_SET);
+	fread(&readBuffer, 0x04, 0x01, ifs);
+	uint32_t important = readBuffer;
+
+	fseek(ifs, 0x10, SEEK_SET);
 	fread(&readBuffer, 0x04, 0x01, ifs);
 	ifile.numberOfFiles = readBuffer;
 
-
 	ifile.localFileHeaders = (IGAE_FileDescHeader*)malloc(ifile.numberOfFiles * sizeof(IGAE_FileDescHeader));
 
-	fseek(ifs, 0x10, SEEK_SET);
+	fseek(ifs, 0x14, SEEK_SET);
 	fread(&readBuffer, 0x04, 0x01, ifs);
 	ifile.nameTableLength = readBuffer;
 
@@ -82,28 +89,40 @@ int IGAR_RebuildArchive(char* input, char* output)
 	uint32_t idontknow1 = 0x00000800;
 	uint32_t idontknow2 = 0x01999999;
 	uint32_t idontknow3 = 0x00000015;
+	uint32_t someAddressLol = 0xFFFF;
 	uint32_t zeros = 0x00000000;
 	uint32_t ones = 0xFFFFFFFF;
-	fwrite(&igaMagicNumber, 0x04, 0x01, ofs);			//0x00
-	fwrite(&ifile.rawVersion, 0x04, 0x01, ofs);			//0x04
-	fwrite(&ifile.unknown, 0x04, 0x01, ofs);			//0x08
-	fwrite(&ifile.numberOfFiles, 0x04, 0x01, ofs);		//0x0C
-	fwrite(&idontknow1, 0x04, 0x01, ofs);				//0x10
-	fwrite(&idontknow2, 0x04, 0x01, ofs);				//0x14
-	fwrite(&idontknow3, 0x04, 0x01, ofs);				//0x18
-	fwrite(&zeros, 0x04, 0x01, ofs);					//0x1C
-	fwrite(&ifile.nameTableLength, 0x04, 0x01, ofs);	//0x20
-	fwrite(&zeros, 0x04, 0x01, ofs);					//0x24
-	fwrite(&zeros, 0x04, 0x01, ofs);					//0x28
-	fwrite(&zeros, 0x04, 0x01, ofs);					//0x2C
-	fwrite(&zeros, 0x04, 0x01, ofs);					//0x30
+	fseek(ofs, 0x00, SEEK_SET);
+	fwrite(&igaMagicNumber, 0x04, 0x01, ofs);
+	fseek(ofs, 0x04, SEEK_SET);
+	fwrite(&ifile.rawVersion, 0x04, 0x01, ofs);
+	fseek(ofs, 0x08, SEEK_SET);
+	fwrite(&important, 0x04, 0x01, ofs);
+	printf("ver: %d", ifile.version);
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_UNKNOWN_1], SEEK_SET);
+	fwrite(&someAddressLol, 0x04, 0x01, ofs);			//cannot be zeroed,between 0xFF and 0xFFFFFF idk
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_NUMBER_OF_FILES], SEEK_SET);
+	fwrite(&ifile.numberOfFiles, 0x04, 0x01, ofs);
+	fseek(ofs, 0x10, SEEK_SET);
+	fwrite(&zeros, 0x04, 0x01, ofs);					//can be zeroed
+	fwrite(&zeros, 0x04, 0x01, ofs);					//an be zeroed
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_UNKNOWN_1], SEEK_SET);
+	fwrite(&ifile.unknown, 0x04, 0x01, ofs);			//must be exact, so taken whilst generating rebuild file
+	//fwrite(&zeros, 0x04, 0x01, ofs);
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_NAMETABLE_SIZE], SEEK_SET);
+	fwrite(&ifile.nameTableLength, 0x04, 0x01, ofs);
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_PADDING_1], SEEK_SET);
+	for (size_t i = 0; i < locations[ifile.version][IGAE_LOCATION_PADDING_1_LENGTH]; i++)
+	{
+		fwrite(&zeros, 0x04, 0x01, ofs);	
+	}
 
-	unsigned char unknownDataBuffer[ifile.numberOfFiles * 0x04];
-	memset(unknownDataBuffer, 0x00, ifile.numberOfFiles * 0x04);
-	fseek(ifs, 0x14, SEEK_SET);
-	fread(unknownDataBuffer, 0x01, ifile.numberOfFiles * 0x04, ifs);
-	fseek(ofs, 0x34, SEEK_SET);
-	fwrite(unknownDataBuffer, 0x01, ifile.numberOfFiles * 0x04, ofs);
+	unsigned char unknownDataBuffer[ifile.numberOfFiles * locations[ifile.version][IGAE_LOCATION_UNKNOWN_2_LENGTH]];
+	memset(unknownDataBuffer, 0x00, ifile.numberOfFiles * locations[ifile.version][IGAE_LOCATION_UNKNOWN_2_LENGTH]);
+	fseek(ifs, 0x18, SEEK_SET);
+	fread(unknownDataBuffer, 0x01, ifile.numberOfFiles * locations[ifile.version][IGAE_LOCATION_UNKNOWN_2_LENGTH], ifs);
+	fseek(ofs, locations[ifile.version][IGAE_LOCATION_UNKNOWN_2_STARTING_LOCATION], SEEK_SET);
+	fwrite(unknownDataBuffer, 0x01, ifile.numberOfFiles * locations[ifile.version][IGAE_LOCATION_UNKNOWN_2_LENGTH], ofs);
 	
 	uint32_t startOfLocalHeaders = ftell(ofs);
 	printf("%08X\n", startOfLocalHeaders);
@@ -144,9 +163,9 @@ int IGAR_RebuildArchive(char* input, char* output)
 	for (size_t i = 0; i < ifile.numberOfFiles; i++)
 	{
 		std::string currentFile(outputFolder);
-		fseek(ifs, 0x14 + ifile.numberOfFiles * 0x04 + i * 0x04, SEEK_SET);
+		fseek(ifs, 0x18 + ifile.numberOfFiles * 0x04 + i * 0x04, SEEK_SET);
 		fread(&readBuffer, 0x04, 0x01, ifs);
-		fseek(ifs, 0x14 + ifile.numberOfFiles * 0x04 + readBuffer + 2, SEEK_SET);
+		fseek(ifs, 0x18 + ifile.numberOfFiles * 0x04 + readBuffer + 2, SEEK_SET);
 		char readCharacter;
 		do
 		{
@@ -179,20 +198,18 @@ int IGAR_RebuildArchive(char* input, char* output)
 	}
 	for (size_t i = 0; i < ifile.numberOfFiles; i++)
 	{
-		fseek(ofs, startOfLocalHeaders + 0x0C * i, SEEK_SET);
+		fseek(ofs, startOfLocalHeaders + locations[ifile.version][IGAE_LOCATION_LENGTH_OF_LOCAL_HEADER] * i + locations[ifile.version][IGAE_LOCATION_LOCAL_START], SEEK_SET);
 		fwrite(&ifile.localFileHeaders[i].startingAddress, 0x04, 0x01, ofs);
+		fseek(ofs, startOfLocalHeaders + locations[ifile.version][IGAE_LOCATION_LENGTH_OF_LOCAL_HEADER] * i + locations[ifile.version][IGAE_LOCATION_LOCAL_SIZE], SEEK_SET);
 		fwrite(&ifile.localFileHeaders[i].size, 0x04, 0x01, ofs);
+		fseek(ofs, startOfLocalHeaders + locations[ifile.version][IGAE_LOCATION_LENGTH_OF_LOCAL_HEADER] * (i + 1) - 4, SEEK_SET);
+		fwrite(&ones, 0x04, 0x01, ofs);
 	}
 
 	fseek(ofs, 0x00, SEEK_END);
 	fseek(ofs, ((ftell(ofs) / IGAR_BLOCK_SIZE) + 1) * IGAR_BLOCK_SIZE, SEEK_SET);
 	ifile.nameTableStartAddress = ftell(ofs);
-	fseek(ifs, 0x14 + ifile.numberOfFiles * 0x04, SEEK_SET);
-
-	/*unsigned char nametable[ifile.nameTableLength];
-	memset(nametable, 0x00, ifile.nameTableLength);
-	fread(nametable, 0x01, ifile.nameTableLength, ifs);
-	fwrite(nametable, 0x01, ifile.nameTableLength, ofs);*/
+	fseek(ifs, 0x18 + ifile.numberOfFiles * 0x04, SEEK_SET);
 
 	uint32_t j = 0;
 	for (; j < ifile.nameTableLength; j += 0x40)

@@ -214,15 +214,18 @@ uint32_t IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output)
 
 	return 0;
 }
-uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion)
+uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile)
 {
-	if(file.fs == NULL) return -1;					//If the file's handle is not assigned, return -1
-	fseek(file.fs, 0x04, SEEK_SET);					//Go to address 0x04
-	fread(rawVersion, 0x04, 0x01, file.fs);		//Read 4 bytes and output to the raw version number
-	if(file.endianness == IGAE_BE)
+	if(readFromFile)
 	{
-		uint32_t temp = invertByteOrder_u32(*rawVersion);
-		*rawVersion = temp;
+		if(file.fs == NULL) return -1;					//If the file's handle is not assigned, return -1
+		fseek(file.fs, 0x04, SEEK_SET);					//Go to address 0x04
+		fread(rawVersion, 0x04, 0x01, file.fs);		//Read 4 bytes and output to the raw version number
+		if(file.endianness == IGAE_BE)
+		{
+			uint32_t temp = invertByteOrder_u32(*rawVersion);
+			*rawVersion = temp;
+		}
 	}
 	switch(*rawVersion)
 	{

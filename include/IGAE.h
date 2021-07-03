@@ -27,14 +27,17 @@
 #define IGAE_LOCATION_UNKNOWN_2_LENGTH				0x08
 #define IGAE_LOCATION_LOCAL_START					0x09
 #define IGAE_LOCATION_LOCAL_SIZE					0x0A
+#define IGAE_LOCATION_PADDING_1						0x0B
+#define IGAE_LOCATION_PADDING_1_LENGTH				0x0C
+#define IGAE_LOCATION_ADDRESS_1						0x0D
 
-const uint32_t locations[0x06][0x0B]
+const uint32_t locations[0x06][0x0E]
 {
 	//SSA WII U
 	{
 		0x00000000,		//Magic Number
 		0x00000004,		//Version
-		0x00000008,		//Unknown
+		0x00000018,		//Unknown
 		0x0000000C,		//Number of Files
 		0x0000001C,		//Nametable Location
 		0x00000020,		//Nametable Size
@@ -42,13 +45,16 @@ const uint32_t locations[0x06][0x0B]
 		0x00000034,		//Unknown data, local file headers start after this data
 		0x00000004,		//Unknown data's size
 		0x00000000,		//Position of a local file's starting location inside of a local header
-		0x00000004		//Position of a local file's size inside of a local header
+		0x00000004,		//Position of a local file's size inside of a local header
+		0x00000024,		//Postion of first padding
+		0x00000010,		//Length of first padding
+		0x00000008		//Unknown but important adddress
 	},
 	//SSA WII
 	{
 		0x00000000,		//Magic Number
 		0x00000004,		//Version
-		0x00,			//Unknown, presumed to be type
+		0x00000018,		//Unknown
 		0x0000000C,		//Number of Files
 		0x00000018,		//Nametable Location
 		0x0000001C,		//Nametable Size
@@ -64,7 +70,7 @@ const uint32_t locations[0x06][0x0B]
 	{
 		0x00000000,		//Magic Number
 		0x00000004,		//Version
-		0x00,			//Unknown, presumed to be type
+		0x00,			//Unknown
 		0x0000000C,		//Number of Files
 		0x00000028,		//Nametable Location
 		0x00000030,		//Nametable Size
@@ -78,15 +84,17 @@ const uint32_t locations[0x06][0x0B]
 	{
 		0x00000000,		//Magic Number
 		0x00000004,		//Version
-		0x00,			//Unknown, presumed to be type
+		0x00000018,		//Unknown
 		0x0000000C,		//Number of Files
-		0x0000002C,		//Nametable Location
+		0x00000028,		//Nametable Location
 		0x00000030,		//Nametable Size
 		0x00000010,		//Length of individual local file header
 		0x00000038,		//Unknown data, local file headers start after this data
 		0x00000004,		//Unknown data's size
 		0x00000000,		//Position of a local file's starting location inside of a local header
-		0x00000008		//Position of a local file's size inside of a local header
+		0x00000008,		//Position of a local file's size inside of a local header
+		0x0000001C,		//Postion of first padding
+		0x0000000C		//Length of first padding
 	},
 	//SSC
 	{}
@@ -122,4 +130,4 @@ uint32_t IGAE_GetFileDescsStartingAddr(IGAE_File file);
 uint32_t IGAE_GetNameTableStartAddr(IGAE_File file);
 uint32_t IGAE_GetNameTableLength(IGAE_File file);
 uint32_t IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output);
-uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion);
+uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile = true);

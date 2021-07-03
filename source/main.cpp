@@ -63,6 +63,8 @@ int main(int argc, char** argv)
 					rebuildIndex = iterator + 1;
 					break;
 			default:
+				printf("unrecognised option.\n");
+				printHelpMessage();
 				break;
 			}
 		}
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
 			printf("extracting file %d of starting location %08X and size %08X to path \"%s\"... ", (int)i, file.localFileHeaders[i].startingAddress, file.localFileHeaders[i].size, outputPath.c_str());		//Print a message to the user
 			IGAE_ExtractFile(file, i, outputPath.c_str());		//Extract the file
 		}
-		
+
 		char rebuildFileOutput[0xFF];
 		memset(rebuildFileOutput, 0x00, 0xFF);
 		sprintf(rebuildFileOutput, "%s/rebuild.igae", argv[outputIndex]);
@@ -116,11 +118,11 @@ void printHelpMessage()
 		"igArchiveExtractor version %s, created by NefariousTechSupport\n"
 		"\n"
 		"Usage:\n"
-		"    igArchiveExtractor \"[path to .arc file]\" \"[path to output folder without '/' or '\\' at end]\"\n"
+		"    igArchiveExtractor -i \"[path to .arc file]\" -o \"[path to output folder without '/' or '\\' at end]\"\n"
 		"\n"
 		"Supported Games:\n"
 		"- Skylanders Spyro's Adventure (Wii/Wii U)\n"
-		"- Skylanders Trap Team (PS3/Mobile try other ports and message on SRE if they do or don't work)\n"
+		"- Skylanders Trap Team\n"
 		"\n",
 		IGAE_VERSION_NUMBER
 		);
