@@ -1,0 +1,10 @@
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\bin\Debug\IGAE_GUI.exe.config
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\bin\Debug\IGAE_GUI.exe
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\bin\Debug\IGAE_GUI.pdb
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.csproj.AssemblyReference.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.Properties.Resources.resources
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.csproj.GenerateResource.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.csproj.CoreCompileInputs.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.exe
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.pdb
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\GUI\IGAE_GUI\IGAE_GUI\obj\Debug\IGAE_GUI.Form_igArchiveExtractor.resources
