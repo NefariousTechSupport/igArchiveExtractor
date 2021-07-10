@@ -1,0 +1,9 @@
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\IGAE_GUI.exe.config
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\IGAE_GUI.exe
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\IGAE_GUI.pdb
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.Form_igArchiveExtractor.resources
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.Properties.Resources.resources
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.GenerateResource.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.CoreCompileInputs.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.exe
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.pdb
