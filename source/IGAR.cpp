@@ -87,8 +87,6 @@ int IGAR_RebuildArchive(char* input, char* output)
 	fseek(ofs, 0x00, SEEK_SET);
 	uint32_t igaMagicNumber = 0x1A414749;
 	uint32_t idontknow1 = 0x00000800;
-	uint32_t idontknow2 = 0x01999999;
-	uint32_t idontknow3 = 0x00000015;
 	uint32_t someAddressLol = 0xFFFF;
 	uint32_t zeros = 0x00000000;
 	uint32_t ones = 0xFFFFFFFF;
@@ -145,7 +143,7 @@ int IGAR_RebuildArchive(char* input, char* output)
 
 	uint16_t strLen = 0;
 
-	for(int i = 0; i < inputStr.length(); i++)
+	for(uint16_t i = 0; i < inputStr.length(); i++)
 	{
 		if(input[i] == '/' || input[i] == '\\')
 		{
@@ -176,7 +174,7 @@ int IGAR_RebuildArchive(char* input, char* output)
 			}
 			currentFile += readCharacter;
 		} while(true);
-		printf("file %d: %s\n", i, currentFile.c_str());
+		printf("file %d: %s\n", (int)i, currentFile.c_str());
 		FILE* cfs = fopen(currentFile.c_str(), "rb");
 		fseek(cfs, 0x00, SEEK_END);
 		fseek(ofs, ((ftell(ofs) / IGAR_BLOCK_SIZE) + 1) * IGAR_BLOCK_SIZE, SEEK_SET);
@@ -223,10 +221,15 @@ int IGAR_RebuildArchive(char* input, char* output)
 		fwrite(fRWBuf, 0x01, ifile.nameTableLength - j, ofs);				//Write the remaining bytes
 	}
 
-	printf("%08X\n", ftell(ofs));
+	printf("%08X\n", (unsigned int)ftell(ofs));
 	fseek(ofs, 0x1C, SEEK_SET);
 	fwrite(&ifile.nameTableStartAddress, 0x04, 0x01, ofs);
 
 	fclose(ifs);
 	fclose(ofs);
+}
+
+extern void test(const char* input)
+{
+	printf("hi\n");
 }

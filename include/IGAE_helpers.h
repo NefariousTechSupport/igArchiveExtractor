@@ -1,7 +1,12 @@
 #pragma once
 
-#include "IGAE.h"
 #include <stdint.h>
+
+#if defined(BUILD_LIB)
+#include "libIGAE.h"
+#else
+#include "C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\lib\libIGAE.h"
+#endif
 
 //Invert byte order for a 32 bit value
 #define invertByteOrder_u32(a) ((a & 0xFF000000) >> 24) | ((a & 0x00FF0000) >> 8) | ((a & 0x0000FF00) << 8) | ((a & 0x000000FF) << 24)

@@ -5,13 +5,14 @@
 #include <stdlib.h>
 #include <string>
 
-#include "IGAE.h"
+#include "C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\lib\libIGAE.h"
 #include "IGAR.h"
-#include "helpers.h"
+#include "IGAE_helpers.h"
 
 #define IGAE_VERSION_NUMBER "0.06"
 
 void printHelpMessage();
+void printErrorMessage(int error);
 
 int main(int argc, char** argv)
 {
@@ -72,10 +73,11 @@ int main(int argc, char** argv)
 	
 	if(inputIndex > 0)
 	{
-		if(IGAE_LoadFile(argv[inputIndex], &file) != 0)			//Load and interpret the file's data, checking the output in the case of an error
-		{
-			return -1;
-		}
+		int res = IGAE_LoadFile(argv[inputIndex], &file);
+
+		printf("opening IGA file... ");
+		printErrorMessage(res);
+		if(res < 0) return -1;
 
 		std::string rawFileName;								//This will store the raw name of the file, it's to be somewhat processed as it contains "c:", which's isn't allowed for normal filenames
 		std::string outputPath(argv[outputIndex]);				//Contains the final output path of the file being extracted
@@ -88,7 +90,9 @@ int main(int argc, char** argv)
 			outputPath += (rawFileName.c_str() + 0x02);			//Add the file being extracted's filepath to the user's desired filepath
 			makeFolders((char*)outputPath.c_str());				//Make the folders that are in the file being extracted's filepath if they do not already exist
 			printf("extracting file %d of starting location %08X and size %08X to path \"%s\"... ", (int)i, file.localFileHeaders[i].startingAddress, file.localFileHeaders[i].size, outputPath.c_str());		//Print a message to the user
-			IGAE_ExtractFile(file, i, outputPath.c_str());		//Extract the file
+			res = IGAE_ExtractFile(file, i, outputPath.c_str());		//Extract the file
+			printErrorMessage(res);
+			if(res < 0) return -1;
 		}
 
 		char rebuildFileOutput[0xFF];
@@ -121,9 +125,20 @@ void printHelpMessage()
 		"    igArchiveExtractor -i \"[path to .arc file]\" -o \"[path to output folder without '/' or '\\' at end]\"\n"
 		"\n"
 		"Supported Games:\n"
-		"- Skylanders Spyro's Adventure (Wii/Wii U)\n"
+		"- Skylanders Spyro's Adventure (Wii/Wii U/3DS)\n"
 		"- Skylanders Trap Team\n"
 		"\n",
 		IGAE_VERSION_NUMBER
 		);
+}
+void printErrorMessage(int error)
+{
+	switch(error)
+	{
+		case 0: printf("Success\n"); break;
+		case -1: printf("File unassigned\n"); break;
+		case -2: printf("File cannot be opened, errno %d\n", errno); break;
+		case -3: printf("Incorrect magic number\n"); break;
+		case -4: printf("Unsupported version\n"); break;
+	}
 }

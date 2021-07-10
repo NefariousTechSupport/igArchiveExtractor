@@ -7,28 +7,101 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "helpers.h"
-#include "IGAE.h"
+#include "IGAE_helpers.h"
+
+#if defined(BUILD_LIB)
+#include "libIGAE.h"
+#else
+#include "C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\lib\libIGAE.h"
+#endif
+
+const uint32_t locations[0x06][0x0E] = {
+	//SSA WII U
+	{
+		0x00000000,		//Magic Number
+		0x00000004,		//Version
+		0x00000018,		//Unknown
+		0x0000000C,		//Number of Files
+		0x0000001C,		//Nametable Location
+		0x00000020,		//Nametable Size
+		0x0000000C,		//Length of indiviual local file header
+		0x00000034,		//Unknown data, local file headers start after this data
+		0x00000004,		//Unknown data's size
+		0x00000000,		//Position of a local file's starting location inside of a local header
+		0x00000004,		//Position of a local file's size inside of a local header
+		0x00000024,		//Postion of first padding
+		0x00000010,		//Length of first padding
+		0x00000008		//Unknown but important adddress
+	},
+	//SSA WII
+	{
+		0x00000000,		//Magic Number
+		0x00000004,		//Version
+		0x00000018,		//Unknown
+		0x0000000C,		//Number of Files
+		0x00000018,		//Nametable Location
+		0x0000001C,		//Nametable Size
+		0x0000000C,		//Length of indiviual local file header
+		0x00000030,		//Unknown data, local file headers start after this data
+		0x00000004,		//Unknown data's size
+		0x00000000,		//Position of a local file's starting location inside of a local header
+		0x00000004		//Position of a local file's size inside of a local header
+	},
+	//SG
+	{},
+	//SSF
+	{
+		0x00000000,		//Magic Number
+		0x00000004,		//Version
+		0x00,			//Unknown
+		0x0000000C,		//Number of Files
+		0x00000028,		//Nametable Location
+		0x00000030,		//Nametable Size
+		0x00000010,		//Length of individual local file header
+		0x00000038,		//Unknown data, local file headers start after this data
+		0x00000004,		//Unknown data's size
+		0x00000000,		//Position of a local file's starting location inside of a local header
+		0x00000008		//Position of a local file's size inside of a local header
+	},
+	//STT
+	{
+		0x00000000,		//Magic Number
+		0x00000004,		//Version
+		0x00000018,		//Unknown
+		0x0000000C,		//Number of Files
+		0x00000028,		//Nametable Location
+		0x00000030,		//Nametable Size
+		0x00000010,		//Length of individual local file header
+		0x00000038,		//Unknown data, local file headers start after this data
+		0x00000004,		//Unknown data's size
+		0x00000000,		//Position of a local file's starting location inside of a local header
+		0x00000008,		//Position of a local file's size inside of a local header
+		0x0000001C,		//Postion of first padding
+		0x0000000C		//Length of first padding
+	},
+	//SSC
+	{}
+};
 
 //Loads a file and its data
-uint32_t IGAE_LoadFile(char* filePath, IGAE_File* output)
+int IGAE_LoadFile(char* filePath, IGAE_File* output)
 {
 	IGAE_File temp;													//Temporary container for the file data
 	temp.fs = fopen(filePath, "rb");								//Open a file handle
-	bool headerCheck = IGAE_CheckFileHeader(&temp);
-	printf("%d:%d\n", headerCheck, errno);
-	if(!headerCheck)												//Check to see if the magic number is correct
+	if(temp.fs == NULL)
 	{
-		printf("Incorrect Magic Number!\n");
 		return -2;
 	}
-	printf("endianness: %d\n", temp.endianness);
-	temp.version = IGAE_ReadVersion(temp, &temp.rawVersion);	
-	printf("version: %08X\n", temp.version);						//Read and assign the version number
+	bool headerCheck = IGAE_CheckFileHeader(&temp);
+	if(!headerCheck)												//Check to see if the magic number is correct
+	{
+		return -3;
+	}
+	temp.version = IGAE_ReadVersion(temp, &temp.rawVersion);		//Read and assign the version number
 	if(temp.version == 0xFF)										//If unsupported version
 	{
 		fclose(temp.fs);
-		return -1;
+		return -4;
 	}
 	temp.numberOfFiles = IGAE_GetNumberOfFiles(temp);				//Read and assign the number of files
 	
@@ -41,7 +114,7 @@ uint32_t IGAE_LoadFile(char* filePath, IGAE_File* output)
 }
 
 //Gets the number of files
-uint32_t IGAE_GetNumberOfFiles(IGAE_File file)
+long long int IGAE_GetNumberOfFiles(IGAE_File file)
 {
 	if(file.fs == NULL) return -1;									//If the file handle's not assigned then return -1
 
@@ -61,9 +134,9 @@ uint32_t IGAE_GetNumberOfFiles(IGAE_File file)
 //Checks the file's magic number
 bool IGAE_CheckFileHeader(IGAE_File* file)
 {
-	if(file->fs == NULL) return -1;					//If the file handle's not assigned then return -1
+	if(file->fs == NULL) return false;				//If the file handle's not assigned then return -1
 
-	fseek(file->fs, 0x00, SEEK_SET);	//go to address 0x00 in the file
+	fseek(file->fs, 0x00, SEEK_SET);				//go to address 0x00 in the file
 
 	uint32_t magicNumber = 0;						//The variable to read the magic number into
 	fread(&magicNumber, 0x04, 0x01, file->fs);		//Read the magic number into the variable
@@ -80,13 +153,12 @@ bool IGAE_CheckFileHeader(IGAE_File* file)
 	}
 	else											//If the magic number just doesn't match
 	{
-		printf("mg: %08X, err: %d\n", magicNumber, errno);
 		returnVal = false;
 	}
 	return returnVal;
 }
 //Reads the local file header for the specified file
-uint32_t IGAE_SetHeaderValues(IGAE_File* file, uint32_t fileNo)
+long long int IGAE_SetHeaderValues(IGAE_File* file, uint32_t fileNo)
 {
 	if(file->fs == NULL) return -1;											//If the file handle's not assigned then return -1
 
@@ -103,7 +175,7 @@ uint32_t IGAE_SetHeaderValues(IGAE_File* file, uint32_t fileNo)
 	return 0;
 }
 //Fills the local file header array
-uint32_t IGAE_PopulateDescHeaderArray(IGAE_File* file)
+void IGAE_PopulateDescHeaderArray(IGAE_File* file)
 {
 	file->localFileHeaders = (IGAE_FileDescHeader*)malloc(sizeof(IGAE_FileDescHeader) * file->numberOfFiles);	//Allocate the appropriate memory for the local file headers
 	for (size_t i = 0; i < file->numberOfFiles; i++)	//For every file in the archive
@@ -111,21 +183,25 @@ uint32_t IGAE_PopulateDescHeaderArray(IGAE_File* file)
 		IGAE_SetHeaderValues(file, i);					//Get the header values for this header
 		file->localFileHeaders[i].index = i;			//Set the index number of this header (soon to be deprecated)
 	}
-	return 0;
 }
 //Ez
-uint32_t IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPath)
+int IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPath)
 {
-	unsigned char readBuffer[0x40];						//Byte array of length 64
-	memset(readBuffer, 0x00, 0x40);						//Initialise the array
+	if(file.fs == NULL)								//If the file wasn't opened successfully
+	{
+		return -1;
+	}
 
 	FILE* outputfs = fopen(outputPath, "wb");			//Open the file that'll be the output file
 
 	if(outputfs == NULL)								//If the file wasn't opened successfully
 	{
-		printf("fopen failed with error %d\n", errno);	//Print the error
-		return 1;
+		return -2;
 	}
+
+	unsigned char readBuffer[0x40];						//Byte array of length 64
+	memset(readBuffer, 0x00, 0x40);						//Initialise the array
+
 
 	fseek(file.fs, file.localFileHeaders[fileNo].startingAddress, SEEK_SET);	//Go to the local file's starting address
 	uint32_t i = 0;
@@ -134,14 +210,12 @@ uint32_t IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPat
 		int readres = fread(readBuffer, 0x01, 0x40, file.fs);					//Read the file
 		if(readres < 64)														//If less than 64 bytes were read then an error occured
 		{
-			printf("fread failed with error %d\n", errno);						//Print the error code
 			goto ExitExtract;
 		}
 		int writeres = fwrite(readBuffer, 0x01, 0x40, outputfs);				//Write to the output file
 
 		if(writeres < 64)														//If less than 64 bytes were written then an error occured
 		{
-			printf("fwrite failed with error %d\n", errno);						//Print the error code
 			goto ExitExtract;
 		}
 	}
@@ -150,20 +224,28 @@ uint32_t IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPat
 		fread(readBuffer, 0x01, file.localFileHeaders[fileNo].size - i, file.fs);						//Read the remaining bytes
 		fwrite(readBuffer, 0x01, file.localFileHeaders[fileNo].size - i, outputfs);						//Write the remaining bytes
 	}
-	printf("extracted\n");
 ExitExtract:
 	fclose(outputfs);															//Close the output file
 	return 0;
 }
 
 //Returns the end of the local file headers
-uint32_t IGAE_GetFileDescsStartingAddr(IGAE_File file)
+long long int IGAE_GetFileDescsStartingAddr(IGAE_File file)
 {
+	if(file.numberOfFiles == 0)
+	{
+		return -1;
+	}
 	return locations[file.version][IGAE_LOCATION_UNKNOWN_2_STARTING_LOCATION] + file.numberOfFiles * locations[file.version][IGAE_LOCATION_UNKNOWN_2_LENGTH];
 }
 //Get the start of the nametable's address
-uint32_t IGAE_GetNameTableStartAddr(IGAE_File file)
+long long int IGAE_GetNameTableStartAddr(IGAE_File file)
 {
+	if(file.fs == NULL)
+	{
+		return -1;
+	}
+
 	fseek(file.fs, locations[file.version][IGAE_LOCATION_NAMETABLE_LOCATION], SEEK_SET);	//Go to the nametable's location's location
 
 	uint32_t nameTableLocation;
@@ -173,8 +255,13 @@ uint32_t IGAE_GetNameTableStartAddr(IGAE_File file)
 	return nameTableLocation;										//return
 }
 //Get the size of the nametable
-uint32_t IGAE_GetNameTableLength(IGAE_File file)
+long long int IGAE_GetNameTableLength(IGAE_File file)
 {
+	if(file.fs == NULL)
+	{
+		return -1;
+	}
+
 	fseek(file.fs, locations[file.version][IGAE_LOCATION_NAMETABLE_SIZE], SEEK_SET);		//Go to the nametable's location's location
 
 	uint32_t nameTableSize;
@@ -184,8 +271,13 @@ uint32_t IGAE_GetNameTableLength(IGAE_File file)
 	return nameTableSize;											//return
 }
 //Find the name of the specified file
-uint32_t IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output)
+long long int IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output)
 {
+	if(file.fs == NULL)
+	{
+		return -1;
+	}
+
 	uint32_t nameStartAddress;													//The name's starting address
 
 	fseek(file.fs, file.nameTableStartAddress + fileNo * 4, SEEK_SET);			//Go to where the name's location will be stored
@@ -214,7 +306,7 @@ uint32_t IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output)
 
 	return 0;
 }
-uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile)
+int IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile)
 {
 	if(readFromFile)
 	{
@@ -227,6 +319,13 @@ uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile
 			*rawVersion = temp;
 		}
 	}
+	else
+	{
+		if(file.fs == NULL)
+		{
+			return -1;
+		}
+	}
 	switch(*rawVersion)
 	{
 		case IGAE_VER_SSA_WIIU:	return 0x00;
@@ -236,7 +335,10 @@ uint8_t IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile
 		case IGAE_VER_STT:		return 0x04;
 		//case IGAE_VER_SSC:	return 0x05;
 		default:
-			printf("Version %04X is unsupported\n", *rawVersion);
-			return 0xFF;						//Return 255, signifies error
+			return -4;						//Return 255, signifies error
 	}
+}
+extern void test()
+{
+	printf("test\n");
 }

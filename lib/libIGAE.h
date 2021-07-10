@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef BUILD_LIB
+#define IGAE_API __declspec(dllexport)
+#else
+#define IGAE_API __declspec(dllimport)
+#endif
+
 #include <fstream>
 #include <stdint.h>
 
@@ -53,14 +59,15 @@ typedef struct
     uint32_t nameTableLength;
 } IGAE_File;
 
-int IGAE_LoadFile(char* filePath, IGAE_File* output);
-long long int IGAE_GetNumberOfFiles(IGAE_File file);
-bool IGAE_CheckFileHeader(IGAE_File* file);
-long long int IGAE_SetHeaderValues(IGAE_File* file, uint32_t fileNo);
-void IGAE_PopulateDescHeaderArray(IGAE_File* file);
-int IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPath);
-long long int IGAE_GetFileDescsStartingAddr(IGAE_File file);
-long long int IGAE_GetNameTableStartAddr(IGAE_File file);
-long long int IGAE_GetNameTableLength(IGAE_File file);
-long long int IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output);
-int IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile = true);
+extern "C" IGAE_API int IGAE_LoadFile(char* filePath, IGAE_File* output);
+extern "C" IGAE_API long long int IGAE_GetNumberOfFiles(IGAE_File file);
+extern "C" IGAE_API bool IGAE_CheckFileHeader(IGAE_File* file);
+extern "C" IGAE_API long long int IGAE_SetHeaderValues(IGAE_File* file, uint32_t fileNo);
+extern "C" IGAE_API void IGAE_PopulateDescHeaderArray(IGAE_File* file);
+extern "C" IGAE_API int IGAE_ExtractFile(IGAE_File file, uint32_t fileNo, const char* outputPath);
+extern "C" IGAE_API long long int IGAE_GetFileDescsStartingAddr(IGAE_File file);
+extern "C" IGAE_API long long int IGAE_GetNameTableStartAddr(IGAE_File file);
+extern "C" IGAE_API long long int IGAE_GetNameTableLength(IGAE_File file);
+extern "C" IGAE_API long long int IGAE_FindName(IGAE_File file, uint32_t fileNo, std::string* output);
+extern "C" IGAE_API int IGAE_ReadVersion(IGAE_File file, uint32_t* rawVersion, bool readFromFile = true);
+extern "C" IGAE_API void test();

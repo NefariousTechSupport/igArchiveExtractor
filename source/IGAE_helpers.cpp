@@ -1,5 +1,3 @@
-#include "helpers.h"
-#include "IGAE.h"
 #include <stdint.h>
 #include <iostream>
 #include <cstdio>
@@ -8,6 +6,14 @@
 #if defined(_WIN32)
 #include <fileapi.h>
 #include <windows.h>
+#endif
+
+#include "IGAE_helpers.h"
+
+#if defined(BUILD_LIB)
+#include "libIGAE.h"
+#else
+#include "C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\lib\libIGAE.h"
 #endif
 
 //Checks if the system is big endian
