@@ -1,6 +1,11 @@
 # igArchiveExtractor
  A GUI tool for extracting files from .arc files from various games made with the Vicarious Visions Alchemy game engine
 
+Supported games include:
+* Skylanders Spyro's Adventure (Wii and Wii U)
+* Skylanders Giants
+* Skylanders Trap Team
+
 ## Usage
 
 * Start the program
