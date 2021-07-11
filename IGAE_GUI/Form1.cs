@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,11 +13,14 @@ namespace IGAE_GUI
 {
 	public partial class Form_igArchiveExtractor : Form
 	{
+		private CommonOpenFileDialog cofdSelectDir = new CommonOpenFileDialog();
+
 		IGAE_File file;
 		public Form_igArchiveExtractor()
 		{
 			InitializeComponent();
 
+			cofdSelectDir.IsFolderPicker = true;
 			SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
 			prgProgressBar.Minimum = 0;
 			lblComplete.Visible = false;
@@ -25,38 +28,38 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
-			SelectIGAFile.ShowDialog();
-		}
-
-		private void SelectIGAFile_FileOk(object sender, CancelEventArgs e)
-		{
-			file = new IGAE_File(SelectIGAFile.FileName);
-			btnExtractAllLoaded.Enabled = true;
-			treeLocalFiles.Nodes.Clear();
-			for (uint i = 0; i < file.numberOfFiles; i++)
+			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
-				string currFile = file.ReadName(i);
-				string[] contents = currFile.Split(new char[] { '\\', '/' });
-				TreeNodeCollection parentDirNodeCollection = treeLocalFiles.Nodes;
-				for (int j = 0; j < contents.Length; j++)
+				file = new IGAE_File(SelectIGAFile.FileName);
+				btnExtractAllLoaded.Enabled = true;
+				treeLocalFiles.Nodes.Clear();
+				for (uint i = 0; i < file.numberOfFiles; i++)
 				{
-					if (contents[j] == "C:" || contents[j] == "c:") continue;
-					string curdir = string.Empty;
-					for (int k = 0; k <= j; k++)
+					string currFile = file.ReadName(i);
+					string[] contents = currFile.Split(new char[] { '\\', '/' });
+					TreeNodeCollection parentDirNodeCollection = treeLocalFiles.Nodes;
+					for (int j = 0; j < contents.Length; j++)
 					{
-						if (contents[k] == "C:" || contents[k] == "c:") continue;
-						curdir += contents[k];
-					}
-					TreeNode[] searchNodes = treeLocalFiles.Nodes.Find(curdir, true);
-					if (searchNodes.Length > 0)
-					{
-						parentDirNodeCollection = searchNodes[0].Nodes;
-					}
-					else
-					{
-						parentDirNodeCollection = parentDirNodeCollection.Add(curdir, contents[j]).Nodes;
+						if (contents[j] == "C:" || contents[j] == "c:") continue;
+						string curdir = string.Empty;
+						for (int k = 0; k <= j; k++)
+						{
+							if (contents[k] == "C:" || contents[k] == "c:") continue;
+							curdir += contents[k];
+						}
+						TreeNode[] searchNodes = treeLocalFiles.Nodes.Find(curdir, true);
+						if (searchNodes.Length > 0)
+						{
+							parentDirNodeCollection = searchNodes[0].Nodes;
+						}
+						else
+						{
+							parentDirNodeCollection = parentDirNodeCollection.Add(curdir, contents[j]).Nodes;
+						}
 					}
 				}
+				treeLocalFiles.Sort();
+				lstLog.Items.Add($"Opened IGA file \"{SelectIGAFile.FileName}\"");
 			}
 		}
 		private void treeLocalFiles_AfterSelect(object sender, EventArgs e)
@@ -108,12 +111,19 @@ namespace IGAE_GUI
 
 			prgProgressBar.Maximum = (int)totalSize;
 
-			if (SelectOutputDir.ShowDialog() == DialogResult.OK)
+			cofdSelectDir.Title = "Select Output Folder";
+
+			if (cofdSelectDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
 				for (uint i = 0; i < file.numberOfFiles; i++)
 				{
-					file.ExtractFile(i, SelectOutputDir.SelectedPath, prgProgressBar);
+					file.ExtractFile(i, cofdSelectDir.FileName, prgProgressBar);
+					lstLog.Items.Add($"Extracted file {i} successfully...");
 				}
+				IGAR_File reb = new IGAR_File(file);
+				//Bad repeated code
+				reb.Generate($"{cofdSelectDir.FileName}/rebuild-{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar");
+				lstLog.Items.Add($"Generated Rebuild File \"rebuild -{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar\"");
 			}
 			lblComplete.Visible = true;
 		}
@@ -126,9 +136,11 @@ namespace IGAE_GUI
 
 			prgProgressBar.Maximum = (int)file.localFileHeaders[index].size;
 
-			if (SelectOutputDir.ShowDialog() == DialogResult.OK)
+			cofdSelectDir.Title = "Select Output Folder";
+
+			if (cofdSelectDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
-				file.ExtractFile(index, SelectOutputDir.SelectedPath, prgProgressBar);
+				file.ExtractFile(index, cofdSelectDir.FileName, prgProgressBar);
 			}
 
 			lblComplete.Visible = true;
@@ -137,6 +149,11 @@ namespace IGAE_GUI
 		private void btnQuit_Click(object sender, EventArgs e)
 		{
 			Application.Exit();
+		}
+
+		private void btnClearLog_Click(object sender, EventArgs e)
+		{
+			lstLog.Items.Clear();
 		}
 	}
 }

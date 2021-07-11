@@ -26,16 +26,16 @@ namespace IGAE_GUI
 			for(uint i = 0; i < numberOfFiles; i++)
 			{
 				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown2Location] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown2Length] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
-				byte[] readBuffer = new byte[0x04];                                                    //The variable to read into
+				byte[] readBuffer = new byte[0x04];																//The variable to read into
 
 				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal], SeekOrigin.Begin);         //Go to where the local file header contains data on where the file would actually start
-				fs.Read(readBuffer, 0x00, 0x04);                               //Read into the read buffer
-				localFileHeaders[i].startingAddress = BitConverter.ToUInt32(readBuffer, 0x00);            //Set the starting address
+				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer
+				localFileHeaders[i].startingAddress = BitConverter.ToUInt32(readBuffer, 0x00);					//Set the starting address
 
 				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal], SeekOrigin.Begin);          //Go to where the local file header contains data on where the file would actually start
-				fs.Read(readBuffer, 0x00, 0x04);                               //Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
+				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
 				Console.WriteLine($"val for {i}: {headerStartingAddress}");
-				localFileHeaders[i].size = BitConverter.ToUInt32(readBuffer, 0x00);                       //Set the size
+				localFileHeaders[i].size = BitConverter.ToUInt32(readBuffer, 0x00);								//Set the size
 
 				localFileHeaders[i].index = i;
 			}
@@ -77,12 +77,13 @@ namespace IGAE_GUI
 			int startValue = prgBar.Value;
 			string outputPath = $"{outputDir}/{ReadName(index).Substring(3)}";
 			string[] parts = outputPath.Split(new char[] { '/', '\\' });
-			string parentDir = string.Empty;
+			string parentDir = parts[0];
 			for (int i = 1; i < parts.Length - 1; i++)
 			{
 				parentDir += "/" + parts[i];
 			}
-			Directory.CreateDirectory(parentDir);
+			Console.WriteLine(parentDir);
+			DirectoryInfo info = Directory.CreateDirectory(parentDir);
 			FileStream outputfs = File.Create($"{outputDir}/{ReadName(index).Substring(3)}");
 			byte[] buffer = new byte[ioBlockSize];
 			fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
@@ -93,39 +94,38 @@ namespace IGAE_GUI
 				outputfs.Write(buffer, 0x00, (int)ioBlockSize);
 				if (startValue + j < prgBar.Maximum)
 				{
-					//prgBar.Value = (int)((float)(startValue + j) / prgBar.Maximum * 100);
 					prgBar.Value = (int)(startValue + j);
 				}
 				j += ioBlockSize;
 			}
-			if (ioBlockSize >= localFileHeaders[index].size - j && localFileHeaders[index].size - j > 0)   //If the bytes remaining is in between 0 and 40
+			if (ioBlockSize >= localFileHeaders[index].size - j && localFileHeaders[index].size - j > 0)	//If the bytes remaining is in between 0 and 40
 			{
-				fs.Read(buffer, 0x00, (int)(localFileHeaders[index].size - j));                       //Read the remaining bytes
-				outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));                     //Write the remaining bytes
+				fs.Read(buffer, 0x00, (int)(localFileHeaders[index].size - j));								//Read the remaining bytes
+				outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));						//Write the remaining bytes
 				prgBar.Value = (int)(startValue + localFileHeaders[index].size);
 			}
 			outputfs.Close();
 		}
 		public string ReadName(uint index)
 		{
-			uint nameStartAddress = ReadUInt32(nametableLocation + index * 4);                                                  //The name's starting address
+			uint nameStartAddress = ReadUInt32(nametableLocation + index * 4);		//The name's starting address
 
-			fs.Seek(nametableLocation + nameStartAddress, SeekOrigin.Begin);    //Go to where the name would start
+			fs.Seek(nametableLocation + nameStartAddress, SeekOrigin.Begin);		//Go to where the name would start
 
-			byte[] readChar = new byte[1] { 0x00 };                           //The character being read
+			byte[] readChar = new byte[1] { 0x00 };									//The character being read
 
-			string output = string.Empty;                     //the name
+			string output = string.Empty;											//The name
 
 			while (true)
 			{
-				fs.Read(readChar, 0x00, 0x01);      //Read the character
-				if (readChar[0] == 0x00)                       //If the character that was just read is a null character
+				fs.Read(readChar, 0x00, 0x01);										//Read the character
+				if (readChar[0] == 0x00)											//If the character that was just read is a null character
 				{
-					break;                                  //Then exit out of the loop as you'd have reached the end of the file
+					break;															//Then exit out of the loop as you'd have reached the end of the file
 				}
-				else                                        //Otherwise
+				else																//Otherwise
 				{
-					output += (char)readChar[0];                   //Add to the output
+					output += (char)readChar[0];									//Add to the output
 				}
 			}
 			localFileHeaders[index].path = output;

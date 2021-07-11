@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+
 namespace IGAE_GUI
 {
 	partial class Form_igArchiveExtractor
@@ -41,9 +42,11 @@ namespace IGAE_GUI
 			this.SelectOutputDir = new System.Windows.Forms.FolderBrowserDialog();
 			this.prgProgressBar = new System.Windows.Forms.ProgressBar();
 			this.lblComplete = new System.Windows.Forms.Label();
-			this.btnLoadFolder = new System.Windows.Forms.Button();
+			this.btnClearLog = new System.Windows.Forms.Button();
 			this.btnSettings = new System.Windows.Forms.Button();
 			this.btnQuit = new System.Windows.Forms.Button();
+			this.lstLog = new System.Windows.Forms.ListBox();
+			this.lblLol = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// btnLoadFile
@@ -61,7 +64,6 @@ namespace IGAE_GUI
 			// 
 			this.SelectIGAFile.FileName = "SelectIGAFile";
 			this.SelectIGAFile.Title = "Open IGA File";
-			this.SelectIGAFile.FileOk += new System.ComponentModel.CancelEventHandler(this.SelectIGAFile_FileOk);
 			// 
 			// treeLocalFiles
 			// 
@@ -148,18 +150,20 @@ namespace IGAE_GUI
 			this.lblComplete.TabIndex = 9;
 			this.lblComplete.Text = "Complete!";
 			// 
-			// btnLoadFolder
+			// btnClearLog
 			// 
-			this.btnLoadFolder.Enabled = false;
-			this.btnLoadFolder.Location = new System.Drawing.Point(701, 503);
-			this.btnLoadFolder.Name = "btnLoadFolder";
-			this.btnLoadFolder.Size = new System.Drawing.Size(75, 23);
-			this.btnLoadFolder.TabIndex = 10;
-			this.btnLoadFolder.Text = "Load Folder";
-			this.btnLoadFolder.UseVisualStyleBackColor = true;
+			this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnClearLog.Location = new System.Drawing.Point(701, 503);
+			this.btnClearLog.Name = "btnClearLog";
+			this.btnClearLog.Size = new System.Drawing.Size(75, 23);
+			this.btnClearLog.TabIndex = 10;
+			this.btnClearLog.Text = "Clear Log";
+			this.btnClearLog.UseVisualStyleBackColor = true;
+			this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
 			// 
 			// btnSettings
 			// 
+			this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnSettings.Enabled = false;
 			this.btnSettings.Location = new System.Drawing.Point(539, 504);
 			this.btnSettings.Name = "btnSettings";
@@ -170,6 +174,7 @@ namespace IGAE_GUI
 			// 
 			// btnQuit
 			// 
+			this.btnQuit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnQuit.Location = new System.Drawing.Point(539, 533);
 			this.btnQuit.Name = "btnQuit";
 			this.btnQuit.Size = new System.Drawing.Size(75, 23);
@@ -178,14 +183,36 @@ namespace IGAE_GUI
 			this.btnQuit.UseVisualStyleBackColor = true;
 			this.btnQuit.Click += new System.EventHandler(this.btnQuit_Click);
 			// 
+			// lstLog
+			// 
+			this.lstLog.FormattingEnabled = true;
+			this.lstLog.HorizontalScrollbar = true;
+			this.lstLog.Location = new System.Drawing.Point(539, 100);
+			this.lstLog.Name = "lstLog";
+			this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.lstLog.Size = new System.Drawing.Size(237, 394);
+			this.lstLog.TabIndex = 13;
+			// 
+			// lblLol
+			// 
+			this.lblLol.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.lblLol.AutoSize = true;
+			this.lblLol.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.lblLol.Location = new System.Drawing.Point(567, 206);
+			this.lblLol.Name = "lblLol";
+			this.lblLol.Size = new System.Drawing.Size(111, 13);
+			this.lblLol.TabIndex = 14;
+			this.lblLol.Text = "Why are you like this?";
+			// 
 			// Form_igArchiveExtractor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(788, 568);
+			this.Controls.Add(this.lstLog);
 			this.Controls.Add(this.btnQuit);
 			this.Controls.Add(this.btnSettings);
-			this.Controls.Add(this.btnLoadFolder);
+			this.Controls.Add(this.btnClearLog);
 			this.Controls.Add(this.lblComplete);
 			this.Controls.Add(this.prgProgressBar);
 			this.Controls.Add(this.btnExtractFile);
@@ -196,8 +223,9 @@ namespace IGAE_GUI
 			this.Controls.Add(this.btnExtractAllLoaded);
 			this.Controls.Add(this.treeLocalFiles);
 			this.Controls.Add(this.btnLoadFile);
+			this.Controls.Add(this.lblLol);
 			this.Name = "Form_igArchiveExtractor";
-			this.Text = "igArchiveExtractor (0.10)";
+			this.Text = "igArchiveExtractor (0.11)";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -217,9 +245,11 @@ namespace IGAE_GUI
 		private System.Windows.Forms.FolderBrowserDialog SelectOutputDir;
 		private System.Windows.Forms.ProgressBar prgProgressBar;
 		private System.Windows.Forms.Label lblComplete;
-		private System.Windows.Forms.Button btnLoadFolder;
 		private System.Windows.Forms.Button btnSettings;
 		private System.Windows.Forms.Button btnQuit;
+		private System.Windows.Forms.ListBox lstLog;
+		private System.Windows.Forms.Label lblLol;
+		private System.Windows.Forms.Button btnClearLog;
 	}
 }
 

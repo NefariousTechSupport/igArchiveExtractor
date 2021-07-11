@@ -7,3 +7,10 @@ C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\I
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.CoreCompileInputs.cache
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.exe
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.pdb
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.AssemblyReference.cache
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.Sensors.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.CopyComplete
