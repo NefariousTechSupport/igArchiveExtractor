@@ -1,27 +1,26 @@
 # igArchiveExtractor
- A command line utility for extracting files from a .arc file from Skylander's Spyro's Adventure for Wii U
+ A GUI tool for extracting files from .arc files from various games made with the Vicarious Visions Alchemy game engine
 
 ## Usage
 
-`igArchiveExtractor -i [input .arc file] -o [output folder]`
+* Start the program
+* Load a file using the "Load File" button
+* Navigate to the file you want to extract and click "Extract File" or just click "Extract All"
+* Select an output folder
+* Wait
+* Profit
 
-### Example
-
-The following will extract all files from `Title.arc` and put its contents into the folder called `title`, do not include a `/` after the folder name
-
-`igArchiveExtractor -i Title.arc -o title`
+If you're on mac or linux use wine but idk if that works
 
 ## Building
 ### Prerequisites
-* Mac OS: make and g++ installed (can be done with brew)
-* Linux: make and g++ installed (can be done with sudo apt-get)
-* Windows: mingw installed (mingw32 for 32bit building, mingw64 for 64bit building)
+* Mac OS: no
+* Linux: no
+* Windows: dotnet 5.0 + visual studio
 
 ### How to Build
-* `cd` to the repo's root folder
-* run `make osx` on mac os, run `make` and linux, and run `mingw32-make` or `mingw64-make` on windows depending on the bitness you desire
+* Open the sln file in visual studio, and press ctrl + b to build, alternatively press f5 to build (if neccessary) and run
 
 ## To Do
 
-* Add support for SG
 * Figure out bld files (known as pak files on ssf and ssc)
