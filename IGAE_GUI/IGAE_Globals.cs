@@ -8,6 +8,9 @@ namespace IGAE_GUI
 {
 	static class IGAE_Globals
 	{
+		public static byte[] bigEndianMagic =		new byte[4] { 0x1A, 0x41, 0x47, 0x49 };
+		public static byte[] littleEndianMagic =	new byte[4] { 0x49, 0x47, 0x41, 0x1A };
+
 		public static Dictionary<IGAE_Version, uint[]> headerData = new Dictionary<IGAE_Version, uint[]>()
 		{
 			{
@@ -19,8 +22,8 @@ namespace IGAE_GUI
 					0x00000018,		//Nametable Location
 					0x0000001C,		//Nametable Size
 					0x0000000C,		//Length of indiviual local file header
-					0x00000030,		//Unknown data, local file headers start after this data
-					0x00000004,		//Unknown data's size
+					0x00000030,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000004,		//Position of a local file's size inside of a local header
 				}
@@ -34,8 +37,8 @@ namespace IGAE_GUI
 					0x0000001C,		//Nametable Location
 					0x00000020,		//Nametable Size
 					0x0000000C,		//Length of indiviual local file header
-					0x00000034,		//Unknown data, local file headers start after this data
-					0x00000004,		//Unknown data's size
+					0x00000034,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000004,		//Position of a local file's size inside of a local header
 					0x00000024,		//Postion of first padding
@@ -52,8 +55,8 @@ namespace IGAE_GUI
 					0x00000028,		//Nametable Location
 					0x00000030,		//Nametable Size
 					0x00000010,		//Length of individual local file header
-					0x00000038,		//Unknown data, local file headers start after this data
-					0x00000004,		//Unknown data's size
+					0x00000038,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000008,		//Position of a local file's size inside of a local header
 					0x0000001C,		//Postion of first padding
@@ -69,8 +72,8 @@ namespace IGAE_GUI
 		NametableLocation	= 0002,
 		NametableLength		= 0003,
 		LocalHeaderLength	= 0004,
-		Unknown2Location	= 0005,
-		Unknown2Length		= 0006,
+		ChecksumLocation	= 0005,
+		ChecksumLength		= 0006,
 		FileStartInLocal	= 0007,
 		FileLengthInLocal	= 0008,
 		Padding1			= 0009,

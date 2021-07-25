@@ -28,6 +28,7 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
+			SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				file = new IGAE_File(SelectIGAFile.FileName);
@@ -120,7 +121,7 @@ namespace IGAE_GUI
 					file.ExtractFile(i, cofdSelectDir.FileName, prgProgressBar);
 					lstLog.Items.Add($"Extracted file {i} successfully...");
 				}
-				IGAR_File reb = new IGAR_File(file);
+				IGAR_File reb = new IGAR_File(ref file);
 				//Bad repeated code
 				reb.Generate($"{cofdSelectDir.FileName}/rebuild-{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar");
 				lstLog.Items.Add($"Generated Rebuild File \"rebuild -{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar\"");
@@ -154,6 +155,30 @@ namespace IGAE_GUI
 		private void btnClearLog_Click(object sender, EventArgs e)
 		{
 			lstLog.Items.Clear();
+		}
+
+		private void btnRebuild_Click(object sender, EventArgs e)
+		{
+			SelectIGAFile.Filter = "Igar files (*.igar)|*.igar|All files (*.*)|*.*";
+			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
+			{
+				IGAR_File igarfile = IGAR_File.ReadIGARFile(SelectIGAFile.FileName);
+				SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
+				if (SelectIGAFile.ShowDialog() == DialogResult.OK)
+				{
+					IGAR_File.RebuildIGAFile(ref igarfile, SelectIGAFile.FileName);
+				}
+			}
+		}
+
+		private void btnGenerateIGAR_Click(object sender, EventArgs e)
+		{
+			SelectIGAFile.Filter = "Igar files (*.igar)|*.igar|All files (*.*)|*.*";
+			if (SelectIGAFile.ShowDialog() == DialogResult.OK)
+			{
+				IGAR_File rebfile = new IGAR_File(ref file);
+				rebfile.Generate(SelectIGAFile.FileName);
+			}
 		}
 	}
 }

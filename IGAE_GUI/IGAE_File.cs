@@ -16,16 +16,16 @@ namespace IGAE_GUI
 		bool supported;
 		bool initialised;
 
-		static uint ioBlockSize = 0x4000;
+		static uint ioBlockSize = 0x40;
 
 		public IGAE_File(string filepath)
 		{
 			initialised = true;
-			fs = File.OpenRead(filepath);
+			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
 			localFileHeaders = new IGAE_FileDescHeader[numberOfFiles];
 			for(uint i = 0; i < numberOfFiles; i++)
 			{
-				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown2Location] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown2Length] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
+				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLength] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
 				byte[] readBuffer = new byte[0x04];																//The variable to read into
 
 				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal], SeekOrigin.Begin);         //Go to where the local file header contains data on where the file would actually start
@@ -34,7 +34,6 @@ namespace IGAE_GUI
 
 				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal], SeekOrigin.Begin);          //Go to where the local file header contains data on where the file would actually start
 				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
-				Console.WriteLine($"val for {i}: {headerStartingAddress}");
 				localFileHeaders[i].size = BitConverter.ToUInt32(readBuffer, 0x00);								//Set the size
 
 				localFileHeaders[i].index = i;
@@ -147,6 +146,7 @@ namespace IGAE_GUI
 		}
 		~IGAE_File()
 		{
+			Console.WriteLine("destructed");
 			fs.Close();
 		}
 	}

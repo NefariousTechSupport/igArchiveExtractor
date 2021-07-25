@@ -43,10 +43,11 @@ namespace IGAE_GUI
 			this.prgProgressBar = new System.Windows.Forms.ProgressBar();
 			this.lblComplete = new System.Windows.Forms.Label();
 			this.btnClearLog = new System.Windows.Forms.Button();
-			this.btnSettings = new System.Windows.Forms.Button();
+			this.btnRebuild = new System.Windows.Forms.Button();
 			this.btnQuit = new System.Windows.Forms.Button();
 			this.lstLog = new System.Windows.Forms.ListBox();
 			this.lblLol = new System.Windows.Forms.Label();
+			this.btnGenerateIGAR = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnLoadFile
@@ -161,16 +162,17 @@ namespace IGAE_GUI
 			this.btnClearLog.UseVisualStyleBackColor = true;
 			this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
 			// 
-			// btnSettings
+			// btnRebuild
 			// 
-			this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSettings.Enabled = false;
-			this.btnSettings.Location = new System.Drawing.Point(539, 504);
-			this.btnSettings.Name = "btnSettings";
-			this.btnSettings.Size = new System.Drawing.Size(75, 23);
-			this.btnSettings.TabIndex = 11;
-			this.btnSettings.Text = "Settings";
-			this.btnSettings.UseVisualStyleBackColor = true;
+			this.btnRebuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnRebuild.Enabled = false;
+			this.btnRebuild.Location = new System.Drawing.Point(539, 504);
+			this.btnRebuild.Name = "btnRebuild";
+			this.btnRebuild.Size = new System.Drawing.Size(75, 23);
+			this.btnRebuild.TabIndex = 11;
+			this.btnRebuild.Text = "Rebuild File";
+			this.btnRebuild.UseVisualStyleBackColor = true;
+			this.btnRebuild.Click += new System.EventHandler(this.btnRebuild_Click);
 			// 
 			// btnQuit
 			// 
@@ -204,14 +206,27 @@ namespace IGAE_GUI
 			this.lblLol.TabIndex = 14;
 			this.lblLol.Text = "Why are you like this?";
 			// 
+			// btnGenerateIGAR
+			// 
+			this.btnGenerateIGAR.Enabled = false;
+			this.btnGenerateIGAR.Location = new System.Drawing.Point(689, 40);
+			this.btnGenerateIGAR.Name = "btnGenerateIGAR";
+			this.btnGenerateIGAR.Size = new System.Drawing.Size(75, 23);
+			this.btnGenerateIGAR.TabIndex = 15;
+			this.btnGenerateIGAR.Text = "Generate";
+			this.btnGenerateIGAR.UseVisualStyleBackColor = true;
+			this.btnGenerateIGAR.Visible = false;
+			this.btnGenerateIGAR.Click += new System.EventHandler(this.btnGenerateIGAR_Click);
+			// 
 			// Form_igArchiveExtractor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(788, 568);
+			this.Controls.Add(this.btnGenerateIGAR);
 			this.Controls.Add(this.lstLog);
 			this.Controls.Add(this.btnQuit);
-			this.Controls.Add(this.btnSettings);
+			this.Controls.Add(this.btnRebuild);
 			this.Controls.Add(this.btnClearLog);
 			this.Controls.Add(this.lblComplete);
 			this.Controls.Add(this.prgProgressBar);
@@ -245,11 +260,12 @@ namespace IGAE_GUI
 		private System.Windows.Forms.FolderBrowserDialog SelectOutputDir;
 		private System.Windows.Forms.ProgressBar prgProgressBar;
 		private System.Windows.Forms.Label lblComplete;
-		private System.Windows.Forms.Button btnSettings;
+		private System.Windows.Forms.Button btnRebuild;
 		private System.Windows.Forms.Button btnQuit;
 		private System.Windows.Forms.ListBox lstLog;
 		private System.Windows.Forms.Label lblLol;
 		private System.Windows.Forms.Button btnClearLog;
+		private System.Windows.Forms.Button btnGenerateIGAR;
 	}
 }
 
