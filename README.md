@@ -29,3 +29,4 @@ If you're on mac or linux use wine but idk if that works
 ## To Do
 
 * Figure out bld files (known as pak files on ssf and ssc)
+* Add support for rebuilding these files
