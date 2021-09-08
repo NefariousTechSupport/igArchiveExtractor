@@ -43,7 +43,7 @@ namespace IGAE_GUI
 					0x00000004,		//Position of a local file's size inside of a local header
 					0x00000024,		//Postion of first padding
 					0x00000010,		//Length of first padding
-					0x00000008		//Unknown but important adddress
+					0x00000008		//Address to the length of the dictionary for the compression
 				}
 			},
 			{
@@ -78,6 +78,6 @@ namespace IGAE_GUI
 		FileLengthInLocal	= 0008,
 		Padding1			= 0009,
 		Padding2			= 0010,
-		Unknown3			= 0011
+		DictionarySize		= 0011,
 	}
 }

@@ -30,6 +30,7 @@ namespace IGAE_GUI
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_igArchiveExtractor));
 			this.btnLoadFile = new System.Windows.Forms.Button();
 			this.SelectIGAFile = new System.Windows.Forms.OpenFileDialog();
 			this.treeLocalFiles = new System.Windows.Forms.TreeView();
@@ -48,6 +49,7 @@ namespace IGAE_GUI
 			this.lstLog = new System.Windows.Forms.ListBox();
 			this.lblLol = new System.Windows.Forms.Label();
 			this.btnGenerateIGAR = new System.Windows.Forms.Button();
+			this.btnLoadFolder = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnLoadFile
@@ -70,7 +72,7 @@ namespace IGAE_GUI
 			// 
 			this.treeLocalFiles.Location = new System.Drawing.Point(12, 12);
 			this.treeLocalFiles.Name = "treeLocalFiles";
-			this.treeLocalFiles.Size = new System.Drawing.Size(515, 515);
+			this.treeLocalFiles.Size = new System.Drawing.Size(515, 544);
 			this.treeLocalFiles.TabIndex = 1;
 			this.treeLocalFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeLocalFiles_AfterSelect);
 			// 
@@ -137,10 +139,12 @@ namespace IGAE_GUI
 			// 
 			// prgProgressBar
 			// 
+			this.prgProgressBar.Enabled = false;
 			this.prgProgressBar.Location = new System.Drawing.Point(13, 534);
 			this.prgProgressBar.Name = "prgProgressBar";
 			this.prgProgressBar.Size = new System.Drawing.Size(514, 23);
 			this.prgProgressBar.TabIndex = 8;
+			this.prgProgressBar.Visible = false;
 			// 
 			// lblComplete
 			// 
@@ -150,11 +154,12 @@ namespace IGAE_GUI
 			this.lblComplete.Size = new System.Drawing.Size(54, 13);
 			this.lblComplete.TabIndex = 9;
 			this.lblComplete.Text = "Complete!";
+			this.lblComplete.Visible = false;
 			// 
 			// btnClearLog
 			// 
 			this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnClearLog.Location = new System.Drawing.Point(701, 503);
+			this.btnClearLog.Location = new System.Drawing.Point(701, 474);
 			this.btnClearLog.Name = "btnClearLog";
 			this.btnClearLog.Size = new System.Drawing.Size(75, 23);
 			this.btnClearLog.TabIndex = 10;
@@ -192,7 +197,7 @@ namespace IGAE_GUI
 			this.lstLog.Location = new System.Drawing.Point(539, 100);
 			this.lstLog.Name = "lstLog";
 			this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.lstLog.Size = new System.Drawing.Size(237, 394);
+			this.lstLog.Size = new System.Drawing.Size(237, 368);
 			this.lstLog.TabIndex = 13;
 			// 
 			// lblLol
@@ -218,11 +223,22 @@ namespace IGAE_GUI
 			this.btnGenerateIGAR.Visible = false;
 			this.btnGenerateIGAR.Click += new System.EventHandler(this.btnGenerateIGAR_Click);
 			// 
+			// btnLoadFolder
+			// 
+			this.btnLoadFolder.Location = new System.Drawing.Point(702, 504);
+			this.btnLoadFolder.Name = "btnLoadFolder";
+			this.btnLoadFolder.Size = new System.Drawing.Size(75, 23);
+			this.btnLoadFolder.TabIndex = 16;
+			this.btnLoadFolder.Text = "Load Folder";
+			this.btnLoadFolder.UseVisualStyleBackColor = true;
+			this.btnLoadFolder.Click += new System.EventHandler(this.btnLoadFolder_Click);
+			// 
 			// Form_igArchiveExtractor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(788, 568);
+			this.Controls.Add(this.btnLoadFolder);
 			this.Controls.Add(this.btnGenerateIGAR);
 			this.Controls.Add(this.lstLog);
 			this.Controls.Add(this.btnQuit);
@@ -239,6 +255,7 @@ namespace IGAE_GUI
 			this.Controls.Add(this.treeLocalFiles);
 			this.Controls.Add(this.btnLoadFile);
 			this.Controls.Add(this.lblLol);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form_igArchiveExtractor";
 			this.Text = "igArchiveExtractor (0.11)";
 			this.ResumeLayout(false);
@@ -266,6 +283,7 @@ namespace IGAE_GUI
 		private System.Windows.Forms.Label lblLol;
 		private System.Windows.Forms.Button btnClearLog;
 		private System.Windows.Forms.Button btnGenerateIGAR;
+		private System.Windows.Forms.Button btnLoadFolder;
 	}
 }
 

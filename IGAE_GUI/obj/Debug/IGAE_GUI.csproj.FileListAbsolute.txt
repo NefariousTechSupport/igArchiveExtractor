@@ -24,3 +24,9 @@ C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Debug\IGA
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Debug\IGAE_GUI.csproj.CopyComplete
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Debug\IGAE_GUI.exe
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Debug\IGAE_GUI.pdb
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\SevenZip.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\SevenZip.xml
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\ManagedLzma.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\System.Collections.Immutable.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\ManagedLzma.xml
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Debug\System.Collections.Immutable.xml

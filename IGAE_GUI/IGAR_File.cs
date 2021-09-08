@@ -19,34 +19,34 @@ namespace IGAE_GUI
 		public byte[] checksumBuffer;
 		public byte[] badcodepog;
 
-		public IGAR_File(ref IGAE_File file)
+		public IGAR_File(ref IGAE_File file, FileStream fs)
 		{
 			byte[] readBuffer = new byte[4];
 
 			version = file.version;
 
-			file.fs.Seek(IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown1], SeekOrigin.Begin);
-			file.fs.Read(readBuffer, 0x00, 0x04);
+			fs.Seek(IGAE_Globals.headerData[version][(int)IGAE_HeaderData.Unknown1], SeekOrigin.Begin);
+			fs.Read(readBuffer, 0x00, 0x04);
 			unknown1 = BitConverter.ToUInt32(readBuffer, 0x00);
 
 			numberOfFiles = file.numberOfFiles;
 
-			file.fs.Seek(IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation], SeekOrigin.Begin);
+			fs.Seek(IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation], SeekOrigin.Begin);
 			checksumBuffer = new byte[numberOfFiles * 4];
-			file.fs.Read(checksumBuffer, 0x00, (int)numberOfFiles * 4);
+			fs.Read(checksumBuffer, 0x00, (int)numberOfFiles * 4);
 
 			Console.WriteLine($"nametableLocation: {file.nametableLocation}");
-			file.fs.Seek(file.nametableLocation, SeekOrigin.Begin);
-			Console.WriteLine($"fs position: {file.fs.Position}");
-			badcodepog = new byte[file.fs.Length - file.nametableLocation];
+			fs.Seek(file.nametableLocation, SeekOrigin.Begin);
+			Console.WriteLine($"fs position: {fs.Position}");
+			badcodepog = new byte[fs.Length - file.nametableLocation];
 			int i = 0;
 			for (; i + 80 < badcodepog.Length; i += 0x40)
 			{
-				file.fs.Read(badcodepog, i, 0x40);
+				fs.Read(badcodepog, i, 0x40);
 			}
 			if (0x40 >= badcodepog.Length - i && badcodepog.Length - i > 0)   //If the bytes remaining is in between 0 and 40
 			{
-				file.fs.Read(badcodepog, badcodepog.Length - i, badcodepog.Length - i);
+				fs.Read(badcodepog, badcodepog.Length - i, badcodepog.Length - i);
 			}
 		}
 		public static IGAR_File ReadIGARFile(string igarFilePath)
