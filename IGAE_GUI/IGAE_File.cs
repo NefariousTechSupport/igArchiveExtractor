@@ -20,21 +20,12 @@ namespace IGAE_GUI
 
 		public IGAE_Version version;
 		public uint numberOfFiles;
-		public uint dictionarySize;
 		public uint nametableLocation;
 		public uint nametableLength;
 
 		public IGAE_File(string filepath)
 		{
 			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-			/*if(filepath.Substring(filepath.Length - 4) == "arc")
-			{
-				compressed = false;
-			}
-			else if (filepath.Substring(filepath.Length - 4) == "bld" || filepath.Substring(filepath.Length - 4) == "pak")
-			{
-				compressed = true;
-			}*/
 
 			try
 			{
@@ -44,8 +35,8 @@ namespace IGAE_GUI
 			{
 				throw new NotImplementedException($"IGA version {version} is not yet supported");
 			}
+
 			numberOfFiles = ReadUInt32(IGAE_HeaderData.NumberOfFiles);
-			//dictionarySize = ReadUInt32(IGAE_HeaderData.DictionarySize);				//Not Implemented
 			nametableLocation = ReadUInt32(IGAE_HeaderData.NametableLocation);
 			nametableLength = ReadUInt32(IGAE_HeaderData.NametableLength);
 
@@ -69,12 +60,16 @@ namespace IGAE_GUI
 			}
 		}
 
+		//This function contains commented out references to the progress bar, yeah that's cause it kept causing headaches but i wanna bring it back.
 		public void ExtractFile(uint index, string outputDir, ProgressBar prgBar, int current, uint max)
 		{
-			if (index != 0) return;
+			//int startValue = current;
 
-			int startValue = current;
-			string outputPath = $"{outputDir}/{ReadName(index).Substring(3)}";
+			//The following code up until outputfs is created should be rewritten cos it's hard to read
+
+			string outputFileName = ReadName(index);
+			outputFileName = outputFileName.Substring(outputFileName[1] == ':' ? 3 : 0);
+			string outputPath = $"{outputDir}/{outputFileName}";
 			string[] parts = outputPath.Split(new char[] { '/', '\\' });
 			string parentDir = parts[0];
 			for (int i = 1; i < parts.Length - 1; i++)
@@ -83,7 +78,7 @@ namespace IGAE_GUI
 			}
 			Console.WriteLine(parentDir);
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
-			FileStream outputfs = File.Create($"{outputDir}/{ReadName(index).Substring(parts[0][1] == ':' ? 3 : 0)}");
+			FileStream outputfs = File.Create($"{outputDir}/{outputFileName}");
 
 			if(localFileHeaders[index].mode == 0xFFFFFFFF)
 			{
@@ -110,6 +105,8 @@ namespace IGAE_GUI
 			}
 			else
 			{
+				//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
+
 				uint compressedSize;
 				uint def_block = 0x8000;
 				byte[] readBuffer = new byte[0x40];
@@ -119,12 +116,10 @@ namespace IGAE_GUI
 				{
 					fs.Read(readBuffer, 0x00, 0x02);
 					compressedSize = BitConverter.ToUInt16(readBuffer, 0x00);
-					//fs.Position -= 2;
 				}
 				else
 				{
 					compressedSize = ReadUInt32((uint)fs.Position);
-					//fs.Position -= 4;
 				}
 
 
@@ -147,7 +142,7 @@ namespace IGAE_GUI
 				decoder.SetDecoderProperties(properties);
 				decoder.Code(ms, outputfs, compressedSize, def_block, null);
 
-				//The following will replace the above, this is faster apparently but i had issues with writing to the output file
+				//The following will replace the above, the below is faster apparently but i had issues with writing to the output file.
 
 				/*ManagedLzma.LZMA.Decoder decoder = new ManagedLzma.LZMA.Decoder(DecoderSettings.ReadFrom(properties, 0x00));
 				decoder.Decode(compressedBytes, 0x00, (int)compressedSize, (int)def_block, false);*/
@@ -197,7 +192,6 @@ namespace IGAE_GUI
 		}
 		~IGAE_File()
 		{
-			Console.WriteLine("destructed");
 			fs.Close();
 		}
 	}

@@ -2,12 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IGAE_GUI
@@ -33,7 +29,7 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
-			SelectIGAFile.Filter = "Arc files (*.arc)|*.bld|All files (*.*)|*.*";
+			SelectIGAFile.Filter = "Supported game files (*.arc, *.bld)|*.arc;*.bld|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				files = new IGAE_File[1];
@@ -143,7 +139,7 @@ namespace IGAE_GUI
 				//IGAR_File reb = new IGAR_File(ref file);
 				//Bad repeated code
 				//reb.Generate($"{cofdSelectDir.FileName}/rebuild-{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar");
-				lstLog.Items.Add($"Generated Rebuild File \"rebuild -{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar\"");
+				//lstLog.Items.Add($"Generated Rebuild File \"rebuild -{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar\"");
 			}
 			//lblComplete.Visible = true;
 		}
@@ -203,7 +199,8 @@ namespace IGAE_GUI
 
 		private void btnGenerateIGAR_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException("Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha.");
+
 			SelectIGAFile.Filter = "Igar files (*.igar)|*.igar|All files (*.*)|*.*";
 			if (SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
