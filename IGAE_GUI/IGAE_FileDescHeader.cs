@@ -12,5 +12,6 @@ namespace IGAE_GUI
 		public uint size;
 		public string path;
 		public uint index;
+		public uint mode;
 	}
 }

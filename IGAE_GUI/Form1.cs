@@ -33,7 +33,7 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
-			SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
+			SelectIGAFile.Filter = "Arc files (*.arc)|*.bld|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				files = new IGAE_File[1];

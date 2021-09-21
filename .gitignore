@@ -1,12 +1,14 @@
-.vscode
-*.o
-*.exe
-output
+# Exclude visual studio files
+
+.vs/**
+
+# Exclude compiled files
+
+IGAE_GUI/bin/**
+IGAE_GUI/obj/**
+
+# Exclude game files 
+
 *.arc
 *.bld
-*.zip
-igArchiveExtractor
-Makefile-PSL1GHT
-build
-.DS_Store
 *.pak

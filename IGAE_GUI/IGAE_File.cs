@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SevenZip.Compression.LZMA;
 using ManagedLzma.LZMA;
+
 namespace IGAE_GUI
 {
 	class IGAE_File
@@ -62,12 +63,16 @@ namespace IGAE_GUI
 				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
 				localFileHeaders[i].size = BitConverter.ToUInt32(readBuffer, 0x00);								//Set the size
 
+				localFileHeaders[i].mode = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ModeInLocal]);
+
 				localFileHeaders[i].index = i;
 			}
 		}
 
 		public void ExtractFile(uint index, string outputDir, ProgressBar prgBar, int current, uint max)
 		{
+			if (index != 0) return;
+
 			int startValue = current;
 			string outputPath = $"{outputDir}/{ReadName(index).Substring(3)}";
 			string[] parts = outputPath.Split(new char[] { '/', '\\' });
@@ -78,69 +83,79 @@ namespace IGAE_GUI
 			}
 			Console.WriteLine(parentDir);
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
-			FileStream outputfs = File.Create($"{outputDir}/{ReadName(index).Substring(3)}");
-			byte[] buffer = new byte[ioBlockSize];
-			fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
-			uint j = 0;
+			FileStream outputfs = File.Create($"{outputDir}/{ReadName(index).Substring(parts[0][1] == ':' ? 3 : 0)}");
+
+			if(localFileHeaders[index].mode == 0xFFFFFFFF)
+			{
+				byte[] buffer = new byte[ioBlockSize];
+				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+				uint j = 0;
 			
-			while (j < localFileHeaders[index].size - ioBlockSize)
-			{
-				fs.Read(buffer, 0x00, (int)ioBlockSize);
-				outputfs.Write(buffer, 0x00, (int)ioBlockSize);
-				/*if (startValue + j < prgBar.Maximum)
+				while (j < localFileHeaders[index].size - ioBlockSize)
 				{
-					prgBar.Value = (int)(startValue + j);
-				}*/
-				j += ioBlockSize;
-			}
-			if (ioBlockSize >= localFileHeaders[index].size - j && localFileHeaders[index].size - j > 0)	//If the bytes remaining is in between 0 and 40
-			{
-				fs.Read(buffer, 0x00, (int)(localFileHeaders[index].size - j));								//Read the remaining bytes
-				outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));						//Write the remaining bytes
-				//prgBar.Value = (int)((float)((startValue + localFileHeaders[index].size) / max) * 1000);
-			}
-			#if false
-				//byte[] fileContents = new byte[nametableLocation - IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + (4 + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength]) * numberOfFiles];
-
-				SevenZip.Compression.LZMA.Decoder dec = new SevenZip.Compression.LZMA.Decoder();
-				int dictionaryPos = (int)(IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + (4 + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength]) * numberOfFiles);
-				using (MemoryStream input = new MemoryStream((int)(fs.Length - dictionaryPos - nametableLength)))
-				{
-					fs.Seek(dictionaryPos, SeekOrigin.Begin);
-					//fs.CopyTo(input, (int)(fs.Length - nametableLength - dictionaryPos));
-					//input.Seek(0, SeekOrigin.Begin);
-
-					//byte lc = 0x08;								//Number of literal context bits
-					//byte lp = 0x04;								//Number of literal position bits
-					//byte pb = 0x04;								//Number of position bits
-					// Set the decoder properties as there isn't a header for this afaik
-					byte[] properties = new byte[5];
-					/*properties[0] = (byte)((pb * 5 + lp) * 9 + lc);
-					Array.Copy(BitConverter.GetBytes(dictionarySize), 0, properties, 1, 0x04);*/
-					fs.Seek(localFileHeaders[0].startingAddress, SeekOrigin.Begin);
-					fs.Read(properties, 0x00, 0x05);
-					properties = properties.Reverse().ToArray();
-					Console.WriteLine($"properties at {fs.Position - 5}: {BitConverter.ToString(properties, 0x00, 0x05)}");
-					dec.SetDecoderProperties(properties);
-					fs.Seek(0x03, SeekOrigin.Current);
-					//Console.WriteLine($"ipos: {input.Position}");
-					//byte[] test = new byte[4];
-					//fs.Seek(dictionaryPos, SeekOrigin.Begin);
-					//fs.Read(test, 0x00, 0x04);
-					//Console.WriteLine($"first 4 bytes at pos {fs.Position}: {BitConverter.ToUInt32(test, 0x00).ToString("X8")}");
-					//fs.Seek(dictionaryPos, SeekOrigin.Begin);					
-					//Console.WriteLine($"dictionaryPos: {dictionaryPos.ToString("X2")}");
-					//Console.WriteLine($"len: {(int)(fs.Length - nametableLength - dictionaryPos)}");
-					outputfs.Seek(0, SeekOrigin.Begin);
-					//byte[] bad = new byte[fs.Length - nametableLength - dictionaryPos];
-					//fs.Seek(dictionaryPos, SeekOrigin.Begin);
-					//fs.Read(bad, 0x00, bad.Length);//(outputfs, (int)(fs.Length - nametableLength - dictionaryPos));
-					//outputfs.Write(bad, 0x00, bad.Length);
-					dec.Code(fs, outputfs, -1, localFileHeaders[0].size, null);
+					fs.Read(buffer, 0x00, (int)ioBlockSize);
+					outputfs.Write(buffer, 0x00, (int)ioBlockSize);
+					/*if (startValue + j < prgBar.Maximum)
+					{
+						prgBar.Value = (int)(startValue + j);
+					}*/
+					j += ioBlockSize;
 				}
-			#endif
+				if (ioBlockSize >= localFileHeaders[index].size - j && localFileHeaders[index].size - j > 0)	//If the bytes remaining is in between 0 and 40
+				{
+					fs.Read(buffer, 0x00, (int)(localFileHeaders[index].size - j));								//Read the remaining bytes
+					outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));						//Write the remaining bytes
+					//prgBar.Value = (int)((float)((startValue + localFileHeaders[index].size) / max) * 1000);
+				}
+			}
+			else
+			{
+				uint compressedSize;
+				uint def_block = 0x8000;
+				byte[] readBuffer = new byte[0x40];
+				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+
+				if((uint)version <= 0x0B)
+				{
+					fs.Read(readBuffer, 0x00, 0x02);
+					compressedSize = BitConverter.ToUInt16(readBuffer, 0x00);
+					//fs.Position -= 2;
+				}
+				else
+				{
+					compressedSize = ReadUInt32((uint)fs.Position);
+					//fs.Position -= 4;
+				}
+
+
+				if(def_block > localFileHeaders[index].size)
+				{
+					def_block = localFileHeaders[index].size;
+				}
+
+				byte[] properties = new byte[0x05];
+				fs.Read(properties, 0x00, 0x05);
+
+				fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
+
+				byte[] compressedBytes = new byte[compressedSize];
+				fs.Read(compressedBytes, 0x00, (int)compressedSize);
+
+				MemoryStream ms = new MemoryStream(compressedBytes);
+
+				SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+				decoder.SetDecoderProperties(properties);
+				decoder.Code(ms, outputfs, compressedSize, def_block, null);
+
+				//The following will replace the above, this is faster apparently but i had issues with writing to the output file
+
+				/*ManagedLzma.LZMA.Decoder decoder = new ManagedLzma.LZMA.Decoder(DecoderSettings.ReadFrom(properties, 0x00));
+				decoder.Decode(compressedBytes, 0x00, (int)compressedSize, (int)def_block, false);*/
+				//outputfs.Write(compressedBytes, 0x00, (int)def_block);
+			}
 			outputfs.Close();
 		}
+
 		public string ReadName(uint index)
 		{
 			uint nameStartAddress = ReadUInt32(nametableLocation + index * 4);		//The name's starting address

@@ -26,6 +26,7 @@ namespace IGAE_GUI
 					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000004,		//Position of a local file's size inside of a local header
+					0x00000008,		//The compression mode of the file
 				}
 			},
 			{
@@ -41,9 +42,7 @@ namespace IGAE_GUI
 					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000004,		//Position of a local file's size inside of a local header
-					0x00000024,		//Postion of first padding
-					0x00000010,		//Length of first padding
-					0x00000008		//Address to the length of the dictionary for the compression
+					0x00000008,		//The compression mode of the file
 				}
 			},
 			{
@@ -59,8 +58,7 @@ namespace IGAE_GUI
 					0x00000004,		//Size of individual checksum
 					0x00000000,		//Position of a local file's starting location inside of a local header
 					0x00000008,		//Position of a local file's size inside of a local header
-					0x0000001C,		//Postion of first padding
-					0x0000000C		//Length of first padding
+					0x0000000C		//The compression mode of the file
 				}
 			},
 		};
@@ -76,8 +74,6 @@ namespace IGAE_GUI
 		ChecksumLength		= 0006,
 		FileStartInLocal	= 0007,
 		FileLengthInLocal	= 0008,
-		Padding1			= 0009,
-		Padding2			= 0010,
-		DictionarySize		= 0011,
+		ModeInLocal			= 0009
 	}
 }

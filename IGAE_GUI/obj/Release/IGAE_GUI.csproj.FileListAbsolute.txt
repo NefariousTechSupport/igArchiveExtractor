@@ -14,3 +14,9 @@ C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\M
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\Microsoft.WindowsAPICodePack.ShellExtensions.dll
 C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\obj\Release\IGAE_GUI.csproj.CopyComplete
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\ManagedLzma.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\SevenZip.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\System.Collections.Immutable.dll
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\ManagedLzma.xml
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\SevenZip.xml
+C:\Users\jaska\Documents\source\VScode\igArchiveExtractor\IGAE_GUI\bin\Release\System.Collections.Immutable.xml
