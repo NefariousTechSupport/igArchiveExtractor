@@ -5,9 +5,11 @@
 A GUI tool for extracting files from .arc files from various games made with the Vicarious Visions Alchemy game engine
 
 ### Supported Games:
-* Skylanders Spyro's Adventure (Wii and Wii U)
+* Skylanders Spyro's Adventure
 * Skylanders Giants
+* Skylanders Swap Force (only uncompressed files can be extracted)
 * Skylanders Trap Team
+* Skylanders Superchargers
 
 ## Usage
 

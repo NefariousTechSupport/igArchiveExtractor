@@ -42,7 +42,7 @@ namespace IGAE_GUI
 					0x00000008,		//The compression mode of the file
 				}
 			},
-			/*{
+			{
 				IGAE_Version.SkylandersSwapForce,
 				new uint[]
 				{
@@ -57,7 +57,7 @@ namespace IGAE_GUI
 					0x00000004,		//Position of a local file's size inside of a local header
 					0x0000000C,		//Position of a local file's compression mode inside of a local header
 				}
-			},*/
+			},
 			{
 				IGAE_Version.SkylandersTrapTeam,
 				new uint[]
@@ -74,7 +74,7 @@ namespace IGAE_GUI
 					0x0000000C		//The compression mode of the file
 				}
 			},
-			/*{
+			{
 				IGAE_Version.SkylandersSuperChargers,
 				new uint[]
 				{
@@ -89,7 +89,7 @@ namespace IGAE_GUI
 					0x00000008,		//Position of a local file's size inside of a local header
 					0x0000000C		//The compression mode of the file
 				}
-			},*/
+			},
 		};
 	}
 	enum IGAE_HeaderData

@@ -64,6 +64,7 @@ namespace IGAE_GUI
 				treeLocalFiles.Sort();
 				lstLog.Items.Add($"Opened IGA file \"{SelectIGAFile.FileName}\"");
 			}
+			btnExtractFile.Enabled = false;
 		}
 		private void treeLocalFiles_AfterSelect(object sender, EventArgs e)
 		{
@@ -80,7 +81,6 @@ namespace IGAE_GUI
 			{
 				string[] parts = treeLocalFiles.SelectedNode.Text.Split('.');
 				string extension = parts[parts.Length - 1];
-				btnExtractFile.Enabled = true;
 				switch (extension)
 				{
 					case "igz":
@@ -101,6 +101,7 @@ namespace IGAE_GUI
 						IGAE_FileDescHeader selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
 						lblSize.Text = $"Size: {selected.size} bytes";
 						lblIndex.Text = $"Index: {selected.index}";
+						btnExtractFile.Enabled = (selected.mode & 0xFF000000) != 0x10000000;
 					}
 				}
 			}
@@ -132,8 +133,8 @@ namespace IGAE_GUI
 				{
 					for (uint j = 0; j < files[i].numberOfFiles; j++)
 					{
-						files[i].ExtractFile(j, cofdSelectExtractOutputDir.FileName, prgProgressBar, currentProgress, totalSize);
-						lstLog.Items.Add($"Extracted file {j} successfully...");
+						int res = files[i].ExtractFile(j, cofdSelectExtractOutputDir.FileName, prgProgressBar, currentProgress, totalSize);
+						lstLog.Items.Add($"Extracting file {j} {(res == 0 ? "succeeded" : "failed due to: unsupported compression")}...");
 					}
 				}
 				//IGAR_File reb = new IGAR_File(ref file);
@@ -233,6 +234,7 @@ namespace IGAE_GUI
 				treeLocalFiles.Sort();
 				btnExtractAllLoaded.Enabled = true;
 			}
+			btnExtractFile.Enabled = false;
 		}
 
 		//Stolen from ykm29's reply to https://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path with some slight alterations

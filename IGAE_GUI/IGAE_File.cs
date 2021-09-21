@@ -25,7 +25,7 @@ namespace IGAE_GUI
 			byte[] readBuffer = new byte[0x04];
 
 			fs.Read(readBuffer, 0x00, 0x04);
-			if(BitConverter.ToUInt32(readBuffer, 0x00) == 0x1A414749)
+			if (BitConverter.ToUInt32(readBuffer, 0x00) == 0x1A414749)
 			{
 				swapEndianness = false;
 			}
@@ -41,15 +41,15 @@ namespace IGAE_GUI
 			try
 			{
 				uint rawVersion = ReadUInt32(0x04);
-				version = (IGAE_Version)rawVersion;
 
-				/*if(rawVersion != 0x0B)
+				if(rawVersion != 0x0B)
 				{
+					version = (IGAE_Version)rawVersion;
 				}
 				else
 				{
 					version = swapEndianness ? IGAE_Version.SkylandersSuperChargers : IGAE_Version.SkylandersTrapTeam;
-				}*/
+				}
 
 				Console.WriteLine(version);
 			}
@@ -63,15 +63,15 @@ namespace IGAE_GUI
 			nametableLength = ReadUInt32(IGAE_HeaderData.NametableLength);
 
 			localFileHeaders = new IGAE_FileDescHeader[numberOfFiles];
-			for(uint i = 0; i < numberOfFiles; i++)
+			for (uint i = 0; i < numberOfFiles; i++)
 			{
 				//The following is bad code
 
 				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLength] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
 
-				localFileHeaders[i].startingAddress = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal]); 				//Set the starting address
+				localFileHeaders[i].startingAddress = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal]);              //Set the starting address
 
-				localFileHeaders[i].size = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal]);						//Set the size
+				localFileHeaders[i].size = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal]);                        //Set the size
 
 				localFileHeaders[i].mode = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ModeInLocal]);
 
@@ -80,7 +80,7 @@ namespace IGAE_GUI
 		}
 
 		//This function contains commented out references to the progress bar, yeah that's cause it kept causing headaches but i wanna bring it back.
-		public void ExtractFile(uint index, string outputDir, ProgressBar prgBar, int current, uint max)
+		public int ExtractFile(uint index, string outputDir, ProgressBar prgBar, int current, uint max)
 		{
 			//int startValue = current;
 
@@ -99,7 +99,7 @@ namespace IGAE_GUI
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
 			FileStream outputfs = File.Create($"{outputDir}/{outputFileName}");
 
-			if(localFileHeaders[index].mode == 0xFFFFFFFF)
+			if (localFileHeaders[index].mode == 0xFFFFFFFF)
 			{
 				byte[] buffer = new byte[ioBlockSize];
 				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
@@ -123,8 +123,9 @@ namespace IGAE_GUI
 					outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));						//Write the remaining bytes
 					//prgBar.Value = (int)((float)((startValue + localFileHeaders[index].size) / max) * 1000);
 				}
+				return 0;
 			}
-			else
+			else if ((localFileHeaders[index].mode & 0x20000000) == 0x20000000)
 			{
 				//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
 
@@ -133,7 +134,7 @@ namespace IGAE_GUI
 				byte[] readBuffer = new byte[0x40];
 				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
 
-				if((uint)version <= 0x0B)
+				if ((uint)version <= 0x0B || version == IGAE_Version.SkylandersSuperChargers)		//I assigned superchargers 0x1000000B cos it has the same version number as stt but is different to stt
 				{
 					compressedSize = ReadUInt16((uint)fs.Position);
 				}
@@ -143,7 +144,7 @@ namespace IGAE_GUI
 				}
 
 
-				if(def_block > localFileHeaders[index].size)
+				if (def_block > localFileHeaders[index].size)
 				{
 					def_block = localFileHeaders[index].size;
 				}
@@ -153,6 +154,7 @@ namespace IGAE_GUI
 
 				fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
 
+				Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
 				byte[] compressedBytes = new byte[compressedSize];
 				fs.Read(compressedBytes, 0x00, (int)compressedSize);
 
@@ -167,6 +169,12 @@ namespace IGAE_GUI
 				/*ManagedLzma.LZMA.Decoder decoder = new ManagedLzma.LZMA.Decoder(DecoderSettings.ReadFrom(properties, 0x00));
 				decoder.Decode(compressedBytes, 0x00, (int)compressedSize, (int)def_block, false);*/
 				//outputfs.Write(compressedBytes, 0x00, (int)def_block);
+
+				return 0;
+			}
+			else //if((localFileHeaders[index].mode & 0x10000000) == 0x10000000)
+			{
+				return -1;
 			}
 			outputfs.Close();
 		}
@@ -218,15 +226,12 @@ namespace IGAE_GUI
 			}
 			return BitConverter.ToUInt32(readBuffer, 0x00);
 		}
+		//This one doesn't have endianness swapping cos this is only used to read compressed sizes which are always little endian, and this only runs on windows, which is little endian, so there's no need to swap the endianness
 		uint ReadUInt16(uint location)
 		{
 			fs.Seek(location, SeekOrigin.Begin);
 			byte[] readBuffer = new byte[0x02];
 			fs.Read(readBuffer, 0x00, 0x02);
-			if (swapEndianness)
-			{
-				Array.Reverse(readBuffer);
-			}
 			return BitConverter.ToUInt16(readBuffer, 0x00);
 		}
 		~IGAE_File()
