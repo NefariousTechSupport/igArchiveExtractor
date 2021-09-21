@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//This place doesn't work, ignore it pls :)
+
 namespace IGAE_GUI
 {
 	[Serializable]
@@ -73,14 +75,14 @@ namespace IGAE_GUI
 
 			igaefs.Seek(0x00, SeekOrigin.Begin);
 
+			/*igaefs.Write(BitConverter.GetBytes(0x), 0x00, 0x04);
 			if(igarFile.isBigEndian)
 			{
-				igaefs.Write(IGAE_Globals.bigEndianMagic, 0x00, 0x04);
 			}
 			else
 			{
 				igaefs.Write(IGAE_Globals.littleEndianMagic, 0x00, 0x04);
-			}
+			}*/
 
 			//Write the version number
 

@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SevenZip.Compression.LZMA;
-using ManagedLzma.LZMA;
 
 namespace IGAE_GUI
 {
@@ -14,7 +8,6 @@ namespace IGAE_GUI
 	{
 		public FileStream fs;
 		public IGAE_FileDescHeader[] localFileHeaders;
-		public bool compressed = false;
 
 		static uint ioBlockSize = 0x40;
 
@@ -23,13 +16,42 @@ namespace IGAE_GUI
 		public uint nametableLocation;
 		public uint nametableLength;
 
+		bool swapEndianness = false;
+
 		public IGAE_File(string filepath)
 		{
 			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
 
+			byte[] readBuffer = new byte[0x04];
+
+			fs.Read(readBuffer, 0x00, 0x04);
+			if(BitConverter.ToUInt32(readBuffer, 0x00) == 0x1A414749)
+			{
+				swapEndianness = false;
+			}
+			else if (BitConverter.ToUInt32(readBuffer, 0x00) == 0x4947411A)
+			{
+				swapEndianness = true;
+			}
+			else
+			{
+				throw new InvalidOperationException("This isn't an IGA file, what the h*ck are you doing?");
+			}
+
 			try
 			{
-				version = (IGAE_Version)ReadUInt32(0x04);
+				uint rawVersion = ReadUInt32(0x04);
+				version = (IGAE_Version)rawVersion;
+
+				/*if(rawVersion != 0x0B)
+				{
+				}
+				else
+				{
+					version = swapEndianness ? IGAE_Version.SkylandersSuperChargers : IGAE_Version.SkylandersTrapTeam;
+				}*/
+
+				Console.WriteLine(version);
 			}
 			catch (Exception)
 			{
@@ -43,16 +65,13 @@ namespace IGAE_GUI
 			localFileHeaders = new IGAE_FileDescHeader[numberOfFiles];
 			for(uint i = 0; i < numberOfFiles; i++)
 			{
+				//The following is bad code
+
 				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLength] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
-				byte[] readBuffer = new byte[0x04];																//The variable to read into
 
-				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal], SeekOrigin.Begin);         //Go to where the local file header contains data on where the file would actually start
-				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer
-				localFileHeaders[i].startingAddress = BitConverter.ToUInt32(readBuffer, 0x00);					//Set the starting address
+				localFileHeaders[i].startingAddress = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal]); 				//Set the starting address
 
-				fs.Seek(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal], SeekOrigin.Begin);          //Go to where the local file header contains data on where the file would actually start
-				fs.Read(readBuffer, 0x00, 0x04);																//Read into the read buffer, at this point the read head would be 4 in front now, aka where the local file's size is stored
-				localFileHeaders[i].size = BitConverter.ToUInt32(readBuffer, 0x00);								//Set the size
+				localFileHeaders[i].size = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal]);						//Set the size
 
 				localFileHeaders[i].mode = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ModeInLocal]);
 
@@ -85,7 +104,9 @@ namespace IGAE_GUI
 				byte[] buffer = new byte[ioBlockSize];
 				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
 				uint j = 0;
-			
+
+				//Will be rewritten
+
 				while (j < localFileHeaders[index].size - ioBlockSize)
 				{
 					fs.Read(buffer, 0x00, (int)ioBlockSize);
@@ -114,8 +135,7 @@ namespace IGAE_GUI
 
 				if((uint)version <= 0x0B)
 				{
-					fs.Read(readBuffer, 0x00, 0x02);
-					compressedSize = BitConverter.ToUInt16(readBuffer, 0x00);
+					compressedSize = ReadUInt16((uint)fs.Position);
 				}
 				else
 				{
@@ -181,6 +201,10 @@ namespace IGAE_GUI
 			fs.Seek(IGAE_Globals.headerData[version][(uint)value], SeekOrigin.Begin);
 			byte[] readBuffer = new byte[0x04];
 			fs.Read(readBuffer, 0x00, 0x04);
+			if(swapEndianness)
+			{
+				Array.Reverse(readBuffer);
+			}
 			return BitConverter.ToUInt32(readBuffer, 0x00);
 		}
 		uint ReadUInt32(uint location)
@@ -188,7 +212,22 @@ namespace IGAE_GUI
 			fs.Seek(location, SeekOrigin.Begin);
 			byte[] readBuffer = new byte[0x04];
 			fs.Read(readBuffer, 0x00, 0x04);
+			if (swapEndianness)
+			{
+				Array.Reverse(readBuffer);
+			}
 			return BitConverter.ToUInt32(readBuffer, 0x00);
+		}
+		uint ReadUInt16(uint location)
+		{
+			fs.Seek(location, SeekOrigin.Begin);
+			byte[] readBuffer = new byte[0x02];
+			fs.Read(readBuffer, 0x00, 0x02);
+			if (swapEndianness)
+			{
+				Array.Reverse(readBuffer);
+			}
+			return BitConverter.ToUInt16(readBuffer, 0x00);
 		}
 		~IGAE_File()
 		{

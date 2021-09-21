@@ -8,9 +8,6 @@ namespace IGAE_GUI
 {
 	static class IGAE_Globals
 	{
-		public static byte[] bigEndianMagic =		new byte[4] { 0x1A, 0x41, 0x47, 0x49 };
-		public static byte[] littleEndianMagic =	new byte[4] { 0x49, 0x47, 0x41, 0x1A };
-
 		public static Dictionary<IGAE_Version, uint[]> headerData = new Dictionary<IGAE_Version, uint[]>()
 		{
 			{
@@ -45,6 +42,22 @@ namespace IGAE_GUI
 					0x00000008,		//The compression mode of the file
 				}
 			},
+			/*{
+				IGAE_Version.SkylandersSwapForce,
+				new uint[]
+				{
+					0x00000018,		//Unknown but important address
+					0x0000000C,		//Number of Files
+					0x0000002C,		//Nametable Location
+					0x00000030,		//Nametable Size
+					0x00000010,		//Length of indiviual local file header
+					0x00000038,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
+					0x00000004,		//Position of a local file's starting location inside of a local header
+					0x00000004,		//Position of a local file's size inside of a local header
+					0x0000000C,		//Position of a local file's compression mode inside of a local header
+				}
+			},*/
 			{
 				IGAE_Version.SkylandersTrapTeam,
 				new uint[]
@@ -61,6 +74,22 @@ namespace IGAE_GUI
 					0x0000000C		//The compression mode of the file
 				}
 			},
+			/*{
+				IGAE_Version.SkylandersSuperChargers,
+				new uint[]
+				{
+					0x00000018,		//Unknown
+					0x0000000C,		//Number of Files
+					0x0000002C,		//Nametable Location
+					0x00000030,		//Nametable Size
+					0x00000010,		//Length of individual local file header
+					0x00000038,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
+					0x00000004,		//Position of a local file's starting location inside of a local header
+					0x00000008,		//Position of a local file's size inside of a local header
+					0x0000000C		//The compression mode of the file
+				}
+			},*/
 		};
 	}
 	enum IGAE_HeaderData
