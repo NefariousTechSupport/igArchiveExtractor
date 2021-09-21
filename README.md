@@ -2,7 +2,7 @@
 
 ![igArchiveExtractor Logo](https://media.discordapp.net/attachments/852283501738065951/884608132016394240/image0.png?width=300&height=300)
 
-A GUI tool for extracting files from .arc files from various games made with the Vicarious Visions Alchemy game engine
+A GUI tool for extracting files from .arc/.bld files from various games made with the Vicarious Visions Alchemy game engine
 
 ### Supported Games:
 * Skylanders Spyro's Adventure (Wii and Wii U)
