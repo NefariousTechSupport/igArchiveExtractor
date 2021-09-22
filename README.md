@@ -33,5 +33,5 @@ If you're on mac or linux use wine but idk if that works
 
 ## To Do
 
-* Figure out bld files (known as pak files on ssf and ssc)
+* Figure out ssf's compression format (mode 0x10000000)
 * Add support for rebuilding these files
