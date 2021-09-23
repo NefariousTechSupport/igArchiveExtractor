@@ -1,11 +1,15 @@
 # Exclude visual studio files
 
-.vs/**
+.vs
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
 # Exclude compiled files
 
-IGAE_GUI/bin/**
-IGAE_GUI/obj/**
+bin
+obj
 
 # Exclude game files 
 
