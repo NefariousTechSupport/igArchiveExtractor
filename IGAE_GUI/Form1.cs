@@ -20,7 +20,6 @@ namespace IGAE_GUI
 
 			cofdSelectExtractOutputDir.IsFolderPicker = true;
 			cofdSelectInputDir.IsFolderPicker = true;
-			SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
 			prgProgressBar.Minimum = 0;
 			prgProgressBar.Maximum = 1000;
 			
@@ -29,7 +28,7 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
-			SelectIGAFile.Filter = "Supported game files (*.arc, *.bld)|*.arc;*.bld|All files (*.*)|*.*";
+			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				files = new IGAE_File[1];
@@ -83,9 +82,6 @@ namespace IGAE_GUI
 				string extension = parts[parts.Length - 1];
 				switch (extension)
 				{
-					case "igz":
-						type = "IGZ Image File";
-						break;
 					case "enc":
 						type = "FSB Audio File";
 						break;
@@ -190,7 +186,7 @@ namespace IGAE_GUI
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				IGAR_File igarfile = IGAR_File.ReadIGARFile(SelectIGAFile.FileName);
-				SelectIGAFile.Filter = "Arc files (*.arc)|*.arc|All files (*.*)|*.*";
+				SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak|All files (*.*)|*.*";
 				if (SelectIGAFile.ShowDialog() == DialogResult.OK)
 				{
 					IGAR_File.RebuildIGAFile(ref igarfile, SelectIGAFile.FileName);
@@ -217,7 +213,7 @@ namespace IGAE_GUI
 			if (cofdSelectInputDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
 				treeLocalFiles.Nodes.Clear();
-				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.arc", SearchOption.AllDirectories);
+				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.arc;*.bld;*.pak", SearchOption.AllDirectories);
 				List<string> containedFiles = new List<string>();
 				files = new IGAE_File[igaFiles.Length];
 				for (int i = 0; i < files.Length; i++)

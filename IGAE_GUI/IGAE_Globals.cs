@@ -54,7 +54,7 @@ namespace IGAE_GUI
 					0x00000038,		//Checksum starting location
 					0x00000004,		//Size of individual checksum
 					0x00000004,		//Position of a local file's starting location inside of a local header
-					0x00000004,		//Position of a local file's size inside of a local header
+					0x00000008,		//Position of a local file's size inside of a local header
 					0x0000000C,		//Position of a local file's compression mode inside of a local header
 				}
 			},
