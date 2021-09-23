@@ -2,13 +2,13 @@
 
 ![igArchiveExtractor Logo](https://media.discordapp.net/attachments/852283501738065951/884608132016394240/image0.png?width=300&height=300)
 
-A GUI tool for extracting files from .arc/.bld files from various games made with the Vicarious Visions Alchemy game engine
+A GUI tool for extracting files from .arc/.bld/.pak files from various games made with the Vicarious Visions Alchemy game engine
 
 ### Supported Games:
-* Skylanders Spyro's Adventure
-* Skylanders Giants
-* Skylanders Swap Force (only uncompressed files can be extracted)
-* Skylanders Trap Team
+* Skylanders Spyro's Adventure (3DS/Wii/Wii U)
+* Skylanders Giants (3DS/Home Console)
+* Skylanders Swap Force (3DS/Home Console)
+* Skylanders Trap Team (3DS/Home Console)
 * Skylanders Superchargers
 
 ## Usage
@@ -33,5 +33,5 @@ If you're on mac or linux use wine but idk if that works
 
 ## To Do
 
-* Figure out ssf's compression format (mode 0x10000000)
+* Redesign GUI
 * Add support for rebuilding these files
