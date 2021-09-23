@@ -28,11 +28,11 @@ namespace IGAE_GUI
 
 		private void btnLoadFile_Click(object sender, EventArgs e)
 		{
-			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak|All files (*.*)|*.*";
+			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
-				files = new List<IGAE_File>(1);
-				files[0] = new IGAE_File(SelectIGAFile.FileName);
+				files = new List<IGAE_File>();
+				files.Add(new IGAE_File(SelectIGAFile.FileName));
 				btnExtractAllLoaded.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
 				List<string> containedFiles = new List<string>();
@@ -188,7 +188,7 @@ namespace IGAE_GUI
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				IGAR_File igarfile = IGAR_File.ReadIGARFile(SelectIGAFile.FileName);
-				SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak|All files (*.*)|*.*";
+				SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
 				if (SelectIGAFile.ShowDialog() == DialogResult.OK)
 				{
 					IGAR_File.RebuildIGAFile(ref igarfile, SelectIGAFile.FileName);
