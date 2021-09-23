@@ -39,27 +39,6 @@ namespace IGAE_GUI
 				for (uint i = 0; i < files[0].numberOfFiles; i++)
 				{
 					containedFiles.Add(files[0].ReadName(i));
-					/*string[] contents = currFile.Split(new char[] { '\\', '/' });
-					TreeNodeCollection parentDirNodeCollection = treeLocalFiles.Nodes;
-					for (int j = 0; j < contents.Length; j++)
-					{
-						if (contents[j] == "C:" || contents[j] == "c:") continue;
-						string curdir = string.Empty;
-						for (int k = 0; k <= j; k++)
-						{
-							if (contents[k] == "C:" || contents[k] == "c:") continue;
-							curdir += contents[k];
-						}
-						TreeNode[] searchNodes = treeLocalFiles.Nodes.Find(curdir, true);
-						if (searchNodes.Length > 0)
-						{
-							parentDirNodeCollection = searchNodes[0].Nodes;
-						}
-						else
-						{
-							parentDirNodeCollection = parentDirNodeCollection.Add(curdir, contents[j]).Nodes;
-						}
-					}*/
 				}
 				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
 				treeLocalFiles.Sort();

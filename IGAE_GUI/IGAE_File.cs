@@ -96,82 +96,92 @@ namespace IGAE_GUI
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
 			FileStream outputfs = File.Create($"{outputDir}/{outputFileName}");
 
-			if (localFileHeaders[index].mode == 0xFFFFFFFF)
+			switch(localFileHeaders[index].mode >> 24)
 			{
-				byte[] buffer = new byte[localFileHeaders[index].size];
-				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+				case 0x00:
+				case 0x10:
+					{
+						uint compressedSize = ReadUInt16(localFileHeaders[index].startingAddress);
+						MemoryStream ms = new MemoryStream((int)compressedSize);
+						byte[] compressedBytes = new byte[compressedSize];
+						fs.Read(compressedBytes, 0x00, (int)compressedSize);
+						ms.Write(compressedBytes, 0x00, (int)compressedSize);
+						ms.Seek(0x00, SeekOrigin.Begin);
+						DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
+						decompressionStream.CopyTo(outputfs);
+						outputfs.Close();
+						return 0;
+					}
+				case 0x20:
+					{
+						//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
+						uint compressedSize;
+						uint def_block = 0x8000;
+						byte[] readBuffer = new byte[0x40];
+						fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
 
-				fs.Read(buffer, 0x00, (int)localFileHeaders[index].size);
-				outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
-
-				outputfs.Close();
-				return 0;
-			}
-			else if ((localFileHeaders[index].mode & 0x20000000) == 0x20000000)
-			{
-				//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
-
-				uint compressedSize;
-				uint def_block = 0x8000;
-				byte[] readBuffer = new byte[0x40];
-				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
-
-				if ((uint)version <= 0x0B || version == IGAE_Version.SkylandersSuperChargers)		//I assigned superchargers 0x1000000B cos it has the same version number as stt but is different to stt
-				{
-					compressedSize = ReadUInt16((uint)fs.Position);
-				}
-				else
-				{
-					compressedSize = ReadUInt32((uint)fs.Position);
-				}
+						if ((uint)version <= 0x0B || version == IGAE_Version.SkylandersSuperChargers)       //I assigned superchargers 0x1000000B cos it has the same version number as stt but is different to stt
+						{
+							compressedSize = ReadUInt16((uint)fs.Position);
+						}
+						else
+						{
+							compressedSize = ReadUInt32((uint)fs.Position);
+						}
 
 
-				if (def_block > localFileHeaders[index].size)
-				{
-					def_block = localFileHeaders[index].size;
-				}
+						if (def_block > localFileHeaders[index].size)
+						{
+							def_block = localFileHeaders[index].size;
+						}
 
-				byte[] properties = new byte[0x05];
-				fs.Read(properties, 0x00, 0x05);
+						byte[] properties = new byte[0x05];
+						fs.Read(properties, 0x00, 0x05);
 
-				fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
+						fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
 
-				Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
-				byte[] compressedBytes = new byte[compressedSize];
-				fs.Read(compressedBytes, 0x00, (int)compressedSize);
+						Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
+						byte[] compressedBytes = new byte[compressedSize];
+						fs.Read(compressedBytes, 0x00, (int)compressedSize);
 
-				MemoryStream ms = new MemoryStream(compressedBytes);
+						MemoryStream ms = new MemoryStream(compressedBytes);
 
-				SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
-				decoder.SetDecoderProperties(properties);
-				decoder.Code(ms, outputfs, compressedSize, def_block, null);
+						SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+						decoder.SetDecoderProperties(properties);
+						decoder.Code(ms, outputfs, compressedSize, def_block, null);
+						outputfs.Close();
+						return 0;
+					}
+				case 0x30:
+					{
+						//This functions like 0xFF except the size is stored at the start.
+						//I don't know why either.
+						//We're just gonna subtract 2 from the size and start at localFileHeaders[index].startingAddress + 4 so as not to break compatibility with any programs
 
-				//The following will replace the above, the below is faster apparently but i had issues with writing to the output file.
+						uint size = ReadUInt16(localFileHeaders[index].startingAddress) - 2;
+						byte[] buffer = new byte[size];
 
-				/*ManagedLzma.LZMA.Decoder decoder = new ManagedLzma.LZMA.Decoder(DecoderSettings.ReadFrom(properties, 0x00));
-				decoder.Decode(compressedBytes, 0x00, (int)compressedSize, (int)def_block, false);*/
-				//outputfs.Write(compressedBytes, 0x00, (int)def_block);
+						fs.Seek(localFileHeaders[index].startingAddress + 0x04, SeekOrigin.Begin);
 
-				outputfs.Close();
-				return 0;
-			}
-			else if((localFileHeaders[index].mode & 0x10000000) == 0x10000000)
-			{
-				uint compressedSize = ReadUInt16(localFileHeaders[index].startingAddress);
-				MemoryStream ms = new MemoryStream((int)compressedSize);
-				byte[] compressedBytes = new byte[compressedSize];
-				fs.Read(compressedBytes, 0x00, (int)compressedSize);
-				ms.Write(compressedBytes, 0x00, (int)compressedSize);
-				ms.Seek(0x00, SeekOrigin.Begin);
-				DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
-				decompressionStream.CopyTo(outputfs);
-				outputfs.Close();
-				return 0;
-			}
-			else
-			{
-				outputfs.Close();
-				return -1;
+						fs.Read(buffer, 0x00, (int)size);
+						outputfs.Write(buffer, 0x00, (int)size);
+
+						outputfs.Close();
+					}
+					return 0;
+				case 0xFF:
+					{
+						byte[] buffer = new byte[localFileHeaders[index].size];
+						fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+
+						fs.Read(buffer, 0x00, (int)localFileHeaders[index].size);
+						outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
+
+						outputfs.Close();
+					}
+					return 0;
+				default:
+					return -1;
 			}
 		}
 
