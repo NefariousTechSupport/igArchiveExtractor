@@ -80,7 +80,6 @@
     <Compile Include="IGAE_File.cs" />
     <Compile Include="IGAE_FileDescHeader.cs" />
     <Compile Include="IGAE_Globals.cs" />
-    <Compile Include="IGAE_Imports.cs" />
     <Compile Include="IGAE_Version.cs" />
     <Compile Include="IGAR_File.cs" />
     <Compile Include="Program.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
+using System.IO.Compression;
 
 namespace IGAE_GUI
 {
@@ -8,8 +9,6 @@ namespace IGAE_GUI
 	{
 		public FileStream fs;
 		public IGAE_FileDescHeader[] localFileHeaders;
-
-		static uint ioBlockSize = 0x40;
 
 		public IGAE_Version version;
 		public uint numberOfFiles;
@@ -35,7 +34,7 @@ namespace IGAE_GUI
 			}
 			else
 			{
-				throw new InvalidOperationException("This isn't an IGA file, what the h*ck are you doing?");
+				throw new InvalidOperationException("File is corrupt.");
 			}
 
 			try
@@ -50,8 +49,6 @@ namespace IGAE_GUI
 				{
 					version = swapEndianness ? IGAE_Version.SkylandersSuperChargers : IGAE_Version.SkylandersTrapTeam;
 				}
-
-				Console.WriteLine(version);
 			}
 			catch (Exception)
 			{
@@ -101,28 +98,13 @@ namespace IGAE_GUI
 
 			if (localFileHeaders[index].mode == 0xFFFFFFFF)
 			{
-				byte[] buffer = new byte[ioBlockSize];
+				byte[] buffer = new byte[localFileHeaders[index].size];
 				fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
-				uint j = 0;
 
-				//Will be rewritten
+				fs.Read(buffer, 0x00, (int)localFileHeaders[index].size);
+				outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
 
-				while (j < localFileHeaders[index].size - ioBlockSize)
-				{
-					fs.Read(buffer, 0x00, (int)ioBlockSize);
-					outputfs.Write(buffer, 0x00, (int)ioBlockSize);
-					/*if (startValue + j < prgBar.Maximum)
-					{
-						prgBar.Value = (int)(startValue + j);
-					}*/
-					j += ioBlockSize;
-				}
-				if (ioBlockSize >= localFileHeaders[index].size - j && localFileHeaders[index].size - j > 0)	//If the bytes remaining is in between 0 and 40
-				{
-					fs.Read(buffer, 0x00, (int)(localFileHeaders[index].size - j));								//Read the remaining bytes
-					outputfs.Write(buffer, 0x00, (int)(localFileHeaders[index].size - j));						//Write the remaining bytes
-					//prgBar.Value = (int)((float)((startValue + localFileHeaders[index].size) / max) * 1000);
-				}
+				outputfs.Close();
 				return 0;
 			}
 			else if ((localFileHeaders[index].mode & 0x20000000) == 0x20000000)
@@ -170,13 +152,27 @@ namespace IGAE_GUI
 				decoder.Decode(compressedBytes, 0x00, (int)compressedSize, (int)def_block, false);*/
 				//outputfs.Write(compressedBytes, 0x00, (int)def_block);
 
+				outputfs.Close();
 				return 0;
 			}
-			else //if((localFileHeaders[index].mode & 0x10000000) == 0x10000000)
+			else if((localFileHeaders[index].mode & 0x10000000) == 0x10000000)
 			{
+				uint compressedSize = ReadUInt16(localFileHeaders[index].startingAddress);
+				MemoryStream ms = new MemoryStream((int)compressedSize);
+				byte[] compressedBytes = new byte[compressedSize];
+				fs.Read(compressedBytes, 0x00, (int)compressedSize);
+				ms.Write(compressedBytes, 0x00, (int)compressedSize);
+				ms.Seek(0x00, SeekOrigin.Begin);
+				DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
+				decompressionStream.CopyTo(outputfs);
+				outputfs.Close();
+				return 0;
+			}
+			else
+			{
+				outputfs.Close();
 				return -1;
 			}
-			outputfs.Close();
 		}
 
 		public string ReadName(uint index)

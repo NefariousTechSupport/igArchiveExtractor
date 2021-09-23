@@ -13,7 +13,7 @@ namespace IGAE_GUI
 		private CommonOpenFileDialog cofdSelectExtractOutputDir = new CommonOpenFileDialog();
 		private CommonOpenFileDialog cofdSelectInputDir = new CommonOpenFileDialog();
 
-		IGAE_File[] files;
+		List<IGAE_File> files;
 		public Form_igArchiveExtractor()
 		{
 			InitializeComponent();
@@ -31,14 +31,15 @@ namespace IGAE_GUI
 			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
-				files = new IGAE_File[1];
+				files = new List<IGAE_File>(1);
 				files[0] = new IGAE_File(SelectIGAFile.FileName);
 				btnExtractAllLoaded.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
+				List<string> containedFiles = new List<string>();
 				for (uint i = 0; i < files[0].numberOfFiles; i++)
 				{
-					string currFile = files[0].ReadName(i);
-					string[] contents = currFile.Split(new char[] { '\\', '/' });
+					containedFiles.Add(files[0].ReadName(i));
+					/*string[] contents = currFile.Split(new char[] { '\\', '/' });
 					TreeNodeCollection parentDirNodeCollection = treeLocalFiles.Nodes;
 					for (int j = 0; j < contents.Length; j++)
 					{
@@ -58,8 +59,9 @@ namespace IGAE_GUI
 						{
 							parentDirNodeCollection = parentDirNodeCollection.Add(curdir, contents[j]).Nodes;
 						}
-					}
+					}*/
 				}
+				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
 				treeLocalFiles.Sort();
 				lstLog.Items.Add($"Opened IGA file \"{SelectIGAFile.FileName}\"");
 			}
@@ -90,14 +92,14 @@ namespace IGAE_GUI
 						break;
 				}
 
-				for (int i = 0; i < files.Length; i++)
+				for (int i = 0; i < files.Count; i++)
 				{
 					if(files[i].localFileHeaders.Any(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text)))
 					{
 						IGAE_FileDescHeader selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
 						lblSize.Text = $"Size: {selected.size} bytes";
 						lblIndex.Text = $"Index: {selected.index}";
-						btnExtractFile.Enabled = (selected.mode & 0xFF000000) != 0x10000000;
+						btnExtractFile.Enabled = true;//(selected.mode & 0xFF000000) != 0x10000000;
 					}
 				}
 			}
@@ -113,7 +115,7 @@ namespace IGAE_GUI
 
 			uint totalSize = 0;
 
-			for (int j = 0; j < files.Length; j++)
+			for (int j = 0; j < files.Count; j++)
 			{
 				for(uint i = 0; i < files[j].numberOfFiles; i++)
 				{
@@ -125,7 +127,7 @@ namespace IGAE_GUI
 
 			if (cofdSelectExtractOutputDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
-				for (int i = 0; i < files.Length; i++)
+				for (int i = 0; i < files.Count; i++)
 				{
 					for (uint j = 0; j < files[i].numberOfFiles; j++)
 					{
@@ -146,8 +148,8 @@ namespace IGAE_GUI
 			lblComplete.Visible = false;
 
 			uint index = 0;
-			uint igaIndex;
-			for (igaIndex = 0; igaIndex < files.Length; igaIndex++)
+			int igaIndex;
+			for (igaIndex = 0; igaIndex < files.Count; igaIndex++)
 			{
 				try
 				{
@@ -213,15 +215,29 @@ namespace IGAE_GUI
 			if (cofdSelectInputDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
 				treeLocalFiles.Nodes.Clear();
-				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.arc;*.bld;*.pak", SearchOption.AllDirectories);
+				//I don't like this line of code either
+				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".arc", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".pak", StringComparison.OrdinalIgnoreCase)).ToArray();
+				if (igaFiles.Length == 0) throw new InvalidOperationException("There are no IGA type files in this directory");
 				List<string> containedFiles = new List<string>();
-				files = new IGAE_File[igaFiles.Length];
-				for (int i = 0; i < files.Length; i++)
+				files = new List<IGAE_File>();
+				for (int i = 0; i < igaFiles.Length; i++)
 				{
-					files[i] = new IGAE_File(igaFiles[i]);
-					for (uint j = 0; j < files[i].numberOfFiles; j++)
+					//Some arc files on 3DS are 0 bytes, this line of code prevents them from loading
+					if (new FileInfo(igaFiles[i]).Length == 0) continue;
+					files.Add(new IGAE_File(igaFiles[i]));
+					bool isBLD = igaFiles[i].EndsWith("bld", StringComparison.OrdinalIgnoreCase);
+					for (uint j = 0; j < files.Last().numberOfFiles; j++)
 					{
-						containedFiles.Add(files[i].ReadName(j));
+						if(isBLD)
+						{
+							//Done to prevent a newly loaded bld overwriting previously loaded ones
+							containedFiles.Add($"c:/{Path.GetFileNameWithoutExtension(igaFiles[i])}/{files.Last().ReadName(j)}");
+							Console.WriteLine(containedFiles.Last());
+						}
+						else
+						{
+							containedFiles.Add(files.Last().ReadName(j));
+						}
 					}
 					lstLog.Items.Add($"Opened IGA file \"{igaFiles[i]}\"");
 				}
@@ -234,21 +250,21 @@ namespace IGAE_GUI
 		}
 
 		//Stolen from ykm29's reply to https://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path with some slight alterations
-		static TreeNode MakeTreeFromPaths(List<string> paths, string rootNodeName = "", char separator = '/')
+		static TreeNode MakeTreeFromPaths(List<string> paths, string rootNodeName = "c")
 		{
 			var rootNode = new TreeNode(rootNodeName);
 			for (int i = 0; i < paths.Count; i++)
 			{
 				var currentNode = rootNode;
-				var pathItems = paths[i].Split(separator);
+				var pathItems = paths[i].Split(new char[2] { '/', '\\' });
 				foreach (var item in pathItems)
 				{
-					if (item == "C:" || item == "c:") continue;
+					if (item[1] == ':') continue;
 					var tmp = currentNode.Nodes.Cast<TreeNode>().Where(x => x.Text.Equals(item));
 					currentNode = tmp.Count() > 0 ? tmp.Single() : currentNode.Nodes.Add(item);
 				}
 			}
-			return rootNode.FirstNode;
+			return rootNode;
 		}
 	}
 }

@@ -257,7 +257,7 @@ namespace IGAE_GUI
 			this.Controls.Add(this.lblLol);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form_igArchiveExtractor";
-			this.Text = "igArchiveExtractor (0.14)";
+			this.Text = "igArchiveExtractor (0.15)";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
