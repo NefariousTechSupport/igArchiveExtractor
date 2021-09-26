@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
 
@@ -76,11 +75,8 @@ namespace IGAE_GUI
 			}
 		}
 
-		//This function contains commented out references to the progress bar, yeah that's cause it kept causing headaches but i wanna bring it back.
-		public int ExtractFile(uint index, string outputDir, ProgressBar prgBar, int current, uint max)
+		public void ExtractFile(uint index, string outputDir, out int res)
 		{
-			//int startValue = current;
-
 			//The following code up until outputfs is created should be rewritten cos it's hard to read
 
 			string outputFileName = ReadName(index);
@@ -92,9 +88,12 @@ namespace IGAE_GUI
 			{
 				parentDir += "/" + parts[i];
 			}
-			Console.WriteLine(parentDir);
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
-			FileStream outputfs = File.Create($"{outputDir}/{outputFileName}");
+			if(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase))
+			{
+				Directory.CreateDirectory($"{outputDir}/{Path.GetFileNameWithoutExtension(fs.Name)}");
+			}
+			FileStream outputfs = File.Create($"{outputDir}{(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) ? "/" + Path.GetFileNameWithoutExtension(fs.Name) : string.Empty)}/{outputFileName}");
 
 			switch(localFileHeaders[index].mode >> 24)
 			{
@@ -110,8 +109,9 @@ namespace IGAE_GUI
 						DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
 						decompressionStream.CopyTo(outputfs);
 						outputfs.Close();
-						return 0;
+						res = 0;
 					}
+					break;
 				case 0x20:
 					{
 						//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
@@ -140,9 +140,10 @@ namespace IGAE_GUI
 
 						fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
 
-						Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
+						//Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
 						byte[] compressedBytes = new byte[compressedSize];
 						fs.Read(compressedBytes, 0x00, (int)compressedSize);
+						byte[] uncompressedBytes = new byte[localFileHeaders[index].size];
 
 						MemoryStream ms = new MemoryStream(compressedBytes);
 
@@ -150,8 +151,9 @@ namespace IGAE_GUI
 						decoder.SetDecoderProperties(properties);
 						decoder.Code(ms, outputfs, compressedSize, def_block, null);
 						outputfs.Close();
-						return 0;
+						res = 0;
 					}
+					break;
 				case 0x30:
 					{
 						//This functions like 0xFF except the size is stored at the start.
@@ -167,8 +169,9 @@ namespace IGAE_GUI
 						outputfs.Write(buffer, 0x00, (int)size);
 
 						outputfs.Close();
+						res =0;
 					}
-					return 0;
+					break;
 				case 0xFF:
 					{
 						byte[] buffer = new byte[localFileHeaders[index].size];
@@ -178,10 +181,12 @@ namespace IGAE_GUI
 						outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
 
 						outputfs.Close();
+						res = 0;
 					}
-					return 0;
+					break;
 				default:
-					return -1;
+					res = -1;
+					break;
 			}
 		}
 

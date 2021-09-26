@@ -1,10 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 //This place doesn't work, ignore it pls :)
 
@@ -17,7 +13,6 @@ namespace IGAE_GUI
 		public UInt32 unknown1;
 		public UInt32 unknown2;
 		public UInt32 numberOfFiles;
-		public bool isBigEndian;
 		public byte[] checksumBuffer;
 		public byte[] badcodepog;
 

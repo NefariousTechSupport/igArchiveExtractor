@@ -16,7 +16,8 @@ namespace IGAE_GUI
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Form_igArchiveExtractor());
+			//ThreadManager.InitialiseThreads();
+			Application.Run(new Form_igArchiveExtractor(Config.Read()));
 		}
 	}
 }
