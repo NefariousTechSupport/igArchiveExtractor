@@ -6,10 +6,11 @@ A GUI tool for extracting files from .arc/.bld/.pak files from various games mad
 
 ### Supported Games:
 * Skylanders Spyro's Adventure (3DS/Wii/Wii U)
-* Skylanders Giants (3DS/Home Console)
-* Skylanders Swap Force (3DS/Home Console)
-* Skylanders Trap Team (3DS/Home Console)
+* Skylanders Giants
+* Skylanders Swap Force
+* Skylanders Trap Team
 * Skylanders Superchargers
+* Skylanders Imaginators (PS3)
 
 ## Usage
 
