@@ -15,7 +15,54 @@ namespace IGAE_GUI
 		public uint nametableLength;
 
 		bool swapEndianness = false;
+		public IGAE_File(string filepath, IGAE_Version _version)
+		{
+			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
 
+			byte[] readBuffer = new byte[0x04];
+
+			fs.Read(readBuffer, 0x00, 0x04);
+			if (BitConverter.ToUInt32(readBuffer, 0x00) == 0x1A414749)
+			{
+				swapEndianness = false;
+			}
+			else if (BitConverter.ToUInt32(readBuffer, 0x00) == 0x4947411A)
+			{
+				swapEndianness = true;
+			}
+			else
+			{
+				throw new InvalidOperationException("File is corrupt.");
+			}
+
+			version = _version;
+
+			numberOfFiles = ReadUInt32(IGAE_HeaderData.NumberOfFiles);
+			nametableLocation = ReadUInt32(IGAE_HeaderData.NametableLocation);
+			nametableLength = ReadUInt32(IGAE_HeaderData.NametableLength);
+
+			localFileHeaders = new IGAE_FileDescHeader[numberOfFiles];
+			for (uint i = 0; i < numberOfFiles; i++)
+			{
+				//The following is bad code
+
+				uint headerStartingAddress = IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLocation] + numberOfFiles * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ChecksumLength] + i * IGAE_Globals.headerData[version][(int)IGAE_HeaderData.LocalHeaderLength];        //Read the local file header's starting address
+
+				localFileHeaders[i].startingAddress = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileStartInLocal]);              //Set the starting address
+
+				localFileHeaders[i].size = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.FileLengthInLocal]);                        //Set the size
+
+				localFileHeaders[i].mode = ReadUInt32(headerStartingAddress + IGAE_Globals.headerData[version][(int)IGAE_HeaderData.ModeInLocal]);
+
+				//For some reason the 3ds games have mode 0x10000000 as lzma whereas ssf has it as 0x20000000, so yeah this exists to make that work
+				if(version == IGAE_Version.SkylandersSpyrosAdventureWii && localFileHeaders[i].mode == 0x10000000)
+				{
+					localFileHeaders[i].mode = 0x20000000;
+				}
+
+				localFileHeaders[i].index = i;
+			}
+		}
 		public IGAE_File(string filepath)
 		{
 			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);

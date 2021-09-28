@@ -6,16 +6,16 @@ A GUI tool for extracting files from .arc/.bld/.pak files from various games mad
 
 ### Supported Games:
 * Skylanders Spyro's Adventure (3DS/Wii/Wii U)
-* Skylanders Giants
-* Skylanders Swap Force
-* Skylanders Trap Team
-* Skylanders Superchargers
-* Skylanders Imaginators (PS3)
+* Skylanders Giants (All Verisons)
+* Skylanders Swap Force (All Versions)
+* Skylanders Trap Team (All Versions)
+* Skylanders Superchargers (All Versions, SSC Racing is a different game)
+* Skylanders Imaginators (PS3, Wii U, PS4, Xbox 360, Xbox One)
 
 ## Usage
 
 * Start the program
-* Load a file using the "Load File" button
+* Load a file using the "File > Load File", then select the game and platform you wish to open
 * Navigate to the file you want to extract and click "Extract File" or just click "Extract All"
 * Select an output folder
 * Wait
@@ -34,5 +34,6 @@ If you're on mac or linux use wine but idk if that works
 
 ## To Do
 
-* Redesign GUI
+* Improve performance by using multithreading
 * Add support for rebuilding these files
+* Add support for editing igz files

@@ -31,7 +31,7 @@ namespace IGAE_GUI
 			lblComplete.Visible = false;
 		}
 
-		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+		private void OpenIGAFile(IGAE_Version version)
 		{
 			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
@@ -39,8 +39,8 @@ namespace IGAE_GUI
 				prgProgressBar.Value = 0;
 				lblComplete.Visible = false;
 				files = new List<IGAE_File>();
-				files.Add(new IGAE_File(SelectIGAFile.FileName));
-				extractAllToolStripMenuItem.Enabled = true;
+				files.Add(new IGAE_File(SelectIGAFile.FileName, version));
+				tmsi_ExtractAll.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
 				List<string> containedFiles = new List<string>();
 				for (uint i = 0; i < files[0].numberOfFiles; i++)
@@ -53,7 +53,7 @@ namespace IGAE_GUI
 				lstLog.Items.Add($"Opened IGA file \"{SelectIGAFile.FileName}\"");
 				lblComplete.Visible = true;
 				prgProgressBar.Value = prgBarMax;
-				extractFileToolStripMenuItem.Enabled = false;
+				tmsi_ExtractFile.Enabled = false;
 			}
 		}
 		private void treeLocalFiles_AfterSelect(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace IGAE_GUI
 			string type;
 			if(treeLocalFiles.SelectedNode.Nodes.Count > 0)
 			{
-				extractFileToolStripMenuItem.Enabled = false;
+				tmsi_ExtractFile.Enabled = false;
 				type = "Directory";
 				lblSize.Text = $"Size: N/A";
 				lblIndex.Text = $"Index: N/A";
@@ -88,14 +88,14 @@ namespace IGAE_GUI
 						IGAE_FileDescHeader selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
 						lblSize.Text = $"Size: {selected.size} bytes";
 						lblIndex.Text = $"Index: {selected.index}";
-						extractFileToolStripMenuItem.Enabled = true;//(selected.mode & 0xFF000000) != 0x10000000;
+						tmsi_ExtractFile.Enabled = true;//(selected.mode & 0xFF000000) != 0x10000000;
 					}
 				}
 			}
 			lblType.Text = $"Type: {type}";
 		}
 
-		private void extractAllToolStripMenuItem_Click(object sender, EventArgs e)
+		private void ExtractAllFiles(object sender, EventArgs e)
 		{
 
 			cofdSelectExtractOutputDir.Title = "Select Output Folder";
@@ -136,7 +136,7 @@ namespace IGAE_GUI
 			}
 		}
 
-		private void extractFileToolStripMenuItem_Click(object sender, EventArgs e)
+		private void ExtractSingleFile(object sender, EventArgs e)
 		{
 
 			uint index = 0;
@@ -166,7 +166,7 @@ namespace IGAE_GUI
 			}
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		private void ExitApplication(object sender, EventArgs e)
 		{
 			Application.Exit();
 		}
@@ -176,33 +176,7 @@ namespace IGAE_GUI
 			lstLog.Items.Clear();
 		}
 
-		private void btnRebuild_Click(object sender, EventArgs e)
-		{
-			SelectIGAFile.Filter = "Igar files (*.igar)|*.igar|All files (*.*)|*.*";
-			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
-			{
-				IGAR_File igarfile = IGAR_File.ReadIGARFile(SelectIGAFile.FileName);
-				SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
-				if (SelectIGAFile.ShowDialog() == DialogResult.OK)
-				{
-					IGAR_File.RebuildIGAFile(ref igarfile, SelectIGAFile.FileName);
-				}
-			}
-		}
-
-		private void btnGenerateIGAR_Click(object sender, EventArgs e)
-		{
-			throw new NotImplementedException("Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha.");
-
-			SelectIGAFile.Filter = "Igar files (*.igar)|*.igar|All files (*.*)|*.*";
-			if (SelectIGAFile.ShowDialog() == DialogResult.OK)
-			{
-				//IGAR_File rebfile = new IGAR_File(ref file, file.fs);
-				//rebfile.Generate(SelectIGAFile.FileName);
-			}
-		}
-
-		private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
+		private void OpenFolder(IGAE_Version version)
 		{
 			prgProgressBar.Value = 0;
 			lblComplete.Visible = false;
@@ -213,7 +187,7 @@ namespace IGAE_GUI
 			{
 				treeLocalFiles.Nodes.Clear();
 				//I don't like this line of code either
-				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".arc", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".pak", StringComparison.OrdinalIgnoreCase)).ToArray();
+				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".arc", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".iga", StringComparison.OrdinalIgnoreCase)).ToArray();
 				if (igaFiles.Length == 0) throw new InvalidOperationException("There are no IGA type files in this directory");
 				List<string> containedFiles = new List<string>();
 				files = new List<IGAE_File>();
@@ -222,7 +196,6 @@ namespace IGAE_GUI
 					prgProgressBar.Value = (int)(((float)i / igaFiles.Length) * prgBarMax);
 					//Some arc files on 3DS are 0 bytes, this line of code prevents them from loading
 					if (new FileInfo(igaFiles[i]).Length == 0) continue;
-					Console.WriteLine(igaFiles[i]);
 					//Most BLD files contain bld and pak files which are not iga
 					if (Path.GetFileName(igaFiles[i]) == "level.bld") continue;
 					if (Path.GetFileName(igaFiles[i]) == "ENGLISH.pak") continue;
@@ -240,7 +213,7 @@ namespace IGAE_GUI
 					if (Path.GetFileName(igaFiles[i]) == "JAPANESE.pak") continue;
 
 
-					files.Add(new IGAE_File(igaFiles[i]));
+					files.Add(new IGAE_File(igaFiles[i], version));
 					bool isBLD = igaFiles[i].EndsWith("bld", StringComparison.OrdinalIgnoreCase);
 					for (uint j = 0; j < files.Last().numberOfFiles; j++)
 					{
@@ -259,9 +232,9 @@ namespace IGAE_GUI
 
 				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
 				treeLocalFiles.Sort();
-				extractAllToolStripMenuItem.Enabled = true;
+				tmsi_ExtractAll.Enabled = true;
 			}
-			extractFileToolStripMenuItem.Enabled = false;
+			tmsi_ExtractFile.Enabled = false;
 			prgProgressBar.Value = prgBarMax;
 			lblComplete.Visible = true;
 		}
@@ -284,7 +257,7 @@ namespace IGAE_GUI
 			return rootNode;
 		}
 
-		private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+		private void OpenSettings(object sender, EventArgs e)
 		{
 			SettingsMenu menu = new SettingsMenu(Config.Read());
 
@@ -305,5 +278,62 @@ namespace IGAE_GUI
 				Themes.SwitchMainFormToLightTheme();
 			}
 		}
+		#region Version ToolStripMenuItems
+		private void OpenFile_SSAWii_3DS_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersSpyrosAdventureWii);
+		}
+		//Sg and ssa wii u are the same
+		private void OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersSpyrosAdventureWiiU);
+		}
+		private void OpenFile_SSF_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersSwapForce);
+		}
+		private void OpenFile_STT_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersTrapTeam);
+		}
+		//They're the same
+		private void OpenFile_SSC_SI2016_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersSuperChargers);
+		}
+		//Lost islands
+		private void OpenFile_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersLostIslands);
+		}
+
+		private void OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersSpyrosAdventureWii);
+		}
+		//Sg and ssa wii u are the same
+		private void OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersSpyrosAdventureWiiU);
+		}
+		private void OpenFolder_SSF_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersSwapForce);
+		}
+		private void OpenFolder_STT_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersTrapTeam);
+		}
+		//They're the same
+		private void OpenFolder_SSC_SI2016_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersSuperChargers);
+		}
+		//Lost islands
+		private void OpenFolder_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersLostIslands);
+		}
+		#endregion
 	}
 }

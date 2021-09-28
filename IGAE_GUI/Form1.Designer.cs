@@ -45,12 +45,46 @@ namespace IGAE_GUI
 			this.lblLol = new System.Windows.Forms.Label();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.extractAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSA = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSA_3DS_Wii = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSA_WiiU = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SG = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SG_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SG_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSF = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSF_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSF_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_STT = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_STT_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_STT_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SI = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SI_2016 = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SI_Switch = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SLI = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSA = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSA_3DS_Wii = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSA_WiiU = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SG = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SG_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SG_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSF = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSF_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSF_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_STT = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_STT_3DS = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_STT_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SI = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SI_2016 = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SI_Switch = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SLI = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_ExtractFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_ExtractAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_Settings = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_Exit = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -168,58 +202,327 @@ namespace IGAE_GUI
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openFileToolStripMenuItem,
-            this.openFolderToolStripMenuItem,
-            this.extractFileToolStripMenuItem,
-            this.extractAllToolStripMenuItem,
-            this.settingsToolStripMenuItem,
-            this.exitToolStripMenuItem});
+            this.tmsi_OpenFile,
+            this.tmsi_OpenFolder,
+            this.tmsi_ExtractFile,
+            this.tmsi_ExtractAll,
+            this.tmsi_Settings,
+            this.tmsi_Exit});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "File";
 			// 
-			// openFileToolStripMenuItem
+			// tmsi_OpenFile
 			// 
-			this.openFileToolStripMenuItem.BackColor = System.Drawing.SystemColors.Control;
-			this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.openFileToolStripMenuItem.Text = "Open File";
-			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
+			this.tmsi_OpenFile.BackColor = System.Drawing.SystemColors.Control;
+			this.tmsi_OpenFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_SSA,
+            this.tmsi_OpenFile_SG,
+            this.tmsi_OpenFile_SSF,
+            this.tmsi_OpenFile_STT,
+            this.tmsi_OpenFile_SSC,
+            this.tmsi_OpenFile_SI,
+            this.tmsi_OpenFile_SLI});
+			this.tmsi_OpenFile.Name = "tmsi_OpenFile";
+			this.tmsi_OpenFile.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFile.Text = "Open File";
 			// 
-			// openFolderToolStripMenuItem
+			// tmsi_OpenFile_SSA
 			// 
-			this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
-			this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.openFolderToolStripMenuItem.Text = "Open Folder";
-			this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
+			this.tmsi_OpenFile_SSA.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_SSA_3DS_Wii,
+            this.tmsi_OpenFile_SSA_WiiU});
+			this.tmsi_OpenFile_SSA.Name = "tmsi_OpenFile_SSA";
+			this.tmsi_OpenFile_SSA.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SSA.Text = "Skylanders Spyro\'s Adventure";
 			// 
-			// extractFileToolStripMenuItem
+			// tmsi_OpenFile_SSA_3DS_Wii
 			// 
-			this.extractFileToolStripMenuItem.Name = "extractFileToolStripMenuItem";
-			this.extractFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.extractFileToolStripMenuItem.Text = "Extract File";
-			this.extractFileToolStripMenuItem.Click += new System.EventHandler(this.extractFileToolStripMenuItem_Click);
+			this.tmsi_OpenFile_SSA_3DS_Wii.Name = "tmsi_OpenFile_SSA_3DS_Wii";
+			this.tmsi_OpenFile_SSA_3DS_Wii.Size = new System.Drawing.Size(116, 22);
+			this.tmsi_OpenFile_SSA_3DS_Wii.Text = "3DS/Wii";
+			this.tmsi_OpenFile_SSA_3DS_Wii.Click += new System.EventHandler(this.OpenFile_SSAWii_3DS_ToolStripMenuItem_Click);
 			// 
-			// extractAllToolStripMenuItem
+			// tmsi_OpenFile_SSA_WiiU
 			// 
-			this.extractAllToolStripMenuItem.Name = "extractAllToolStripMenuItem";
-			this.extractAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.extractAllToolStripMenuItem.Text = "Extract All";
-			this.extractAllToolStripMenuItem.Click += new System.EventHandler(this.extractAllToolStripMenuItem_Click);
+			this.tmsi_OpenFile_SSA_WiiU.Name = "tmsi_OpenFile_SSA_WiiU";
+			this.tmsi_OpenFile_SSA_WiiU.Size = new System.Drawing.Size(116, 22);
+			this.tmsi_OpenFile_SSA_WiiU.Text = "Wii U";
+			this.tmsi_OpenFile_SSA_WiiU.Click += new System.EventHandler(this.OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click);
 			// 
-			// settingsToolStripMenuItem
+			// tmsi_OpenFile_SG
 			// 
-			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.settingsToolStripMenuItem.Text = "Settings";
-			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+			this.tmsi_OpenFile_SG.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_SG_3DS,
+            this.tmsi_OpenFile_SG_HC});
+			this.tmsi_OpenFile_SG.Name = "tmsi_OpenFile_SG";
+			this.tmsi_OpenFile_SG.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SG.Text = "Skylanders Giants";
 			// 
-			// exitToolStripMenuItem
+			// tmsi_OpenFile_SG_3DS
 			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.exitToolStripMenuItem.Text = "Exit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			this.tmsi_OpenFile_SG_3DS.Name = "tmsi_OpenFile_SG_3DS";
+			this.tmsi_OpenFile_SG_3DS.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SG_3DS.Text = "3DS";
+			this.tmsi_OpenFile_SG_3DS.Click += new System.EventHandler(this.OpenFile_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SG_HC
+			// 
+			this.tmsi_OpenFile_SG_HC.Name = "tmsi_OpenFile_SG_HC";
+			this.tmsi_OpenFile_SG_HC.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SG_HC.Text = "Home Console";
+			this.tmsi_OpenFile_SG_HC.Click += new System.EventHandler(this.OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SSF
+			// 
+			this.tmsi_OpenFile_SSF.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_SSF_3DS,
+            this.tmsi_OpenFile_SSF_HC});
+			this.tmsi_OpenFile_SSF.Name = "tmsi_OpenFile_SSF";
+			this.tmsi_OpenFile_SSF.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SSF.Text = "Skylanders Swap Force";
+			// 
+			// tmsi_OpenFile_SSF_3DS
+			// 
+			this.tmsi_OpenFile_SSF_3DS.Name = "tmsi_OpenFile_SSF_3DS";
+			this.tmsi_OpenFile_SSF_3DS.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SSF_3DS.Text = "3DS";
+			this.tmsi_OpenFile_SSF_3DS.Click += new System.EventHandler(this.OpenFile_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SSF_HC
+			// 
+			this.tmsi_OpenFile_SSF_HC.Name = "tmsi_OpenFile_SSF_HC";
+			this.tmsi_OpenFile_SSF_HC.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SSF_HC.Text = "Home Console";
+			this.tmsi_OpenFile_SSF_HC.Click += new System.EventHandler(this.OpenFile_SSF_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_STT
+			// 
+			this.tmsi_OpenFile_STT.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_STT_3DS,
+            this.tmsi_OpenFile_STT_HC});
+			this.tmsi_OpenFile_STT.Name = "tmsi_OpenFile_STT";
+			this.tmsi_OpenFile_STT.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_STT.Text = "Skylanders Trap Team";
+			// 
+			// tmsi_OpenFile_STT_3DS
+			// 
+			this.tmsi_OpenFile_STT_3DS.Name = "tmsi_OpenFile_STT_3DS";
+			this.tmsi_OpenFile_STT_3DS.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_STT_3DS.Text = "3DS";
+			this.tmsi_OpenFile_STT_3DS.Click += new System.EventHandler(this.OpenFile_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_STT_HC
+			// 
+			this.tmsi_OpenFile_STT_HC.Name = "tmsi_OpenFile_STT_HC";
+			this.tmsi_OpenFile_STT_HC.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_STT_HC.Text = "Home Console";
+			this.tmsi_OpenFile_STT_HC.Click += new System.EventHandler(this.OpenFile_STT_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SSC
+			// 
+			this.tmsi_OpenFile_SSC.Name = "tmsi_OpenFile_SSC";
+			this.tmsi_OpenFile_SSC.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SSC.Text = "Skylanders Superchargers";
+			this.tmsi_OpenFile_SSC.Click += new System.EventHandler(this.OpenFile_SSC_SI2016_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SI
+			// 
+			this.tmsi_OpenFile_SI.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFile_SI_2016,
+            this.tmsi_OpenFile_SI_Switch});
+			this.tmsi_OpenFile_SI.Name = "tmsi_OpenFile_SI";
+			this.tmsi_OpenFile_SI.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SI.Text = "Skylanders Imaginators";
+			// 
+			// tmsi_OpenFile_SI_2016
+			// 
+			this.tmsi_OpenFile_SI_2016.Name = "tmsi_OpenFile_SI_2016";
+			this.tmsi_OpenFile_SI_2016.Size = new System.Drawing.Size(109, 22);
+			this.tmsi_OpenFile_SI_2016.Text = "2016";
+			this.tmsi_OpenFile_SI_2016.Click += new System.EventHandler(this.OpenFile_SSC_SI2016_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFile_SI_Switch
+			// 
+			this.tmsi_OpenFile_SI_Switch.Name = "tmsi_OpenFile_SI_Switch";
+			this.tmsi_OpenFile_SI_Switch.Size = new System.Drawing.Size(109, 22);
+			this.tmsi_OpenFile_SI_Switch.Text = "Switch";
+			// 
+			// tmsi_OpenFile_SLI
+			// 
+			this.tmsi_OpenFile_SLI.Name = "tmsi_OpenFile_SLI";
+			this.tmsi_OpenFile_SLI.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFile_SLI.Text = "Lost Islands";
+			this.tmsi_OpenFile_SLI.Click += new System.EventHandler(this.OpenFile_SLI_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder
+			// 
+			this.tmsi_OpenFolder.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_SSA,
+            this.tmsi_OpenFolder_SG,
+            this.tmsi_OpenFolder_SSF,
+            this.tmsi_OpenFolder_STT,
+            this.tmsi_OpenFolder_SSC,
+            this.tmsi_OpenFolder_SI,
+            this.tmsi_OpenFolder_SLI});
+			this.tmsi_OpenFolder.Name = "tmsi_OpenFolder";
+			this.tmsi_OpenFolder.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFolder.Text = "Open Folder";
+			// 
+			// tmsi_OpenFolder_SSA
+			// 
+			this.tmsi_OpenFolder_SSA.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_SSA_3DS_Wii,
+            this.tmsi_OpenFolder_SSA_WiiU});
+			this.tmsi_OpenFolder_SSA.Name = "tmsi_OpenFolder_SSA";
+			this.tmsi_OpenFolder_SSA.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SSA.Text = "Skylanders Spyro\'s Adventure";
+			// 
+			// tmsi_OpenFolder_SSA_3DS_Wii
+			// 
+			this.tmsi_OpenFolder_SSA_3DS_Wii.Name = "tmsi_OpenFolder_SSA_3DS_Wii";
+			this.tmsi_OpenFolder_SSA_3DS_Wii.Size = new System.Drawing.Size(116, 22);
+			this.tmsi_OpenFolder_SSA_3DS_Wii.Text = "3DS/Wii";
+			this.tmsi_OpenFolder_SSA_3DS_Wii.Click += new System.EventHandler(this.OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SSA_WiiU
+			// 
+			this.tmsi_OpenFolder_SSA_WiiU.Name = "tmsi_OpenFolder_SSA_WiiU";
+			this.tmsi_OpenFolder_SSA_WiiU.Size = new System.Drawing.Size(116, 22);
+			this.tmsi_OpenFolder_SSA_WiiU.Text = "Wii U";
+			this.tmsi_OpenFolder_SSA_WiiU.Click += new System.EventHandler(this.OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SG
+			// 
+			this.tmsi_OpenFolder_SG.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_SG_3DS,
+            this.tmsi_OpenFolder_SG_HC});
+			this.tmsi_OpenFolder_SG.Name = "tmsi_OpenFolder_SG";
+			this.tmsi_OpenFolder_SG.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SG.Text = "Skylanders Giants";
+			// 
+			// tmsi_OpenFolder_SG_3DS
+			// 
+			this.tmsi_OpenFolder_SG_3DS.Name = "tmsi_OpenFolder_SG_3DS";
+			this.tmsi_OpenFolder_SG_3DS.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFolder_SG_3DS.Text = "3DS";
+			this.tmsi_OpenFolder_SG_3DS.Click += new System.EventHandler(this.OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SG_HC
+			// 
+			this.tmsi_OpenFolder_SG_HC.Name = "tmsi_OpenFolder_SG_HC";
+			this.tmsi_OpenFolder_SG_HC.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFolder_SG_HC.Text = "Home Console";
+			this.tmsi_OpenFolder_SG_HC.Click += new System.EventHandler(this.OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SSF
+			// 
+			this.tmsi_OpenFolder_SSF.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_SSF_3DS,
+            this.tmsi_OpenFolder_SSF_HC});
+			this.tmsi_OpenFolder_SSF.Name = "tmsi_OpenFolder_SSF";
+			this.tmsi_OpenFolder_SSF.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SSF.Text = "Skylanders Swap Force";
+			// 
+			// tmsi_OpenFolder_SSF_3DS
+			// 
+			this.tmsi_OpenFolder_SSF_3DS.Name = "tmsi_OpenFolder_SSF_3DS";
+			this.tmsi_OpenFolder_SSF_3DS.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFolder_SSF_3DS.Text = "3DS";
+			this.tmsi_OpenFolder_SSF_3DS.Click += new System.EventHandler(this.OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SSF_HC
+			// 
+			this.tmsi_OpenFolder_SSF_HC.Name = "tmsi_OpenFolder_SSF_HC";
+			this.tmsi_OpenFolder_SSF_HC.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFolder_SSF_HC.Text = "Home Console";
+			this.tmsi_OpenFolder_SSF_HC.Click += new System.EventHandler(this.OpenFolder_SSF_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_STT
+			// 
+			this.tmsi_OpenFolder_STT.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_STT_3DS,
+            this.tmsi_OpenFolder_STT_HC});
+			this.tmsi_OpenFolder_STT.Name = "tmsi_OpenFolder_STT";
+			this.tmsi_OpenFolder_STT.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_STT.Text = "Skylanders Trap Team";
+			// 
+			// tmsi_OpenFolder_STT_3DS
+			// 
+			this.tmsi_OpenFolder_STT_3DS.Name = "tmsi_OpenFolder_STT_3DS";
+			this.tmsi_OpenFolder_STT_3DS.Size = new System.Drawing.Size(195, 22);
+			this.tmsi_OpenFolder_STT_3DS.Text = "3DS";
+			this.tmsi_OpenFolder_STT_3DS.Click += new System.EventHandler(this.OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_STT_HC
+			// 
+			this.tmsi_OpenFolder_STT_HC.Name = "tmsi_OpenFolder_STT_HC";
+			this.tmsi_OpenFolder_STT_HC.Size = new System.Drawing.Size(195, 22);
+			this.tmsi_OpenFolder_STT_HC.Text = "Home Console/Mobile";
+			this.tmsi_OpenFolder_STT_HC.Click += new System.EventHandler(this.OpenFolder_SSC_SI2016_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SSC
+			// 
+			this.tmsi_OpenFolder_SSC.Name = "tmsi_OpenFolder_SSC";
+			this.tmsi_OpenFolder_SSC.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SSC.Text = "Skylanders Superchargers";
+			// 
+			// tmsi_OpenFolder_SI
+			// 
+			this.tmsi_OpenFolder_SI.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmsi_OpenFolder_SI_2016,
+            this.tmsi_OpenFolder_SI_Switch});
+			this.tmsi_OpenFolder_SI.Name = "tmsi_OpenFolder_SI";
+			this.tmsi_OpenFolder_SI.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SI.Text = "Skylanders Imaginators";
+			// 
+			// tmsi_OpenFolder_SI_2016
+			// 
+			this.tmsi_OpenFolder_SI_2016.Name = "tmsi_OpenFolder_SI_2016";
+			this.tmsi_OpenFolder_SI_2016.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFolder_SI_2016.Text = "2016";
+			this.tmsi_OpenFolder_SI_2016.Click += new System.EventHandler(this.OpenFolder_SSC_SI2016_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SI_Switch
+			// 
+			this.tmsi_OpenFolder_SI_Switch.Name = "tmsi_OpenFolder_SI_Switch";
+			this.tmsi_OpenFolder_SI_Switch.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_OpenFolder_SI_Switch.Text = "Switch";
+			// 
+			// tmsi_OpenFolder_SLI
+			// 
+			this.tmsi_OpenFolder_SLI.Name = "tmsi_OpenFolder_SLI";
+			this.tmsi_OpenFolder_SLI.Size = new System.Drawing.Size(229, 22);
+			this.tmsi_OpenFolder_SLI.Text = "Skylanders Lost Islands";
+			this.tmsi_OpenFolder_SLI.Click += new System.EventHandler(this.OpenFolder_SLI_ToolStripMenuItem_Click);
+			// 
+			// tmsi_ExtractFile
+			// 
+			this.tmsi_ExtractFile.Name = "tmsi_ExtractFile";
+			this.tmsi_ExtractFile.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_ExtractFile.Text = "Extract File";
+			this.tmsi_ExtractFile.Click += new System.EventHandler(this.ExtractSingleFile);
+			// 
+			// tmsi_ExtractAll
+			// 
+			this.tmsi_ExtractAll.Name = "tmsi_ExtractAll";
+			this.tmsi_ExtractAll.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_ExtractAll.Text = "Extract All";
+			this.tmsi_ExtractAll.Click += new System.EventHandler(this.ExtractAllFiles);
+			// 
+			// tmsi_Settings
+			// 
+			this.tmsi_Settings.Name = "tmsi_Settings";
+			this.tmsi_Settings.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_Settings.Text = "Settings";
+			this.tmsi_Settings.Click += new System.EventHandler(this.OpenSettings);
+			// 
+			// tmsi_Exit
+			// 
+			this.tmsi_Exit.Name = "tmsi_Exit";
+			this.tmsi_Exit.Size = new System.Drawing.Size(180, 22);
+			this.tmsi_Exit.Text = "Exit";
+			this.tmsi_Exit.Click += new System.EventHandler(this.ExitApplication);
 			// 
 			// Form_igArchiveExtractor
 			// 
@@ -240,7 +543,7 @@ namespace IGAE_GUI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form_igArchiveExtractor";
-			this.Text = "igArchiveExtractor (1.00)";
+			this.Text = "igArchiveExtractor (1.01)";
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
@@ -263,12 +566,46 @@ namespace IGAE_GUI
 		public System.Windows.Forms.Button btnClearLog;
 		public System.Windows.Forms.MenuStrip menuStrip1;
 		public System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-		public System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
-		public System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
-		public System.Windows.Forms.ToolStripMenuItem extractFileToolStripMenuItem;
-		public System.Windows.Forms.ToolStripMenuItem extractAllToolStripMenuItem;
-		public System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+		public System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile;
+		public System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder;
+		public System.Windows.Forms.ToolStripMenuItem tmsi_ExtractFile;
+		public System.Windows.Forms.ToolStripMenuItem tmsi_ExtractAll;
+		public System.Windows.Forms.ToolStripMenuItem tmsi_Exit;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_Settings;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSA;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_STT;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SI;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSA_3DS_Wii;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSA_WiiU;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG_3DS;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF_3DS;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_STT_3DS;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_STT_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SI_2016;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SI_Switch;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SLI;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSA;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSA_3DS_Wii;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSA_WiiU;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG_3DS;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT_3DS;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SI;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SI_2016;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SI_Switch;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SLI;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF_3DS;
 	}
 }
 
