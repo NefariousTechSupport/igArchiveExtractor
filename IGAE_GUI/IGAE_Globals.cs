@@ -106,6 +106,38 @@ namespace IGAE_GUI
 					0x0000000C		//The compression mode of the file
 				}
 			},
+			{
+				IGAE_Version.SkylandersImaginatorsPS4,
+				new uint[]
+				{
+					0x00000018,		//Unknown
+					0x0000000C,		//Number of Files
+					0x00000028,		//Nametable Location
+					0x00000030,		//Nametable Size
+					0x00000010,		//Length of individual local file header
+					0x00000038,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
+					0x00000000,		//Position of a local file's starting location inside of a local header
+					0x00000008,		//Position of a local file's size inside of a local header
+					0x0000000C		//The compression mode of the file
+				}
+			},
+			{
+				IGAE_Version.CrashNST,
+				new uint[]
+				{
+					0x00000018,		//Unknown
+					0x0000000C,		//Number of Files
+					0x00000024,		//Nametable Location
+					0x0000002C,		//Nametable Size, unconfirmed
+					0x00000010,		//Length of individual local file header
+					0x00000038,		//Checksum starting location
+					0x00000004,		//Size of individual checksum
+					0x00000000,		//Position of a local file's starting location inside of a local header
+					0x00000008,		//Position of a local file's size inside of a local header
+					0x0000000C		//The compression mode of the file
+				}
+			},
 		};
 	}
 	enum IGAE_HeaderData

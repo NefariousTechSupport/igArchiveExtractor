@@ -296,10 +296,15 @@ namespace IGAE_GUI
 		{
 			OpenIGAFile(IGAE_Version.SkylandersTrapTeam);
 		}
-		//They're the same
-		private void OpenFile_SSC_SI2016_ToolStripMenuItem_Click(object sender, EventArgs e)
+		//They're the same, also for clarity it's: SSC, SI (PS3, Xbox 360, Wii U)
+		private void OpenFile_SSC_SI_PS3_X360_WiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenIGAFile(IGAE_Version.SkylandersSuperChargers);
+		}
+		//I'm mad
+		private void OpenFile_SI_PS4_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenIGAFile(IGAE_Version.SkylandersImaginatorsPS4);
 		}
 		//Lost islands
 		private void OpenFile_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -324,10 +329,15 @@ namespace IGAE_GUI
 		{
 			OpenFolder(IGAE_Version.SkylandersTrapTeam);
 		}
-		//They're the same
-		private void OpenFolder_SSC_SI2016_ToolStripMenuItem_Click(object sender, EventArgs e)
+		//They're the same, also for clarity it's: SSC, SI (PS3, Xbox 360, Wii U)
+		private void OpenFolder_SSC_SI_PS3_X360_WiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenFolder(IGAE_Version.SkylandersSuperChargers);
+		}
+		//I'm mad
+		private void OpenFolder_SI_PS4_ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFolder(IGAE_Version.SkylandersImaginatorsPS4);
 		}
 		//Lost islands
 		private void OpenFolder_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
