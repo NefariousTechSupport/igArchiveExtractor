@@ -25,7 +25,7 @@ namespace IGAE_GUI.IGZ
 			Unknown
 		}
 
-		public EndiannessAwareBinaryReader ebr;
+		public StreamHelper ebr;
 
 		public uint version = 0;
 		public uint crc = 0;
@@ -46,13 +46,13 @@ namespace IGAE_GUI.IGZ
 
 			fs.Read(readBuffer, 0x00, 0x04);
 
-			EndiannessAwareBinaryReader.Endianness endianness = EndiannessAwareBinaryReader.Endianness.Little;
+			StreamHelper.Endianness endianness = StreamHelper.Endianness.Little;
 
-			if (BitConverter.ToUInt32(readBuffer, 0) == 0x015A4749) endianness = EndiannessAwareBinaryReader.Endianness.Big;
-			else if (BitConverter.ToUInt32(readBuffer, 0) == 0x48475A01) endianness = EndiannessAwareBinaryReader.Endianness.Little;
+			if (BitConverter.ToUInt32(readBuffer, 0) == 0x015A4749) endianness = StreamHelper.Endianness.Big;
+			else if (BitConverter.ToUInt32(readBuffer, 0) == 0x48475A01) endianness = StreamHelper.Endianness.Little;
 			else throw new InvalidOperationException("File is corrupt.");
 
-			ebr = new EndiannessAwareBinaryReader(fs, endianness);
+			ebr = new StreamHelper(fs, endianness);
 
 			version = ebr.ReadUInt32();
 			crc = ebr.ReadUInt32();

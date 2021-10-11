@@ -4,7 +4,9 @@ using System.Text;
 
 namespace IGAE_GUI
 {
-	public class EndiannessAwareBinaryReader : BinaryReader
+	//Heavily edited and renamed version of https://github.com/AdventureT/TrbMultiTool/blob/opengl/TrbMultiTool/TrbMultiTool/EndiannessAwareBinaryReader.cs
+
+	public class StreamHelper : BinaryReader
 	{
 		public enum Endianness
 		{
@@ -14,29 +16,29 @@ namespace IGAE_GUI
 
 		public Endianness _endianness = Endianness.Little;
 
-		public EndiannessAwareBinaryReader(Stream input) : base(input)
+		public StreamHelper(Stream input) : base(input)
 		{
 		}
 
-		public EndiannessAwareBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
+		public StreamHelper(Stream input, Encoding encoding) : base(input, encoding)
 		{
 		}
 
-		public EndiannessAwareBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
+		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
 		{
 		}
 
-		public EndiannessAwareBinaryReader(Stream input, Endianness endianness) : base(input)
-		{
-			_endianness = endianness;
-		}
-
-		public EndiannessAwareBinaryReader(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding)
+		public StreamHelper(Stream input, Endianness endianness) : base(input)
 		{
 			_endianness = endianness;
 		}
 
-		public EndiannessAwareBinaryReader(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(input, encoding, leaveOpen)
+		public StreamHelper(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding)
+		{
+			_endianness = endianness;
+		}
+
+		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(input, encoding, leaveOpen)
 		{
 			_endianness = endianness;
 		}
@@ -130,7 +132,7 @@ namespace IGAE_GUI
 			return ReadInt16(endianness);
 		}
 		public override int ReadInt32() => ReadInt32(_endianness);
-		public int ReadInt32(uint offset)
+		public int ReadInt32WithOffset(uint offset)
 		{
 			BaseStream.Seek(offset, SeekOrigin.Begin);
 			return ReadInt32(_endianness);
@@ -138,9 +140,19 @@ namespace IGAE_GUI
 		public override long ReadInt64() => ReadInt64(_endianness);
 
 		public override ushort ReadUInt16() => ReadUInt16(_endianness);
-
+		public uint ReadUInt16WithOffset(uint offset) => ReadUInt16WithOffset(offset, _endianness);
+		public uint ReadUInt16WithOffset(uint offset, Endianness endianness)
+		{
+			BaseStream.Seek(offset, SeekOrigin.Begin);
+			return ReadUInt16(endianness);
+		}
 		public override uint ReadUInt32() => ReadUInt32(_endianness);
-
+		public uint ReadUInt32WithOffset(uint offset) => ReadUInt32WithOffset(offset, _endianness);
+		public uint ReadUInt32WithOffset(uint offset, Endianness endianness)
+		{
+			BaseStream.Seek(offset, SeekOrigin.Begin);
+			return ReadUInt32(endianness);
+		}
 		public override ulong ReadUInt64() => ReadUInt64(_endianness);
 
 		public short ReadInt16(Endianness endianness) => BitConverter.ToInt16(ReadForEndianness(sizeof(short), endianness), 0);

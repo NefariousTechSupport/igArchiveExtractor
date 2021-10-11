@@ -46,7 +46,7 @@ namespace IGAE_GUI
 				List<string> containedFiles = new List<string>();
 				for (uint i = 0; i < files[0].numberOfFiles; i++)
 				{
-					containedFiles.Add(files[0].ReadName(i));
+					containedFiles.Add(files[0].names[i]);
 					prgProgressBar.Value = (int)(((float)i / (float)files[0].numberOfFiles) * prgBarMax);
 				}
 				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
@@ -86,7 +86,7 @@ namespace IGAE_GUI
 				{
 					if(files[i].localFileHeaders.Any(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text)))
 					{
-						IGAE_FileDescHeader selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
+						IGA_Descriptor selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
 						lblSize.Text = $"Size: {selected.size} bytes";
 						lblIndex.Text = $"Index: {selected.index}";
 						tmsi_ExtractFile.Enabled = true;//(selected.mode & 0xFF000000) != 0x10000000;
@@ -188,7 +188,7 @@ namespace IGAE_GUI
 
 			files[igaIndex].ExtractFile(index, tempFolder, out int res, false);
 
-			IGZ_File igz = new IGZ_File(tempFolder + "/" + Path.GetFileName(files[igaIndex].ReadName(index)));
+			IGZ_File igz = new IGZ_File(tempFolder + "/" + Path.GetFileName(files[igaIndex].names[index]));
 
 			switch (igz.type)
 			{
@@ -264,11 +264,11 @@ namespace IGAE_GUI
 						if(isBLD)
 						{
 							//Done to prevent a newly loaded bld overwriting previously loaded ones
-							containedFiles.Add($"c:/{Path.GetFileNameWithoutExtension(igaFiles[i])}/{files.Last().ReadName(j)}");
+							containedFiles.Add($"c:/{Path.GetFileNameWithoutExtension(igaFiles[i])}/{files.Last().names[j]}");
 						}
 						else
 						{
-							containedFiles.Add(files.Last().ReadName(j));
+							containedFiles.Add(files.Last().names[j]);
 						}
 					}
 					lstLog.Items.Add($"Opened IGA file \"{igaFiles[i]}\"");

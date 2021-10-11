@@ -102,18 +102,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
-    <Compile Include="EndiannessAwareBinaryReader.cs" />
+    <Compile Include="StreamHelper.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="IGAE_File.cs" />
-    <Compile Include="IGAE_FileDescHeader.cs" />
+    <Compile Include="IGA_Descriptor.cs" />
     <Compile Include="IGAE_Globals.cs" />
     <Compile Include="IGAE_Version.cs" />
-    <Compile Include="IGAR_File.cs" />
+    <Compile Include="IGA\IGAE_File.cs" />
     <Compile Include="IGZ\IGZ_File.cs" />
     <Compile Include="IGZ\IGZ_Structure.cs" />
     <Compile Include="IGZ\IGZ_Text.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IGAE_GUI
 {
-	struct IGAE_FileDescHeader
+	struct IGA_Descriptor
 	{
 		public uint startingAddress;
 		public uint size;
