@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <PathMap>$(MSBuildThisFileDirectory)=X:/</PathMap>
+    <GenerateFullPaths>false</GenerateFullPaths>
+  </PropertyGroup>
+    <ItemGroup>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+  </ItemGroup>
+</Project>

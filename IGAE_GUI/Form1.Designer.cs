@@ -102,6 +102,7 @@ namespace IGAE_GUI
 			this.treeLocalFiles.Size = new System.Drawing.Size(515, 480);
 			this.treeLocalFiles.TabIndex = 1;
 			this.treeLocalFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeLocalFiles_AfterSelect);
+			this.treeLocalFiles.DoubleClick += new System.EventHandler(this.PreviewFile);
 			// 
 			// lblSelectedFile
 			// 

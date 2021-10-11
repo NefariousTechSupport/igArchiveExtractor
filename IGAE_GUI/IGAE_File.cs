@@ -7,6 +7,7 @@ namespace IGAE_GUI
 	class IGAE_File
 	{
 		public FileStream fs;
+		EndiannessAwareBinaryReader brw;
 		public IGAE_FileDescHeader[] localFileHeaders;
 
 		public IGAE_Version version;
@@ -15,6 +16,7 @@ namespace IGAE_GUI
 		public uint nametableLength;
 
 		bool swapEndianness = false;
+
 		public IGAE_File(string filepath, IGAE_Version _version)
 		{
 			fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
@@ -34,6 +36,19 @@ namespace IGAE_GUI
 			{
 				throw new InvalidOperationException("File is corrupt.");
 			}
+
+			EndiannessAwareBinaryReader.Endianness endianness;
+
+			if(swapEndianness && BitConverter.IsLittleEndian || !swapEndianness && !BitConverter.IsLittleEndian)
+			{
+				endianness = EndiannessAwareBinaryReader.Endianness.Big;
+			}
+			else
+			{
+				endianness = EndiannessAwareBinaryReader.Endianness.Little;
+			}
+
+			brw = new EndiannessAwareBinaryReader(fs, endianness);
 
 			version = _version;
 
@@ -122,7 +137,7 @@ namespace IGAE_GUI
 			}
 		}
 
-		public void ExtractFile(uint index, string outputDir, out int res)
+		public void ExtractFile(uint index, string outputDir, out int res, bool trueName = true)
 		{
 			//The following code up until outputfs is created should be rewritten cos it's hard to read
 
@@ -136,11 +151,14 @@ namespace IGAE_GUI
 				parentDir += "/" + parts[i];
 			}
 			DirectoryInfo info = Directory.CreateDirectory(parentDir);
-			if(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase))
+			if(trueName)
 			{
-				Directory.CreateDirectory($"{outputDir}/{Path.GetFileNameWithoutExtension(fs.Name)}");
+				if(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase))
+				{
+					Directory.CreateDirectory($"{outputDir}/{Path.GetFileNameWithoutExtension(fs.Name)}");
+				}
 			}
-			FileStream outputfs = File.Create($"{outputDir}{(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) ? "/" + Path.GetFileNameWithoutExtension(fs.Name) : string.Empty)}/{outputFileName}");
+			FileStream outputfs = File.Create($"{outputDir}{(fs.Name.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) && trueName ? "/" + Path.GetFileNameWithoutExtension(fs.Name) : string.Empty)}/{outputFileName}");
 
 			switch(localFileHeaders[index].mode >> 24)
 			{
@@ -162,41 +180,45 @@ namespace IGAE_GUI
 				case 0x20:
 					{
 						//The following was adapted from https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs
-						uint compressedSize;
-						uint def_block = 0x8000;
-						byte[] readBuffer = new byte[0x40];
-						fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
-
-						if ((uint)version <= 0x0B || version == IGAE_Version.SkylandersSuperChargers)       //I assigned superchargers 0x1000000B cos it has the same version number as stt but is different to stt
-						{
-							compressedSize = ReadUInt16((uint)fs.Position);
-						}
-						else
-						{
-							compressedSize = ReadUInt32((uint)fs.Position);
-						}
-
-
-						if (def_block > localFileHeaders[index].size)
-						{
-							def_block = localFileHeaders[index].size;
-						}
-
-						byte[] properties = new byte[0x05];
-						fs.Read(properties, 0x00, 0x05);
-
-						fs.Seek(localFileHeaders[index].startingAddress + 0x07, SeekOrigin.Begin);
-
-						//Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
-						byte[] compressedBytes = new byte[compressedSize];
-						fs.Read(compressedBytes, 0x00, (int)compressedSize);
-						byte[] uncompressedBytes = new byte[localFileHeaders[index].size];
-
-						MemoryStream ms = new MemoryStream(compressedBytes);
 
 						SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
-						decoder.SetDecoderProperties(properties);
-						decoder.Code(ms, outputfs, compressedSize, def_block, null);
+
+						fs.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+
+						uint attempts = 0;
+						while (outputfs.Position < localFileHeaders[index].size)
+						{
+							Console.WriteLine($"{attempts}: {fs.Position.ToString("X08")}");
+
+							uint compressedSize;
+
+							if ((uint)version <= 0x0B || version == IGAE_Version.SkylandersSuperChargers)       //I assigned superchargers 0x1000000B cos it has the same version number as stt but is different to stt
+							{
+								compressedSize = ReadUInt16((uint)fs.Position);
+							}
+							else
+							{
+								compressedSize = ReadUInt32((uint)fs.Position);
+							}
+
+							byte[] properties = new byte[0x05];
+							fs.Read(properties, 0x00, 0x05);
+							decoder.SetDecoderProperties(properties);
+
+							//Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
+							byte[] compressedBytes = new byte[compressedSize];
+							fs.Read(compressedBytes, 0x00, (int)compressedSize);
+
+							MemoryStream ms = new MemoryStream(compressedBytes);
+
+							decoder.Code(ms, outputfs, compressedSize, Math.Min(0x8000, localFileHeaders[index].size - outputfs.Position), null);
+
+							fs.Seek((((fs.Position - 1) / 0x0800) + 0x01) * 0x0800, SeekOrigin.Begin);
+							attempts++;
+						}
+
+
+
 						outputfs.Close();
 						res = 0;
 					}

@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using IGAE_GUI.IGZ;
 
 //Extremely important feature
 
@@ -67,6 +68,22 @@ namespace IGAE_GUI
 			menu.btnSaveSettings.ForeColor = Color.FromName("ControlText");
 
 			menu.chkDarkMode.ForeColor = Color.FromName("ControlText");
+		}
+		public static void SwitchTextEditingFormToLightTheme(IGZ_TextEditor menu)
+		{
+			menu.BackColor = Color.FromName("Control");
+			menu.ForeColor = Color.FromName("ControlText");
+
+			menu.lstTextItems.BackColor = Color.FromName("Control");
+			menu.lstTextItems.ForeColor = Color.FromName("ControlText");
+		}
+		public static void SwitchTextEditingFormToDarkTheme(IGZ_TextEditor menu)
+		{
+			menu.BackColor = Color.FromArgb(064, 064, 064);
+			menu.ForeColor = Color.FromArgb(191, 191, 191);
+
+			menu.lstTextItems.BackColor = Color.FromArgb(32, 32, 32);
+			menu.lstTextItems.ForeColor = Color.FromName("White");
 		}
 	}
 }

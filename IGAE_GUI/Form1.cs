@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Data;
 using System.Windows.Forms;
+using IGAE_GUI.IGZ;
 
 namespace IGAE_GUI
 {
@@ -164,6 +165,49 @@ namespace IGAE_GUI
 				prgProgressBar.Value = prgBarMax;
 				lblComplete.Visible = true;
 			}
+		}
+
+		private void PreviewFile(object sender, EventArgs e)
+		{
+			uint index = 0;
+			int igaIndex;
+			for (igaIndex = 0; igaIndex < files.Count; igaIndex++)
+			{
+				try
+				{
+					index = files[igaIndex].localFileHeaders.First(x => x.path.Contains(treeLocalFiles.SelectedNode.Text)).index;
+					break;
+				}
+				catch (InvalidOperationException)
+				{
+					continue;
+				}
+			}
+
+			string tempFolder = $"{Path.GetTempPath()}IGAE";
+
+			files[igaIndex].ExtractFile(index, tempFolder, out int res, false);
+
+			IGZ_File igz = new IGZ_File(tempFolder + "/" + Path.GetFileName(files[igaIndex].ReadName(index)));
+
+			switch (igz.type)
+			{
+				case IGZ_File.IGZ_Type.Text:
+					IGZ_Text igzText = new IGZ_Text(igz);
+
+					igzText.ReadStrings();
+
+					IGZ_TextEditor textEditor = new IGZ_TextEditor(igzText);
+
+					textEditor.Show();
+
+					igzText = null;
+					break;
+				default:
+					break;
+			}
+
+			igz = null;
 		}
 
 		private void ExitApplication(object sender, EventArgs e)
