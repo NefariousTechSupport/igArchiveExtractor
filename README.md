@@ -4,13 +4,15 @@
 
 A GUI tool for extracting files from .arc/.bld/.pak files from various games made with the Vicarious Visions Alchemy game engine
 
-### Supported Games:
-* Skylanders Spyro's Adventure (3DS/Wii/Wii U)
-* Skylanders Giants (All Verisons)
-* Skylanders Swap Force (All Versions)
-* Skylanders Trap Team (All Versions)
-* Skylanders Superchargers (All Versions, SSC Racing is a different game)
-* Skylanders Imaginators (PS3, Wii U, PS4, Xbox 360, Xbox One)
+### Features & Games:
+| Game | Extracting IGA Files | Text Viewing
+|---|---|---|
+| Skylanders Spyro's Adventure (3DS/Wii/Wii U) | ✅ | ❌ |
+| Skylanders Giants | ✅ | ✅ |
+| Skylanders Swap Force | ✅ | ❌ |
+| Skylanders Trap Team | ✅ | ❌ |
+| Skylanders Superchargers | ✅ | ❌ |
+| Skylanders Imaginators | ✅ | ❌ |
 
 ## Usage
 
