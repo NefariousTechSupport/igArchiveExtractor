@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using SevenZip.Compression.LZMA;
@@ -69,11 +69,11 @@ namespace IGAE_GUI
 
 		public void ExtractFile(uint index, string outputDir, out int res, bool trueName = true)
 		{
-			string outputFilePath;
+			string outputFilePath;			
 
 			if(trueName && Path.GetExtension(name) == ".bld")
 			{
-				outputFilePath = Path.GetFileNameWithoutExtension(name) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
+				outputFilePath = Path.ChangeExtension(name, null) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
 			}
 			else
 			{
@@ -82,7 +82,8 @@ namespace IGAE_GUI
 
 			Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
-			FileStream outputfs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
+			FileStream outputfs = null;
+			outputfs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
 
 			switch (localFileHeaders[index].mode >> 24)
 			{
@@ -108,13 +109,14 @@ namespace IGAE_GUI
 
 						stream.BaseStream.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
 
-						uint chunkSize = (((int)_version & 0x000000FF) < 0x09) ? 0x00008000u : 0x00800000u;
+						//uint chunkSize = (((int)_version & 0x000000FF) < 0x09) ? 0x00008000u : 0x00800000u;
+						uint chunkSize = 0x00008000u;
 
 						uint attempts = 0;
 
 						uint bytesDecompressed = 0;
 
-						while (bytesDecompressed <= localFileHeaders[index].size)
+						while (bytesDecompressed < localFileHeaders[index].size)
 						{
 							uint compressedSize;
 
@@ -127,10 +129,16 @@ namespace IGAE_GUI
 								compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
 							}
 
+							if(_version == IGAE_Version.SkylandersTrapTeam)
+							{
+								compressedSize += 4;
+							}
+
 							byte[] properties = stream.ReadBytes(5);
 
 							if(properties[0] == 0x5D && BitConverter.ToUInt32(properties, 0x01) <= chunkSize)
 							{
+								Console.WriteLine($"Decompressing file {index}; {bytesDecompressed.ToString("X08")}/{localFileHeaders[index].size.ToString("X08")}; {stream.BaseStream.Position.ToString("X08")}");
 								decoder.SetDecoderProperties(properties);
 
 								//Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
@@ -161,13 +169,23 @@ namespace IGAE_GUI
 							}
 							else
 							{
-								byte[] uncompressedData = stream.ReadBytes((int)chunkSize);
+								Console.WriteLine($"Uncompressed chunk of size {chunkSize.ToString("X08")}, loc {stream.BaseStream.Position.ToString("X08")}");
+								byte[] uncompressedData = new byte[chunkSize];
+								stream.BaseStream.Read(uncompressedData, 0x00, (int)chunkSize);
+								//stream.ReadBytes((int)chunkSize);
 								outputfs.Write(uncompressedData, 0x00, (int)chunkSize);
 
 								bytesDecompressed += chunkSize;
 							}
 
-							stream.BaseStream.Seek((((stream.BaseStream.Position - 0x10) / chunkAlignment) + 0x01) * chunkAlignment, SeekOrigin.Begin);
+							if((((stream.BaseStream.Position - 0x10) / chunkAlignment) + 0x01) * chunkAlignment > stream.BaseStream.Length)
+							{
+								throw new Exception("File truncated");
+							}
+							else
+							{
+								stream.BaseStream.Seek((((stream.BaseStream.Position - 0x10) / chunkAlignment) + 0x01) * chunkAlignment, SeekOrigin.Begin);
+							}
 							attempts++;
 						}
 
