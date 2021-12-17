@@ -169,7 +169,12 @@ namespace IGAE_GUI
 
 		public byte[] ReadForEndianness(int bytesToRead, Endianness endianness)
 		{
-			var bytesRead = ReadBytes(bytesToRead);
+			byte[] bytesRead = new byte[bytesToRead];
+			int res = BaseStream.Read(bytesRead, 0, bytesToRead);
+			if(res != bytesToRead)
+			{
+				throw new Exception($"Read {res} instead of {bytesToRead}");
+			}
 			switch (endianness)
 			{
 				case Endianness.Little:

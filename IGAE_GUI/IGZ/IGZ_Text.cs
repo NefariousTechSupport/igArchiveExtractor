@@ -22,17 +22,11 @@ namespace IGAE_GUI.IGZ
 
 		public void ReadStrings()
 		{
-			ebr.BaseStream.Seek(descriptors.Last().offset, SeekOrigin.Begin);
+			ebr.BaseStream.Seek(descriptors.Last().offset + descriptors.Last().unknown1, SeekOrigin.Begin);
 
-			byte readBuffer;
+			//Console.WriteLine($"{(ebr.BaseStream as FileStream).Name}; IGZ location:{(descriptors.Last().offset + descriptors.Last().unknown1).ToString("X08")} {ebr.BaseStream.Position.ToString("X08")}");
 
-			do
-			{
-				readBuffer = 0;
-				readBuffer = ebr.ReadByte();
-			} while (readBuffer == 0);
-
-			ebr.BaseStream.Position -= 2;
+			//Console.WriteLine(BitConverter.ToString(ebr.ReadBytes(0x1000), 0, 0x1000));
 
 			do
 			{

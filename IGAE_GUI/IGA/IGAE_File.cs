@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using SevenZip.Compression.LZMA;
@@ -11,14 +11,14 @@ namespace IGAE_GUI
 		readonly string name;
 		public IGA_Descriptor[] localFileHeaders;
 
-		public IGAE_Version _version;
+		public IGA_Version _version;
 		public uint numberOfFiles;
 		public uint chunkAlignment;
 		public uint nametableLocation;
 		public uint nametableLength;
 		public string[] names;
 
-		public IGAE_File(string filepath, IGAE_Version version)
+		public IGAE_File(string filepath, IGA_Version version)
 		{
 			FileStream fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
 
@@ -40,13 +40,17 @@ namespace IGAE_GUI
 
 			numberOfFiles = stream.ReadUInt32WithOffset(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.NumberOfFiles]);
 			chunkAlignment = stream.ReadUInt32WithOffset(0x00000010);
+			if(_version == IGA_Version.SkylandersSpyrosAdventureWii)
+			{
+				chunkAlignment = 0x0800;	//It doesn't store it, i found that funny
+			}
 			nametableLocation = stream.ReadUInt32WithOffset(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.NametableLocation]);
 			nametableLength = stream.ReadUInt32WithOffset(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.NametableLength]);
 
 			localFileHeaders = new IGA_Descriptor[numberOfFiles];
 			names = new string[numberOfFiles];
 
-			Console.WriteLine(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLocation] + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLength] * numberOfFiles);
+			//Console.WriteLine(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLocation] + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLength] * numberOfFiles);
 
 			for (uint i = 0; i < numberOfFiles; i++)
 			{
@@ -58,7 +62,7 @@ namespace IGAE_GUI
 				localFileHeaders[i].path = names[i];
 
 				//For some reason the 3ds games have mode 0x10000000 as lzma whereas ssf has it as 0x20000000, so yeah this exists to make that work
-				if (_version == IGAE_Version.SkylandersSpyrosAdventureWii && this.localFileHeaders[i].mode == 0x10000000)
+				if (_version == IGA_Version.SkylandersSpyrosAdventureWii && this.localFileHeaders[i].mode == 0x10000000)
 				{
 					localFileHeaders[i].mode = 0x20000000;
 				}
@@ -71,7 +75,7 @@ namespace IGAE_GUI
 		{
 			string outputFilePath;			
 
-			if(trueName && Path.GetExtension(name) == ".bld")
+			if(trueName && (Path.GetExtension(name) == ".bld" || Path.GetExtension(name) == ".pak"))
 			{
 				outputFilePath = Path.ChangeExtension(name, null) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
 			}
@@ -85,18 +89,57 @@ namespace IGAE_GUI
 			FileStream outputfs = null;
 			outputfs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
 
+			Console.WriteLine(outputfs.Name);
+
 			switch (localFileHeaders[index].mode >> 24)
 			{
 				case 0x00:
 				case 0x10:
 					{
-						uint compressedSize = stream.ReadUInt16WithOffset(localFileHeaders[index].startingAddress, StreamHelper.Endianness.Little);
-						MemoryStream ms = new MemoryStream((int)compressedSize);
-						byte[] compressedBytes = stream.ReadBytes((int)compressedSize);
-						ms.Write(compressedBytes, 0x00, (int)compressedSize);
-						ms.Seek(0x00, SeekOrigin.Begin);
-						DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
-						decompressionStream.CopyTo(outputfs);
+						stream.BaseStream.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+						uint decompressedBytes = 0;
+						while(decompressedBytes < localFileHeaders[index].size)
+						{
+							Console.WriteLine(stream.BaseStream.Position.ToString("X08"));
+
+							uint compressedSize;
+
+							if (((uint)_version & 0x000000FF) <= 0x0B)
+							{
+								compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
+							}
+							else
+							{
+								compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
+							}
+
+							MemoryStream ms = new MemoryStream((int)compressedSize);
+							byte[] compressedBytes = stream.ReadBytes((int)compressedSize);
+							ms.Write(compressedBytes, 0x00, (int)compressedSize);
+							ms.Seek(0x00, SeekOrigin.Begin);
+							DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
+							decompressionStream.CopyTo(outputfs);
+							decompressionStream.Close();
+
+							decompressedBytes += 0x8000;		//Bad code that's definitely fail, you just don't know why yet
+
+
+							uint nextChunk = (uint)(((int)stream.BaseStream.Position + (chunkAlignment - 1)) / chunkAlignment) * chunkAlignment;
+
+							if(stream.BaseStream.Position % chunkAlignment == 0)
+							{
+								nextChunk = (uint)stream.BaseStream.Position;
+							}
+
+							if(nextChunk > stream.BaseStream.Length)
+							{
+								throw new Exception("File truncated");
+							}
+							else
+							{
+								stream.BaseStream.Seek(nextChunk, SeekOrigin.Begin);
+							}
+						}
 						outputfs.Close();
 						res = 0;
 					}
@@ -109,7 +152,9 @@ namespace IGAE_GUI
 
 						stream.BaseStream.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
 
+						//The following is lies and deceit
 						//uint chunkSize = (((int)_version & 0x000000FF) < 0x09) ? 0x00008000u : 0x00800000u;
+
 						uint chunkSize = 0x00008000u;
 
 						uint attempts = 0;
@@ -129,19 +174,12 @@ namespace IGAE_GUI
 								compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
 							}
 
-							if(_version == IGAE_Version.SkylandersTrapTeam)
-							{
-								compressedSize += 4;
-							}
-
 							byte[] properties = stream.ReadBytes(5);
 
 							if(properties[0] == 0x5D && BitConverter.ToUInt32(properties, 0x01) <= chunkSize)
 							{
-								Console.WriteLine($"Decompressing file {index}; {bytesDecompressed.ToString("X08")}/{localFileHeaders[index].size.ToString("X08")}; {stream.BaseStream.Position.ToString("X08")}");
 								decoder.SetDecoderProperties(properties);
 
-								//Console.WriteLine($"{index.ToString("X08")}; cosize: {compressedSize.ToString("X08")}; position: {(fs.Position - 7).ToString("X08")}");
 								byte[] compressedBytes = new byte[compressedSize];
 								stream.Read(compressedBytes, 0x00, (int)compressedSize);
 
@@ -169,22 +207,35 @@ namespace IGAE_GUI
 							}
 							else
 							{
-								Console.WriteLine($"Uncompressed chunk of size {chunkSize.ToString("X08")}, loc {stream.BaseStream.Position.ToString("X08")}");
+								if (((uint)_version & 0x000000FF) <= 0x0B)
+								{
+									stream.BaseStream.Seek(-7, SeekOrigin.Current);
+								}
+								else
+								{
+									stream.BaseStream.Seek(-9, SeekOrigin.Current);
+								}
 								byte[] uncompressedData = new byte[chunkSize];
 								stream.BaseStream.Read(uncompressedData, 0x00, (int)chunkSize);
-								//stream.ReadBytes((int)chunkSize);
 								outputfs.Write(uncompressedData, 0x00, (int)chunkSize);
 
 								bytesDecompressed += chunkSize;
 							}
 
-							if((((stream.BaseStream.Position - 0x10) / chunkAlignment) + 0x01) * chunkAlignment > stream.BaseStream.Length)
+							uint nextChunk = (uint)(((int)stream.BaseStream.Position + (chunkAlignment - 1)) / chunkAlignment) * chunkAlignment;
+
+							if(stream.BaseStream.Position % chunkAlignment == 0)
+							{
+								nextChunk = (uint)stream.BaseStream.Position;
+							}
+
+							if(nextChunk > stream.BaseStream.Length)
 							{
 								throw new Exception("File truncated");
 							}
 							else
 							{
-								stream.BaseStream.Seek((((stream.BaseStream.Position - 0x10) / chunkAlignment) + 0x01) * chunkAlignment, SeekOrigin.Begin);
+								stream.BaseStream.Seek(nextChunk, SeekOrigin.Begin);
 							}
 							attempts++;
 						}
