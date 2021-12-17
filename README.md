@@ -4,6 +4,8 @@
 
 A GUI tool for extracting files from .arc/.bld/.pak files from various games made with the Vicarious Visions Alchemy game engine
 
+Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbgBpmMf) for help and updates!
+
 ### Features & Games:
 | Game | Extracting IGA Files | Text Viewing
 |---|---|---|
