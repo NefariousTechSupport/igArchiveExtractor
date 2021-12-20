@@ -30,9 +30,12 @@ namespace IGAE_GUI
 			prgProgressBar.Maximum = prgBarMax;
 			
 			lblComplete.Visible = false;
+
+			tmsi_ExtractAll.Enabled = false;
+			tmsi_ExtractFile.Enabled = false;
 		}
 
-		private void OpenIGAFile(IGAE_Version version)
+		private void OpenIGAFile(IGA_Version version)
 		{
 			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
@@ -184,11 +187,13 @@ namespace IGAE_GUI
 				}
 			}
 
-			string tempFolder = $"{Path.GetTempPath()}IGAE";
+			string tempFolder = $"{Path.GetTempPath()}IGAE/";
 
 			files[igaIndex].ExtractFile(index, tempFolder, out int res, false);
 
-			IGZ_File igz = new IGZ_File(tempFolder + "/" + Path.GetFileName(files[igaIndex].names[index]));
+			IGZ_File igz = new IGZ_File(tempFolder + Path.GetFileName(files[igaIndex].names[index]));
+
+			if(igz.version != 0x06 && igz.version != 0x08) return;				//temporary line of code cos these two definitely work and other ones are buggy as hell
 
 			switch (igz.type)
 			{
@@ -202,6 +207,22 @@ namespace IGAE_GUI
 					textEditor.Show();
 
 					igzText = null;
+					break;
+				case IGZ_File.IGZ_Type.Texture:
+					IGZ_Texture igzTexture = new IGZ_Texture(igz);
+					Console.WriteLine("Opening save dialogue");
+					using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+					{
+						saveFileDialog.Filter = "dds files (*.dds)|*.dds|All files (*.*)|*.*";		//Only allow dds files, with the option for all files just in case anyone wants that
+						saveFileDialog.FilterIndex = 0;												//Default filter is dds
+						saveFileDialog.RestoreDirectory = true;										//Basically remember what folder you were in last time
+						
+						if (saveFileDialog.ShowDialog() == DialogResult.OK)			//If the user selects a file
+						{
+							igzTexture.ExtractImage(saveFileDialog.FileName);
+						}
+					}
+					igzTexture = null;
 					break;
 				default:
 					break;
@@ -220,7 +241,7 @@ namespace IGAE_GUI
 			lstLog.Items.Clear();
 		}
 
-		private void OpenFolder(IGAE_Version version)
+		private void OpenFolder(IGA_Version version)
 		{
 			prgProgressBar.Value = 0;
 			lblComplete.Visible = false;
@@ -325,68 +346,68 @@ namespace IGAE_GUI
 		#region Version ToolStripMenuItems
 		private void OpenFile_SSAWii_3DS_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersSpyrosAdventureWii);
+			OpenIGAFile(IGA_Version.SkylandersSpyrosAdventureWii);
 		}
 		//Sg and ssa wii u are the same
 		private void OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersSpyrosAdventureWiiU);
+			OpenIGAFile(IGA_Version.SkylandersSpyrosAdventureWiiU);
 		}
 		private void OpenFile_SSF_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersSwapForce);
+			OpenIGAFile(IGA_Version.SkylandersSwapForce);
 		}
 		private void OpenFile_STT_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersTrapTeam);
+			OpenIGAFile(IGA_Version.SkylandersTrapTeam);
 		}
 		//They're the same, also for clarity it's: SSC, SI (PS3, Xbox 360, Wii U)
 		private void OpenFile_SSC_SI_PS3_X360_WiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersSuperChargers);
+			OpenIGAFile(IGA_Version.SkylandersSuperChargers);
 		}
 		//I'm mad
 		private void OpenFile_SI_PS4_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersImaginatorsPS4);
+			OpenIGAFile(IGA_Version.SkylandersImaginatorsPS4);
 		}
 		//Lost islands
 		private void OpenFile_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenIGAFile(IGAE_Version.SkylandersLostIslands);
+			OpenIGAFile(IGA_Version.SkylandersLostIslands);
 		}
 
 		private void OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersSpyrosAdventureWii);
+			OpenFolder(IGA_Version.SkylandersSpyrosAdventureWii);
 		}
 		//Sg and ssa wii u are the same
 		private void OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersSpyrosAdventureWiiU);
+			OpenFolder(IGA_Version.SkylandersSpyrosAdventureWiiU);
 		}
 		private void OpenFolder_SSF_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersSwapForce);
+			OpenFolder(IGA_Version.SkylandersSwapForce);
 		}
 		private void OpenFolder_STT_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersTrapTeam);
+			OpenFolder(IGA_Version.SkylandersTrapTeam);
 		}
 		//They're the same, also for clarity it's: SSC, SI (PS3, Xbox 360, Wii U)
 		private void OpenFolder_SSC_SI_PS3_X360_WiiU_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersSuperChargers);
+			OpenFolder(IGA_Version.SkylandersSuperChargers);
 		}
 		//I'm mad
 		private void OpenFolder_SI_PS4_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersImaginatorsPS4);
+			OpenFolder(IGA_Version.SkylandersImaginatorsPS4);
 		}
 		//Lost islands
 		private void OpenFolder_SLI_ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFolder(IGAE_Version.SkylandersLostIslands);
+			OpenFolder(IGA_Version.SkylandersLostIslands);
 		}
 		#endregion
 	}

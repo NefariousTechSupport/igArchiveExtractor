@@ -107,6 +107,15 @@ namespace IGAE_GUI
 			return sb.ToString();
 		}
 
+		public byte ReadByte() => ReadByte((uint)BaseStream.Position);
+		public byte ReadByte(uint offset)
+		{
+			BaseStream.Seek(offset, SeekOrigin.Begin);
+			byte[] buffer = new byte[1];
+			BaseStream.Read(buffer, 0x00, 0x01);
+			return buffer[0];
+		}
+
 		public string ReadStringFromOffset(uint offset)
 		{
 			var pos = BaseStream.Position;

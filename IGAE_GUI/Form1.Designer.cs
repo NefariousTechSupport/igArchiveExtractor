@@ -52,9 +52,11 @@ namespace IGAE_GUI
 			this.tmsi_OpenFile_SG = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_SG_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_SG_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SG_Alpha = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_SSF = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_SSF_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_SSF_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFile_SSF_Alpha = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_STT = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_STT_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFile_STT_HC = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,9 +72,11 @@ namespace IGAE_GUI
 			this.tmsi_OpenFolder_SG = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_SG_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_SG_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SG_Alpha = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_SSF = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_SSF_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_SSF_HC = new System.Windows.Forms.ToolStripMenuItem();
+			this.tmsi_OpenFolder_SSF_Alpha = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_STT = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_STT_3DS = new System.Windows.Forms.ToolStripMenuItem();
 			this.tmsi_OpenFolder_STT_HC = new System.Windows.Forms.ToolStripMenuItem();
@@ -257,7 +261,8 @@ namespace IGAE_GUI
 			// 
 			this.tmsi_OpenFile_SG.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmsi_OpenFile_SG_3DS,
-            this.tmsi_OpenFile_SG_HC});
+            this.tmsi_OpenFile_SG_HC,
+			this.tmsi_OpenFile_SG_Alpha});
 			this.tmsi_OpenFile_SG.Name = "tmsi_OpenFile_SG";
 			this.tmsi_OpenFile_SG.Size = new System.Drawing.Size(229, 22);
 			this.tmsi_OpenFile_SG.Text = "Skylanders Giants";
@@ -275,12 +280,20 @@ namespace IGAE_GUI
 			this.tmsi_OpenFile_SG_HC.Size = new System.Drawing.Size(153, 22);
 			this.tmsi_OpenFile_SG_HC.Text = "Home Console";
 			this.tmsi_OpenFile_SG_HC.Click += new System.EventHandler(this.OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click);
+			//
+			// tmsi_OpenFile_SG_Alpha
+			//
+			this.tmsi_OpenFile_SG_Alpha.Name = "tmsi_OpenFileSG_Alpha";
+			this.tmsi_OpenFile_SG_Alpha.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SG_Alpha.Text = "Home Console Alpha";
+			this.tmsi_OpenFile_SG_Alpha.Click += new System.EventHandler(this.OpenFile_SSAWii_3DS_ToolStripMenuItem_Click);
 			// 
 			// tmsi_OpenFile_SSF
 			// 
 			this.tmsi_OpenFile_SSF.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmsi_OpenFile_SSF_3DS,
-            this.tmsi_OpenFile_SSF_HC});
+            this.tmsi_OpenFile_SSF_HC,
+			this.tmsi_OpenFile_SSF_Alpha});
 			this.tmsi_OpenFile_SSF.Name = "tmsi_OpenFile_SSF";
 			this.tmsi_OpenFile_SSF.Size = new System.Drawing.Size(229, 22);
 			this.tmsi_OpenFile_SSF.Text = "Skylanders Swap Force";
@@ -298,6 +311,13 @@ namespace IGAE_GUI
 			this.tmsi_OpenFile_SSF_HC.Size = new System.Drawing.Size(153, 22);
 			this.tmsi_OpenFile_SSF_HC.Text = "Home Console";
 			this.tmsi_OpenFile_SSF_HC.Click += new System.EventHandler(this.OpenFile_SSF_ToolStripMenuItem_Click);
+			//
+			// tmsi_OpenFile_SSF_Alpha
+			//
+			this.tmsi_OpenFile_SSF_Alpha.Name = "tmsi_OpenFileSSF_Alpha";
+			this.tmsi_OpenFile_SSF_Alpha.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFile_SSF_Alpha.Text = "Home Console Alpha";
+			this.tmsi_OpenFile_SSF_Alpha.Click += new System.EventHandler(this.OpenFile_SG_SSAWiiU_ToolStripMenuItem_Click);
 			// 
 			// tmsi_OpenFile_STT
 			// 
@@ -400,7 +420,8 @@ namespace IGAE_GUI
 			// 
 			this.tmsi_OpenFolder_SG.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmsi_OpenFolder_SG_3DS,
-            this.tmsi_OpenFolder_SG_HC});
+            this.tmsi_OpenFolder_SG_HC,
+			this.tmsi_OpenFolder_SG_Alpha});
 			this.tmsi_OpenFolder_SG.Name = "tmsi_OpenFolder_SG";
 			this.tmsi_OpenFolder_SG.Size = new System.Drawing.Size(229, 22);
 			this.tmsi_OpenFolder_SG.Text = "Skylanders Giants";
@@ -419,11 +440,19 @@ namespace IGAE_GUI
 			this.tmsi_OpenFolder_SG_HC.Text = "Home Console";
 			this.tmsi_OpenFolder_SG_HC.Click += new System.EventHandler(this.OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click);
 			// 
+			// tmsi_OpenFolder_SG_Alpha
+			// 
+			this.tmsi_OpenFolder_SG_Alpha.Name = "tmsi_OpenFolder_SG_Alpha";
+			this.tmsi_OpenFolder_SG_Alpha.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFolder_SG_Alpha.Text = "Home Console Alpha";
+			this.tmsi_OpenFolder_SG_Alpha.Click += new System.EventHandler(this.OpenFolder_SSAWii_3DS_ToolStripMenuItem_Click);
+			// 
 			// tmsi_OpenFolder_SSF
 			// 
 			this.tmsi_OpenFolder_SSF.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmsi_OpenFolder_SSF_3DS,
-            this.tmsi_OpenFolder_SSF_HC});
+            this.tmsi_OpenFolder_SSF_HC,
+			this.tmsi_OpenFolder_SSF_Alpha});
 			this.tmsi_OpenFolder_SSF.Name = "tmsi_OpenFolder_SSF";
 			this.tmsi_OpenFolder_SSF.Size = new System.Drawing.Size(229, 22);
 			this.tmsi_OpenFolder_SSF.Text = "Skylanders Swap Force";
@@ -441,6 +470,13 @@ namespace IGAE_GUI
 			this.tmsi_OpenFolder_SSF_HC.Size = new System.Drawing.Size(153, 22);
 			this.tmsi_OpenFolder_SSF_HC.Text = "Home Console";
 			this.tmsi_OpenFolder_SSF_HC.Click += new System.EventHandler(this.OpenFolder_SSF_ToolStripMenuItem_Click);
+			// 
+			// tmsi_OpenFolder_SSF_Alpha
+			// 
+			this.tmsi_OpenFolder_SSF_Alpha.Name = "tmsi_OpenFolder_SSF_Alpha";
+			this.tmsi_OpenFolder_SSF_Alpha.Size = new System.Drawing.Size(153, 22);
+			this.tmsi_OpenFolder_SSF_Alpha.Text = "Home Console Alpha";
+			this.tmsi_OpenFolder_SSF_Alpha.Click += new System.EventHandler(this.OpenFolder_SG_SSAWiiU_ToolStripMenuItem_Click);
 			// 
 			// tmsi_OpenFolder_STT
 			// 
@@ -563,7 +599,7 @@ namespace IGAE_GUI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form_igArchiveExtractor";
-			this.Text = "igArchiveExtractor (1.01)";
+			this.Text = "igArchiveExtractor (1.04)";
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
@@ -602,8 +638,10 @@ namespace IGAE_GUI
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSA_WiiU;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG_3DS;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SG_Alpha;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF_3DS;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SSF_Alpha;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_STT_3DS;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_STT_HC;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFile_SI_PS3_X360_WiiU;
@@ -615,8 +653,10 @@ namespace IGAE_GUI
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG_3DS;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SG_Alpha;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF_HC;
+		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_SSF_Alpha;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT_3DS;
 		private System.Windows.Forms.ToolStripMenuItem tmsi_OpenFolder_STT_HC;

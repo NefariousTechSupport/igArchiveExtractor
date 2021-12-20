@@ -8,10 +8,10 @@ namespace IGAE_GUI
 {
 	static class IGAE_Globals
 	{
-		public static Dictionary<IGAE_Version, uint[]> headerData = new Dictionary<IGAE_Version, uint[]>()
+		public static Dictionary<IGA_Version, uint[]> headerData = new Dictionary<IGA_Version, uint[]>()
 		{
 			{
-				IGAE_Version.SkylandersSpyrosAdventureWii,
+				IGA_Version.SkylandersSpyrosAdventureWii,
 				new uint[]
 				{
 					0x00000018,		//Unknown but important address
@@ -27,7 +27,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersSpyrosAdventureWiiU,
+				IGA_Version.SkylandersSpyrosAdventureWiiU,
 				new uint[]
 				{
 					0x00000018,		//Unknown but important address
@@ -43,7 +43,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersSwapForce,
+				IGA_Version.SkylandersSwapForce,
 				new uint[]
 				{
 					0x00000018,		//Unknown but important address
@@ -59,7 +59,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersLostIslands,
+				IGA_Version.SkylandersLostIslands,
 				new uint[]
 				{
 					0x00000018,		//Unknown but important address
@@ -75,7 +75,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersTrapTeam,
+				IGA_Version.SkylandersTrapTeam,
 				new uint[]
 				{
 					0x00000018,		//Unknown
@@ -91,7 +91,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersSuperChargers,
+				IGA_Version.SkylandersSuperChargers,
 				new uint[]
 				{
 					0x00000018,		//Unknown
@@ -107,7 +107,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.SkylandersImaginatorsPS4,
+				IGA_Version.SkylandersImaginatorsPS4,
 				new uint[]
 				{
 					0x00000018,		//Unknown
@@ -123,7 +123,7 @@ namespace IGAE_GUI
 				}
 			},
 			{
-				IGAE_Version.CrashNST,
+				IGA_Version.CrashNST,
 				new uint[]
 				{
 					0x00000018,		//Unknown

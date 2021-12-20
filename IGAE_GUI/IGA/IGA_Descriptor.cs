@@ -13,5 +13,6 @@ namespace IGAE_GUI
 		public string path;
 		public uint index;
 		public uint mode;
+		public uint chunkPropertiesOffset;
 	}
 }

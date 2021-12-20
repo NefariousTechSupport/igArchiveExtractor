@@ -18,6 +18,7 @@ namespace IGAE_GUI.IGZ
 			this.attributes = igz.attributes;
 			this.descriptors = igz.descriptors;
 			this.ebr = igz.ebr;
+			this.fixups = igz.fixups;
 		}
 
 		public void ReadStrings()

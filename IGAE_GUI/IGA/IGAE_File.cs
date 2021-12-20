@@ -17,6 +17,7 @@ namespace IGAE_GUI
 		public uint nametableLocation;
 		public uint nametableLength;
 		public string[] names;
+		uint chunkPropertiesStart = 0;
 
 		public IGAE_File(string filepath, IGA_Version version)
 		{
@@ -60,6 +61,7 @@ namespace IGAE_GUI
 				localFileHeaders[i].size = stream.ReadUInt32WithOffset(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLocation] + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLength] * numberOfFiles + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.LocalHeaderLength] * i + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.FileLengthInLocal]);
 				localFileHeaders[i].mode = stream.ReadUInt32WithOffset(IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLocation] + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ChecksumLength] * numberOfFiles + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.LocalHeaderLength] * i + IGAE_Globals.headerData[_version][(uint)IGAE_HeaderData.ModeInLocal]);
 				localFileHeaders[i].path = names[i];
+				localFileHeaders[i].chunkPropertiesOffset = localFileHeaders[i].mode & 0xFFFFFF;
 
 				//For some reason the 3ds games have mode 0x10000000 as lzma whereas ssf has it as 0x20000000, so yeah this exists to make that work
 				if (_version == IGA_Version.SkylandersSpyrosAdventureWii && this.localFileHeaders[i].mode == 0x10000000)
@@ -69,6 +71,7 @@ namespace IGAE_GUI
 
 				localFileHeaders[i].index = i;
 			}
+			chunkPropertiesStart = (uint)stream.BaseStream.Position;
 		}
 
 		public void ExtractFile(uint index, string outputDir, out int res, bool trueName = true)
@@ -78,6 +81,10 @@ namespace IGAE_GUI
 			if(trueName && (Path.GetExtension(name) == ".bld" || Path.GetExtension(name) == ".pak"))
 			{
 				outputFilePath = Path.ChangeExtension(name, null) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
+			}
+			else if(!trueName && (Path.GetExtension(name) == ".arc" || Path.GetExtension(name) == ".pak"))
+			{
+				outputFilePath = outputDir + Path.GetFileName(names[index]);
 			}
 			else
 			{
@@ -89,42 +96,64 @@ namespace IGAE_GUI
 			FileStream outputfs = null;
 			outputfs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
 
-			Console.WriteLine(outputfs.Name);
-
+			Console.WriteLine(outputfs.Name);	
 			switch (localFileHeaders[index].mode >> 24)
 			{
 				case 0x00:
 				case 0x10:
 					{
-						stream.BaseStream.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+						uint chunkCount = 0;
+						uint nextChunk = localFileHeaders[index].startingAddress;
 						uint decompressedBytes = 0;
+						uint chunkSize = 0x8000;
+
+						//Very bad code but there's no other way to do thiss
+
 						while(decompressedBytes < localFileHeaders[index].size)
 						{
-							Console.WriteLine(stream.BaseStream.Position.ToString("X08"));
+							//stream.BaseStream.Seek(chunkPropertiesStart + localFileHeaders[index].chunkPropertiesOffset * 2 + chunkCount * 2, SeekOrigin.Begin);
+							//Console.WriteLine($"Properties: {stream.BaseStream.Position.ToString("X08")}");
+							//uint chunkProperties = stream.ReadUInt16();
+							stream.BaseStream.Seek(nextChunk, SeekOrigin.Begin);
 
-							uint compressedSize;
-
-							if (((uint)_version & 0x000000FF) <= 0x0B)
+							try
 							{
-								compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
+								uint compressedSize;
+
+								if (((uint)_version & 0x000000FF) <= 0x0B)
+								{
+									compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
+								}
+								else
+								{
+									compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
+								}
+
+								Console.WriteLine($"Chunk: {stream.BaseStream.Position.ToString("X08")} of size {compressedSize.ToString("X08")}");
+
+								MemoryStream ms = new MemoryStream((int)compressedSize);
+								byte[] compressedBytes = stream.ReadBytes((int)compressedSize);
+								ms.Write(compressedBytes, 0x00, (int)compressedSize);
+								ms.Seek(0x00, SeekOrigin.Begin);
+								DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
+								decompressionStream.CopyTo(outputfs);
+								decompressionStream.Close();
 							}
-							else
+							catch(InvalidDataException)
 							{
-								compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
+								stream.BaseStream.Seek(nextChunk, SeekOrigin.Begin);
+
+								Console.WriteLine($"Chunk: {stream.BaseStream.Position.ToString("X08")} of size {chunkSize.ToString("X08")}");
+								byte[] uncompressedData = new byte[chunkSize];
+								stream.BaseStream.Read(uncompressedData, 0x00, (int)chunkSize);
+								outputfs.Write(uncompressedData, 0x00, (int)chunkSize);
 							}
 
-							MemoryStream ms = new MemoryStream((int)compressedSize);
-							byte[] compressedBytes = stream.ReadBytes((int)compressedSize);
-							ms.Write(compressedBytes, 0x00, (int)compressedSize);
-							ms.Seek(0x00, SeekOrigin.Begin);
-							DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
-							decompressionStream.CopyTo(outputfs);
-							decompressionStream.Close();
-
+							chunkCount++;
 							decompressedBytes += 0x8000;		//Bad code that's definitely fail, you just don't know why yet
 
 
-							uint nextChunk = (uint)(((int)stream.BaseStream.Position + (chunkAlignment - 1)) / chunkAlignment) * chunkAlignment;
+							nextChunk = (uint)(((int)stream.BaseStream.Position + (chunkAlignment - 1)) / chunkAlignment) * chunkAlignment;
 
 							if(stream.BaseStream.Position % chunkAlignment == 0)
 							{
@@ -133,11 +162,7 @@ namespace IGAE_GUI
 
 							if(nextChunk > stream.BaseStream.Length)
 							{
-								throw new Exception("File truncated");
-							}
-							else
-							{
-								stream.BaseStream.Seek(nextChunk, SeekOrigin.Begin);
+								throw new Exception($"File truncated, {nextChunk.ToString("X08")} does not exist");
 							}
 						}
 						outputfs.Close();
@@ -264,6 +289,8 @@ namespace IGAE_GUI
 					break;
 				case 0xFF:
 					{
+						stream.BaseStream.Seek(localFileHeaders[index].startingAddress, SeekOrigin.Begin);
+
 						byte[] buffer = stream.ReadBytes((int)localFileHeaders[index].size);
 
 						outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
