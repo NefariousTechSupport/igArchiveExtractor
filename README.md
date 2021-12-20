@@ -7,23 +7,33 @@ A GUI tool for extracting files from .arc/.bld/.pak files from various games mad
 Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbgBpmMf) for help and updates!
 
 ### Features & Games:
-| Game | Extracting IGA Files | Text Viewing
-|---|---|---|
-| Skylanders Spyro's Adventure (3DS/Wii/Wii U) | ✅ | ❌ |
-| Skylanders Giants | ✅ | ✅ |
-| Skylanders Swap Force | ✅ | ❌ |
-| Skylanders Trap Team | ✅ | ❌ |
-| Skylanders Superchargers | ✅ | ❌ |
-| Skylanders Imaginators | ✅ | ❌ |
+| Game | Extracting IGA Files | Text Viewing | Texture Extraction |
+|---|---|---|---|
+| Skylanders Spyro's Adventure (3DS/Wii/Wii U) | ✅ | ❌ | ❌ |
+| Skylanders Giants | ✅ | ✅ | ✅ |
+| Skylanders Swap Force | ✅ | ❌ | ❌ |
+| Skylanders Trap Team | ✅ | ✅ | ✅ |
+| Skylanders Superchargers | ✅ | ❌ | ❌ |
+| Skylanders Imaginators | ✅ | ❌ | ❌ |
 
 ## Usage
+
+### General Use:
 
 * Start the program
 * Load a file using the "File > Load File", then select the game and platform you wish to open
 * Navigate to the file you want to extract and click "Extract File" or just click "Extract All"
 * Select an output folder
 * Wait
-* Profit
+
+### To View Text:
+
+* Once a file is loaded, find a text asset and double click it.
+
+### To Extract Textures:
+
+* Once a file is loaded, find a texture and double click it.
+* You''ll be presented with the option to save as, select a location, and save.
 
 If you're on mac or linux use wine but idk if that works
 
@@ -41,3 +51,4 @@ If you're on mac or linux use wine but idk if that works
 * Improve performance by using multithreading
 * Add support for rebuilding these files
 * Add support for editing igz files
+* Make the table green
