@@ -6,15 +6,6 @@ A GUI tool for extracting files from .arc/.bld/.pak files from various games mad
 
 Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbgBpmMf) for help and updates!
 
-### Features & Games:
-| Game | Extracting IGA Files | Text Viewing | Texture Extraction |
-|---|---|---|---|
-| Skylanders Spyro's Adventure (3DS/Wii/Wii U) | ✅ | ❌ | ❌ |
-| Skylanders Giants | ✅ | ✅ | ✅ |
-| Skylanders Swap Force | ✅ | ❌ | ❌ |
-| Skylanders Trap Team | ✅ | ✅ | ✅ |
-| Skylanders Superchargers | ✅ | ❌ | ❌ |
-| Skylanders Imaginators | ✅ | ❌ | ❌ |
 
 ## Usage
 
@@ -26,6 +17,15 @@ Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbg
 * Select an output folder
 * Wait
 
+### To Rebuild IGA Files:
+
+* Once a file is laoded, extract all to the same folder the IGA is in.
+* Navigate to File > Build.
+* From the build window you can save the settings as a CSV, once you save you can close IGAE.
+* Edit the extracted files with your desired changes.
+* Once happy with your edits, reopen IGAE, navigate to File > Build, and load the CSV.
+* Click Build, select your destination, and you'll have an IGA file.
+
 ### To View Text:
 
 * Once a file is loaded, find a text asset and double click it.
@@ -36,6 +36,38 @@ Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbg
 * You''ll be presented with the option to save as, select a location, and save.
 
 If you're on mac or linux use wine but idk if that works
+
+### Features & Games:
+| Game | Platform | Extracting IGA Files | Rebuilding IGA Files | Text Viewing | Texture Extraction |
+|---|---|---|---|---|---|
+| Skylanders Spyro's Adventure | 3DS | ✅ | ❓ | ❌ | ❌ |
+| | Wii | ✅ | ❓ | ❌ | ❌ |
+| | Wii U | ✅ | ✅ | ❌ | ❌ |
+| Skylanders Giants | 3DS | ✅ | ✅ | ✅ | ✅ |
+| | Wii | ✅ | ✅ | ✅ | ❓ |
+| | Wii U | ✅ | ✅ | ✅ | ❌ |
+| | PS3 | ✅ | ✅ | ✅ | ✅ |
+| | Xbox 360 | ✅ | ✅ | ✅ | ❓ |
+| Skylanders Swap Force | 3DS | ✅ | ❓ | ❌ | ❌ |
+| | Wii | ✅ | ❓ | ❌ | ❌ |
+| | Wii U | ✅ | ❓ | ❌ | ❌ |
+| | PS3 | ✅ | ❓ | ❌ | ❌ |
+| | PS4 | ✅ | ❓ | ❌ | ❌ |
+| | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
+| Skylanders Trap Team | 3DS | ✅ | ❓ | ❌ | ❌ |
+| | Wii | ✅ | ✅ | ✅ | ❓ |
+| | Wii U | ✅ | ✅ | ✅ | ❓ |
+| | PS3 | ✅ | ✅ | ✅ | ✅ |
+| | PS4 | ✅ | ✅ | ✅ | ❓ |
+| | Xbox 360 | ✅ | ✅ | ✅ | ❓ |
+| Skylanders Superchargers | Wii U | ✅ | ✅ | ✅ | ❌ |
+| | PS3 | ✅ | ✅ | ✅ | ❌ |
+| | PS4 | ✅ | ✅ | ✅ | ❌ |
+| | Xbox 360 | ✅ | ✅ | ✅ | ❌ |
+| Skylanders Imaginators | PS4 | ✅ | ❌ | ❌ | ❌ |
+| | PS3 | ✅ | ✅ | ❌ | ❌ |
+| | PS4 | ✅ | ❌ | ❌ | ❌ |
+| | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
 
 ## Building
 ### Prerequisites
