@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IGAE_GUI
 {
-	enum IGA_Version
+	public enum IGA_Version
 	{
 		SkylandersSpyrosAdventureWii	= 0x00000004,
 		SkylandersSpyrosAdventureWiiU	= 0x00000008,		//Is also Giants

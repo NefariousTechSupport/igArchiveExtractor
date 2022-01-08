@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Data;
 using System.Windows.Forms;
+using IGAE_GUI.IGA;
 using IGAE_GUI.IGZ;
 
 namespace IGAE_GUI
@@ -14,7 +15,7 @@ namespace IGAE_GUI
 		private CommonOpenFileDialog cofdSelectExtractOutputDir = new CommonOpenFileDialog();
 		private CommonOpenFileDialog cofdSelectInputDir = new CommonOpenFileDialog();
 
-		List<IGAE_File> files;
+		List<IGA_File> files = new List<IGA_File>();
 
 		const int prgBarMax = 100000;
 
@@ -42,8 +43,18 @@ namespace IGAE_GUI
 			{
 				prgProgressBar.Value = 0;
 				lblComplete.Visible = false;
-				files = new List<IGAE_File>();
-				files.Add(new IGAE_File(SelectIGAFile.FileName, version));
+				if(files != null)
+				{
+					if(files.Count > 0)
+					{
+						for(int i = 0; i < files.Count; i++)
+						{
+							files[i].Close();
+						}
+					}
+				}
+				files = new List<IGA_File>();
+				files.Add(new IGA_File(SelectIGAFile.FileName, version));
 				tmsi_ExtractAll.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
 				List<string> containedFiles = new List<string>();
@@ -172,13 +183,13 @@ namespace IGAE_GUI
 
 		private void PreviewFile(object sender, EventArgs e)
 		{
-			uint index = 0;
+			int index = -1;
 			int igaIndex;
 			for (igaIndex = 0; igaIndex < files.Count; igaIndex++)
 			{
 				try
 				{
-					index = files[igaIndex].localFileHeaders.First(x => x.path.Contains(treeLocalFiles.SelectedNode.Text)).index;
+					index = (int)files[igaIndex].localFileHeaders.First(x => x.path.Contains(treeLocalFiles.SelectedNode.Text)).index;
 					break;
 				}
 				catch (InvalidOperationException)
@@ -187,9 +198,11 @@ namespace IGAE_GUI
 				}
 			}
 
+			if(index == -1) return;
+
 			string tempFolder = $"{Path.GetTempPath()}IGAE/";
 
-			files[igaIndex].ExtractFile(index, tempFolder, out int res, false);
+			files[igaIndex].ExtractFile((uint)index, tempFolder, out int res, false);
 
 			IGZ_File igz = new IGZ_File(tempFolder + Path.GetFileName(files[igaIndex].names[index]));
 
@@ -220,6 +233,10 @@ namespace IGAE_GUI
 						if (saveFileDialog.ShowDialog() == DialogResult.OK)			//If the user selects a file
 						{
 							igzTexture.ExtractImage(saveFileDialog.FileName);
+						}
+						else
+						{
+							igzTexture.Close();
 						}
 					}
 					igzTexture = null;
@@ -255,7 +272,17 @@ namespace IGAE_GUI
 				string[] igaFiles = Directory.GetFiles(cofdSelectInputDir.FileName, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".arc", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".bld", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) || s.EndsWith(".iga", StringComparison.OrdinalIgnoreCase)).ToArray();
 				if (igaFiles.Length == 0) throw new InvalidOperationException("There are no IGA type files in this directory");
 				List<string> containedFiles = new List<string>();
-				files = new List<IGAE_File>();
+				if(files != null)
+				{
+					if(files.Count > 0)
+					{
+						for(int i = 0; i < files.Count; i++)
+						{
+							files[i].Close();
+						}
+					}
+				}
+				files = new List<IGA_File>();
 				for (int i = 0; i < igaFiles.Length; i++)
 				{
 					prgProgressBar.Value = (int)(((float)i / igaFiles.Length) * prgBarMax);
@@ -278,7 +305,7 @@ namespace IGAE_GUI
 					if (Path.GetFileName(igaFiles[i]) == "JAPANESE.pak") continue;
 
 
-					files.Add(new IGAE_File(igaFiles[i], version));
+					files.Add(new IGA_File(igaFiles[i], version));
 					bool isBLD = igaFiles[i].EndsWith("bld", StringComparison.OrdinalIgnoreCase);
 					for (uint j = 0; j < files.Last().numberOfFiles; j++)
 					{
@@ -345,6 +372,17 @@ namespace IGAE_GUI
 		}
 		void SaveAs(object sender, EventArgs e)
 		{
+			IGA_BuildForm buildForm;
+			if(files.Count != 1)
+			{
+				buildForm = new IGA_BuildForm(null);
+			}
+			else
+			{
+				buildForm = new IGA_BuildForm(files[0]);
+			}
+			buildForm.Show();
+			return;
 			Console.WriteLine("Opening save dialogue");
 			using (SaveFileDialog saveFileDialog = new SaveFileDialog())
 			{

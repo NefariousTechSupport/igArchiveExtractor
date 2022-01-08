@@ -105,9 +105,10 @@ namespace IGAE_GUI.IGZ
 				}
 			}
 		}
-		~IGZ_File()
+		public void Close()
 		{
 			ebr.Close();
+			ebr.Dispose();
 		}
 		void ReadOldFixups()
 		{

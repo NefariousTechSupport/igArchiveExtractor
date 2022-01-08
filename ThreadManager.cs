@@ -21,7 +21,7 @@ namespace IGAE_GUI
 			ThreadPool.SetMinThreads(threads, threads);
 			ThreadPool.SetMaxThreads(threads, threads);
 		}
-		public static void Extract(IGAE_File[] files, string outputDir)
+		public static void Extract(IGA_File[] files, string outputDir)
 		{
 			Stopwatch sw = Stopwatch.StartNew();
 
@@ -40,7 +40,7 @@ namespace IGAE_GUI
 				Console.WriteLine($"{i}/{files.Length}");
 
 				//Ok so for some reason the following works:
-				IGAE_File f = files[i];
+				IGA_File f = files[i];
 				ThreadPool.QueueUserWorkItem(state => CallExtract(f, outputDir));
 				//But not this:
 				//ThreadPool.QueueUserWorkItem(state => CallExtract(files[i], outputDir));
@@ -50,7 +50,7 @@ namespace IGAE_GUI
 			Console.WriteLine(((float)currFile / totalFiles) * 100);
 			throw new Exception("Done");
 		}
-		static void CallExtract(IGAE_File file, string outputDir)
+		static void CallExtract(IGA_File file, string outputDir)
 		{
 			for (uint i = 0; i < file.numberOfFiles; i++)
 			{
