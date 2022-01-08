@@ -68,6 +68,8 @@ If you're on mac or linux use wine but idk if that works
 | | PS3 | ✅ | ✅ | ❌ | ❌ |
 | | PS4 | ✅ | ❌ | ❌ | ❌ |
 | | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
+| | Wii U | ✅ | ❓ | ❌ | ❌ |
+| | Switch | ❌ | ❌ | ❌ | ❌ |
 
 ## Building
 ### Prerequisites
