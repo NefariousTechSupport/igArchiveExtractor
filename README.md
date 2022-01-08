@@ -78,9 +78,15 @@ If you're on mac or linux use wine but idk if that works
 ### How to Build
 * Open the sln file in visual studio, and press ctrl + b to build, alternatively press f5 to build (if neccessary) and run
 
+## Credits
+* DTZxPorter: Figured out the HashSearch and CalculateSlop functions
+* AdventureT: Texture Extraction code adapted from [IGZModelConverter](https://github.com/AdventureT/IgzModelConverter). Figured out that the games use FNV1A32 on their hashes
+* LG-RZ: Explained certain aspects of IGA files
+* Drawdler: Drew the logo :)
+* dletozeun: DDS flip function from [disunity](https://github.com/ata4/disunity/pull/43/files)
+
 ## To Do
 
 * Improve performance by using multithreading
-* Add support for rebuilding these files
 * Add support for editing igz files
 * Make the table green
