@@ -1,0 +1,8 @@
+1.05f
+- Rewrote how the main tree is created, getting rid of the made up c at the root of every single file that didn't have it
+- Fixed bug where double clicking a folder lead to it trying to be opened as an IGZ, causing a crash
+- Double clicking IGZs no longer writes to a temporary file but rather to ram, saving you space
+- IGZs open up a viewer with more technical detail. Supports EXNM, EXID, TSTR, TMET, MTSZ, and TDEP
+- Fixed the canccel button in settings
+- Fixed a bug that didn't make it possible to extract pak or bld files to any folder you wish
+- Dark Mode on all forms

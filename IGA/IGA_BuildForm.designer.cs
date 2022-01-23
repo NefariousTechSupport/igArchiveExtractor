@@ -119,7 +119,7 @@ namespace IGAE_GUI.IGA
 			this.cbVersion.Size = new System.Drawing.Size(75, 23);
 			this.cbVersion.DropDownWidth = 75;
 			this.cbVersion.TabIndex = 10;
-			this.cbVersion.Items.AddRange(new string[]{"SSA Wii/3DS", "SSA Wii U", "SG", "SG 3DS", "SG Alpha", "SSF", "SSF 3DS", "SSF Alpha", "STT", "STT 3DS", "SSC"});
+			this.cbVersion.Items.AddRange(new string[]{"SSA Wii/3DS", "SSA Wii U", "SG", "SG 3DS", "SG Alpha", "SSF", "SSF 3DS", "SSF Alpha", "STT", "STT 3DS", "SSC", "SI PS4"});
 			//
 			// chkCaseInsensitiveHash
 			//

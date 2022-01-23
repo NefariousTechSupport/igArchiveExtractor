@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using IGAE_GUI.IGZ;
+using System.Windows.Forms;
 
 //Extremely important feature
 
@@ -7,83 +7,92 @@ namespace IGAE_GUI
 {
 	public static class Themes
 	{
-		public static Form_igArchiveExtractor mainForm;
-
-		public static void SwitchMainFormToLightTheme()
+		#region Dark Mode
+		public static void SetControlToDark(Control control)
 		{
-			mainForm.BackColor = Color.FromName("Control");
-			mainForm.ForeColor = Color.FromName("ControlText");
-
-			mainForm.btnClearLog.BackColor = Color.FromName("Control");
-			mainForm.btnClearLog.ForeColor = Color.FromName("ControlText");
-
-			mainForm.menuStrip1.BackColor = Color.FromName("Control");
-			mainForm.menuStrip1.ForeColor = Color.FromName("ControlText");
-
-			mainForm.lstLog.BackColor = Color.FromName("Window");
-			mainForm.lstLog.ForeColor = Color.FromName("WindowText");
-
-			mainForm.treeLocalFiles.BackColor = Color.FromName("Window");
-			mainForm.treeLocalFiles.ForeColor = Color.FromName("WindowText");
+			if(control.GetType() == typeof(TreeView) || control.GetType() == typeof(ListBox))
+			{
+				SetBoxControlToDark(control);
+				return;
+			}
+			if(control.GetType() == typeof(DataGridView))
+			{
+				SetDGVControlToDark(control as DataGridView);
+			}
+			if(control.GetType() == typeof(Label) || control.GetType() == typeof(CheckBox))
+			{
+				SetWindowControlToDark(control);
+				return;
+			}
+			if(control.GetType() == typeof(MenuStrip))
+			{
+				SetMenuStripToDark(control);
+				return;
+			}
+			control.BackColor = Color.FromName("ControlDarkDark");
+			control.ForeColor = Color.FromName("ControlLight");
 		}
-		public static void SwitchMainFormToDarkTheme()
+		public static void SetBoxControlToDark(Control control)
 		{
-			mainForm.BackColor = Color.FromArgb(064, 064, 064);
-			mainForm.ForeColor = Color.FromName("White");
-
-			mainForm.btnClearLog.BackColor = Color.FromName("ControlDarkDark");
-			mainForm.btnClearLog.ForeColor = Color.FromName("ControlLight");
-
-			mainForm.menuStrip1.BackColor = Color.FromArgb(070, 070, 070);
-			mainForm.menuStrip1.ForeColor = Color.FromName("Control");
-
-			mainForm.lstLog.BackColor = Color.FromArgb(32, 32, 32);
-			mainForm.lstLog.ForeColor = Color.FromName("White");
-
-			mainForm.treeLocalFiles.BackColor = Color.FromArgb(32, 32, 32);
-			mainForm.treeLocalFiles.ForeColor = Color.FromName("White");
+			control.BackColor = Color.FromArgb(032, 032, 032);
+			control.ForeColor = Color.FromName("White");
 		}
-		public static void SwitchSettingsFormToDarkTheme(SettingsMenu menu)
+		public static void SetDGVControlToDark(DataGridView dgv)
 		{
-			menu.BackColor = Color.FromArgb(064, 064, 064);
-			menu.ForeColor = Color.FromArgb(191, 191, 191);
-
-			menu.btnCancel.BackColor = Color.FromName("ControlDarkDark");
-			menu.btnCancel.ForeColor = Color.FromName("ControlLight");
-
-			menu.btnSaveSettings.BackColor = Color.FromName("ControlDarkDark");
-			menu.btnSaveSettings.ForeColor = Color.FromName("ControlLight");
-
-			menu.chkDarkMode.ForeColor = Color.FromName("Control");
+			dgv.BackgroundColor = Color.FromArgb(032, 032, 032);
 		}
-		public static void SwitchSettingsFormToLightTheme(SettingsMenu menu)
+		public static void SetWindowControlToDark(Control control)
 		{
-			menu.BackColor = Color.FromName("Control");
-			menu.ForeColor = Color.FromName("ControlText");
-
-			menu.btnCancel.BackColor = Color.FromName("Control");
-			menu.btnCancel.ForeColor = Color.FromName("ControlText");
-
-			menu.btnSaveSettings.BackColor = Color.FromName("Control");
-			menu.btnSaveSettings.ForeColor = Color.FromName("ControlText");
-
-			menu.chkDarkMode.ForeColor = Color.FromName("ControlText");
+			control.BackColor = Color.FromArgb(064, 064, 064);
+			control.ForeColor = Color.FromName("White");
 		}
-		public static void SwitchTextEditingFormToLightTheme(IGZ_TextEditor menu)
+		public static void SetLabelToDark(Control control)
 		{
-			menu.BackColor = Color.FromName("Control");
-			menu.ForeColor = Color.FromName("ControlText");
-
-			menu.lstTextItems.BackColor = Color.FromName("Control");
-			menu.lstTextItems.ForeColor = Color.FromName("ControlText");
+			control.BackColor = control.Parent.BackColor;
+			control.ForeColor = Color.FromName("White");
 		}
-		public static void SwitchTextEditingFormToDarkTheme(IGZ_TextEditor menu)
+		public static void SetMenuStripToDark(Control control)
 		{
-			menu.BackColor = Color.FromArgb(064, 064, 064);
-			menu.ForeColor = Color.FromArgb(191, 191, 191);
-
-			menu.lstTextItems.BackColor = Color.FromArgb(32, 32, 32);
-			menu.lstTextItems.ForeColor = Color.FromName("White");
+			control.BackColor = Color.FromArgb(070, 070, 070);
+			control.ForeColor = Color.FromName("White");
 		}
+		#endregion
+		#region Light Mode
+		public static void SetControlToLight(Control control)
+		{
+			if(control.GetType() == typeof(DataGridView))
+			{
+				(control as DataGridView).BackgroundColor = Color.White;
+				return;
+			}
+			if(control.GetType() == typeof(TreeView) || control.GetType() == typeof(ListBox))
+			{
+				SetBoxControlToLight(control);
+				return;
+			}
+			if(control.GetType() == typeof(MenuStrip))
+			{
+				SetMenuStripToLight(control);
+				return;
+			}
+			if(control.GetType() == typeof(Form))
+			{
+				control.BackColor = Color.FromName("Window");
+				control.ForeColor = Color.FromName("WindowText");
+			}
+			control.BackColor = Color.FromName("Control");
+			control.ForeColor = Color.FromName("ControlText");
+		}
+		public static void SetBoxControlToLight(Control control)
+		{
+			control.BackColor = Color.FromArgb(255, 255, 255);
+			control.ForeColor = Color.FromName("ControlText");
+		}
+		public static void SetMenuStripToLight(Control control)
+		{
+			control.BackColor = Color.FromName("Window");
+			control.ForeColor = Color.FromName("WindowText");
+		}
+		#endregion
 	}
 }

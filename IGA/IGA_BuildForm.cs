@@ -64,6 +64,9 @@ namespace IGAE_GUI.IGA
 					case IGA_Version.SkylandersSuperChargers:
 						cbVersion.SelectedIndex = 10;
 						break;
+					case IGA_Version.SkylandersImaginatorsPS4:
+						cbVersion.SelectedIndex = 11;
+						break;
 					default:
 						MessageBox.Show("This version does not support rebuilding.", "Rebuild Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign, false);
 						break;
@@ -73,11 +76,15 @@ namespace IGAE_GUI.IGA
 				UpdateCheckboxes();
 			}
 
-			Config cfg = Config.Read();
+			Config config = Config.Read();
 
-			if(cfg.darkMode)
+			if (config.darkMode)
 			{
-				//Themes.SwitchTextEditingFormToDarkTheme(this);
+				foreach(Control control in Controls)
+				{
+					Themes.SetControlToDark(control);
+				}
+				Themes.SetWindowControlToDark(this);
 			}
 		}
 		public void AddRow(object sender, EventArgs e)
@@ -284,7 +291,7 @@ namespace IGAE_GUI.IGA
 					IGA_File outputFile = new IGA_File(version, internalFilenames, crc);
 					outputFile.slop = slop;
 					outputFile.flags = flags;
-					outputFile.Build(saveFileDialog.FileName, realFileNames);
+					outputFile.Build(saveFileDialog.FileName, realFileNames, true);
 				}
 			}
 		}

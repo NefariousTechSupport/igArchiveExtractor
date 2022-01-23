@@ -38,7 +38,7 @@ namespace IGAE_GUI
 
 		private void OpenIGAFile(IGA_Version version)
 		{
-			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga|All files (*.*)|*.*";
+			SelectIGAFile.Filter = "Supported game files|*.arc;*.bld;*.pak;*.iga;*.igz;*.lang|All files (*.*)|*.*";
 			if(SelectIGAFile.ShowDialog() == DialogResult.OK)
 			{
 				prgProgressBar.Value = 0;
@@ -54,7 +54,18 @@ namespace IGAE_GUI
 					}
 				}
 				files = new List<IGA_File>();
-				files.Add(new IGA_File(SelectIGAFile.FileName, version));
+				try
+				{
+					files.Add(new IGA_File(SelectIGAFile.FileName, version));
+				}
+				catch(Exception)
+				{
+					IGZ_File igz = new IGZ_File(new FileStream(SelectIGAFile.FileName, FileMode.Open, FileAccess.ReadWrite));
+
+					IGZ_GeneralForm igzForm = new IGZ_GeneralForm(igz);
+					igzForm.Show();
+					return;
+				}
 				tmsi_ExtractAll.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
 				List<string> containedFiles = new List<string>();
@@ -63,7 +74,7 @@ namespace IGAE_GUI
 					containedFiles.Add(files[0].names[i]);
 					prgProgressBar.Value = (int)(((float)i / (float)files[0].numberOfFiles) * prgBarMax);
 				}
-				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
+				MakeTreeFromPaths(containedFiles);
 				treeLocalFiles.Sort();
 				lstLog.Items.Add($"Opened IGA file \"{SelectIGAFile.FileName}\"");
 				lblComplete.Visible = true;
@@ -103,7 +114,7 @@ namespace IGAE_GUI
 						IGA_Descriptor selected = files[i].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text));
 						lblSize.Text = $"Size: {selected.size} bytes";
 						lblIndex.Text = $"Index: {selected.index}";
-						tmsi_ExtractFile.Enabled = true;//(selected.mode & 0xFF000000) != 0x10000000;
+						tmsi_ExtractFile.Enabled = true;
 					}
 				}
 			}
@@ -125,7 +136,6 @@ namespace IGAE_GUI
 			}
 
 			uint currFiles = 0;
-			//Console.WriteLine($"Max Files: {totalFiles}");
 			if (cofdSelectExtractOutputDir.ShowDialog() == CommonFileDialogResult.Ok)
 			{
 				lblComplete.Visible = false;
@@ -137,15 +147,9 @@ namespace IGAE_GUI
 						files[i].ExtractFile(j, cofdSelectExtractOutputDir.FileName, out int res);
 						lstLog.Items.Add($"Extracting file {j} {(res == 0 ? "succeeded" : "failed due to: unsupported compression")}...");
 						currFiles++;
-						//Console.WriteLine(((float)currFiles / totalFiles) * 100);
 						prgProgressBar.Value = (int)(((float)currFiles / totalFiles) * prgBarMax);
 					}
 				}
-				//ThreadManager.Extract(files.ToArray(), cofdSelectExtractOutputDir.FileName);
-				//IGAR_File reb = new IGAR_File(ref file);
-				//Bad repeated code
-				//reb.Generate($"{cofdSelectDir.FileName}/rebuild-{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar");
-				//lstLog.Items.Add($"Generated Rebuild File \"rebuild -{SelectIGAFile.FileName.Split(new char[] { '/', '\\'}).Last()}.igar\"");
 				prgProgressBar.Value = prgBarMax;
 				lblComplete.Visible = true;
 			}
@@ -183,13 +187,19 @@ namespace IGAE_GUI
 
 		private void PreviewFile(object sender, EventArgs e)
 		{
+			if(treeLocalFiles.SelectedNode.Nodes.Count != 0)
+			{
+				return;
+			}
+
 			int index = -1;
 			int igaIndex;
+
 			for (igaIndex = 0; igaIndex < files.Count; igaIndex++)
 			{
 				try
 				{
-					index = (int)files[igaIndex].localFileHeaders.First(x => x.path.Contains(treeLocalFiles.SelectedNode.Text)).index;
+					index = (int)files[igaIndex].localFileHeaders.First(x => x.path.EndsWith(treeLocalFiles.SelectedNode.Text)).index;
 					break;
 				}
 				catch (InvalidOperationException)
@@ -200,52 +210,16 @@ namespace IGAE_GUI
 
 			if(index == -1) return;
 
-			string tempFolder = $"{Path.GetTempPath()}IGAE/";
+			MemoryStream igzms = new MemoryStream((int)files[igaIndex].localFileHeaders[index].size);
 
-			files[igaIndex].ExtractFile((uint)index, tempFolder, out int res, false);
+			files[igaIndex].ExtractFile((uint)index, igzms, out int res, true);
 
-			IGZ_File igz = new IGZ_File(tempFolder + Path.GetFileName(files[igaIndex].names[index]));
+			IGZ_File igz = new IGZ_File(igzms);
 
-			if(igz.version != 0x06 && igz.version != 0x08) return;				//temporary line of code cos these two definitely work and other ones are buggy as hell
+			//if(igz.version != 0x06 && igz.version != 0x08 && igz.version != 0x09 ) return;				//temporary line of code cos these two definitely work and other ones are buggy as hell
 
-			switch (igz.type)
-			{
-				case IGZ_File.IGZ_Type.Text:
-					IGZ_Text igzText = new IGZ_Text(igz);
-
-					igzText.ReadStrings();
-
-					IGZ_TextEditor textEditor = new IGZ_TextEditor(igzText);
-
-					textEditor.Show();
-
-					igzText = null;
-					break;
-				case IGZ_File.IGZ_Type.Texture:
-					IGZ_Texture igzTexture = new IGZ_Texture(igz);
-					Console.WriteLine("Opening save dialogue");
-					using (SaveFileDialog saveFileDialog = new SaveFileDialog())
-					{
-						saveFileDialog.Filter = "dds files (*.dds)|*.dds|All files (*.*)|*.*";		//Only allow dds files, with the option for all files just in case anyone wants that
-						saveFileDialog.FilterIndex = 0;												//Default filter is dds
-						saveFileDialog.RestoreDirectory = true;										//Basically remember what folder you were in last time
-						
-						if (saveFileDialog.ShowDialog() == DialogResult.OK)			//If the user selects a file
-						{
-							igzTexture.ExtractImage(saveFileDialog.FileName);
-						}
-						else
-						{
-							igzTexture.Close();
-						}
-					}
-					igzTexture = null;
-					break;
-				default:
-					break;
-			}
-
-			igz = null;
+			IGZ_GeneralForm igzForm = new IGZ_GeneralForm(igz);
+			igzForm.Show();
 		}
 
 		private void ExitApplication(object sender, EventArgs e)
@@ -312,7 +286,7 @@ namespace IGAE_GUI
 						if(isBLD)
 						{
 							//Done to prevent a newly loaded bld overwriting previously loaded ones
-							containedFiles.Add($"c:/{Path.GetFileNameWithoutExtension(igaFiles[i])}/{files.Last().names[j]}");
+							containedFiles.Add($"{Path.GetFileNameWithoutExtension(igaFiles[i])}/{files.Last().names[j]}");
 						}
 						else
 						{
@@ -322,7 +296,7 @@ namespace IGAE_GUI
 					lstLog.Items.Add($"Opened IGA file \"{igaFiles[i]}\"");
 				}
 
-				treeLocalFiles.Nodes.Add(MakeTreeFromPaths(containedFiles));
+				MakeTreeFromPaths(containedFiles);
 				treeLocalFiles.Sort();
 				tmsi_ExtractAll.Enabled = true;
 			}
@@ -331,22 +305,41 @@ namespace IGAE_GUI
 			lblComplete.Visible = true;
 		}
 
-		//Stolen from ykm29's reply to https://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path with some slight alterations
-		static TreeNode MakeTreeFromPaths(List<string> paths, string rootNodeName = "c")
+		//Stolen from ykm29's reply to https://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path with some alterations
+		void MakeTreeFromPaths(List<string> paths)
 		{
-			var rootNode = new TreeNode(rootNodeName);
 			for (int i = 0; i < paths.Count; i++)
 			{
-				var currentNode = rootNode;
-				var pathItems = paths[i].Split(new char[2] { '/', '\\' });
-				foreach (var item in pathItems)
+				TreeNode currentNode = null;
+				string[] items = paths[i].Split(new char[]{'/', '\\'});
+				foreach(string item in items)
 				{
-					if (item[1] == ':') continue;
-					var tmp = currentNode.Nodes.Cast<TreeNode>().Where(x => x.Text.Equals(item));
-					currentNode = tmp.Count() > 0 ? tmp.Single() : currentNode.Nodes.Add(item);
+					if(currentNode == null)
+					{
+						TreeNode[] rootNodes = treeLocalFiles.Nodes.Cast<TreeNode>().ToArray();
+						if(rootNodes.Any(x => x.Text.Equals(item, StringComparison.OrdinalIgnoreCase)))
+						{
+							currentNode = rootNodes.First(x => x.Text.Equals(item, StringComparison.OrdinalIgnoreCase));
+						}
+						else
+						{
+							currentNode = treeLocalFiles.Nodes.Add(item);
+						}
+					}
+					else
+					{
+						TreeNode[] currentNodes = currentNode.Nodes.Cast<TreeNode>().ToArray();
+						if(currentNodes.Any(x => x.Text.Equals(item, StringComparison.OrdinalIgnoreCase)))
+						{
+							currentNode = currentNodes.First(x => x.Text.Equals(item, StringComparison.OrdinalIgnoreCase));
+						}
+						else
+						{
+							currentNode = currentNode.Nodes.Add(item);
+						}
+					}
 				}
 			}
-			return rootNode;
 		}
 
 		private void OpenSettings(object sender, EventArgs e)
@@ -359,15 +352,21 @@ namespace IGAE_GUI
 		}
 		void ApplySettings(Config config)
 		{
-			Themes.mainForm = this;
-
 			if (config.darkMode)
 			{
-				Themes.SwitchMainFormToDarkTheme();
+				Themes.SetWindowControlToDark(this);
+				foreach(Control control in Controls)
+				{
+					Themes.SetControlToDark(control);
+				}
 			}
 			else
 			{
-				Themes.SwitchMainFormToLightTheme();
+				foreach(Control control in Controls)
+				{
+					Themes.SetControlToLight(control);
+				}
+				Themes.SetControlToLight(this);
 			}
 		}
 		void SaveAs(object sender, EventArgs e)
@@ -383,7 +382,7 @@ namespace IGAE_GUI
 			}
 			buildForm.Show();
 			return;
-			Console.WriteLine("Opening save dialogue");
+			//Console.WriteLine("Opening save dialogue");
 			using (SaveFileDialog saveFileDialog = new SaveFileDialog())
 			{
 				saveFileDialog.Filter = "iga files|*.arc;*.bld;*.pak|All files (*.*)|*.*";

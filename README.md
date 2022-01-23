@@ -26,49 +26,51 @@ Join The [Skylander Reverse Engineering Discord Server](https://discord.gg/evFbg
 * Once happy with your edits, reopen IGAE, navigate to File > Build, and load the CSV.
 * Click Build, select your destination, and you'll have an IGA file.
 
-### To View Text:
-
-* Once a file is loaded, find a text asset and double click it.
-
 ### To Extract Textures:
 
-* Once a file is loaded, find a texture and double click it.
-* You''ll be presented with the option to save as, select a location, and save.
+* Once a file is loaded, find a texture or level.bld and double click it, alternatively, open an igz/level.bld directly.
+* You'll be presented with the igz viewer, find an object of type igImage2 and you'll see a preview and an option to extract.
+
+### To Replace Textures:
+
+* Once a file is loaded, find a texture or level.bld and double click it, alternatively, open an igz/level.bld directly.
+* You'll be presented with the igz viewer, find an object of type igImage2 and you'll see a preview and an option to replace.
+* If you opened an iga initially, save the igz and replace the original level.bld and rebuild.
+* If you opened an igz directly, your changes save automatically.
 
 If you're on mac or linux use wine but idk if that works
 
 ### Features & Games:
-| Game | Platform | Extracting IGA Files | Rebuilding IGA Files | Text Viewing | Texture Extraction |
+| Game | Platform | Extracting IGA Files | Rebuilding IGA Files | Texture Extraction | Texture Replacement |
 |---|---|---|---|---|---|
 | Skylanders Spyro's Adventure | 3DS | ✅ | ❓ | ❌ | ❌ |
 | | Wii | ✅ | ❓ | ❌ | ❌ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
-| Skylanders Giants | 3DS | ✅ | ✅ | ✅ | ✅ |
-| | Wii | ✅ | ✅ | ✅ | ❓ |
-| | Wii U | ✅ | ✅ | ✅ | ❌ |
+| Skylanders Giants | 3DS | ✅ | ✅ | ❌ | ❌ |
+| | Wii | ✅ | ✅ | ❌ | ❌ |
+| | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
-| | Xbox 360 | ✅ | ✅ | ✅ | ❓ |
+| | Xbox 360 | ✅ | ✅ | ❓ | ❓ |
 | Skylanders Swap Force | 3DS | ✅ | ❓ | ❌ | ❌ |
 | | Wii | ✅ | ❓ | ❌ | ❌ |
-| | Wii U | ✅ | ❓ | ❌ | ❌ |
-| | PS3 | ✅ | ❓ | ❌ | ❌ |
-| | PS4 | ✅ | ❓ | ❌ | ❌ |
-| | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
+| | Wii U | ✅ | ✅ | ❌ | ❌ |
+| | PS3 | ✅ | ❓ | ✅ | ✅ |
+| | PS4 | ✅ | ❓ | ❓ | ❓ |
+| | Xbox 360 | ✅ | ✅ | ❓ | ❓ |
 | Skylanders Trap Team | 3DS | ✅ | ❓ | ❌ | ❌ |
-| | Wii | ✅ | ✅ | ✅ | ❓ |
-| | Wii U | ✅ | ✅ | ✅ | ❓ |
+| | Wii | ✅ | ✅ | ❌ | ❌ |
+| | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
-| | PS4 | ✅ | ✅ | ✅ | ❓ |
-| | Xbox 360 | ✅ | ✅ | ✅ | ❓ |
-| Skylanders Superchargers | Wii U | ✅ | ✅ | ✅ | ❌ |
-| | PS3 | ✅ | ✅ | ✅ | ❌ |
-| | PS4 | ✅ | ✅ | ✅ | ❌ |
-| | Xbox 360 | ✅ | ✅ | ✅ | ❌ |
-| Skylanders Imaginators | PS4 | ✅ | ❌ | ❌ | ❌ |
-| | PS3 | ✅ | ✅ | ❌ | ❌ |
-| | PS4 | ✅ | ❌ | ❌ | ❌ |
+| | PS4 | ✅ | ✅ | ❓ | ❓ |
+| | Xbox 360 | ✅ | ✅ | ❓ | ❓ |
+| Skylanders Superchargers | Wii U | ✅ | ✅ | ❌ | ❌ |
+| | PS3 | ✅ | ✅ | ✅ | ✅ |
+| | PS4 | ✅ | ✅ | ❓ | ❓ |
+| | Xbox 360 | ✅ | ✅ | ❓ | ❌ |
+| Skylanders Imaginators | PS4 | ❌ | ❌ | ❌ | ❌ |
+| | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
-| | Wii U | ✅ | ❓ | ❌ | ❌ |
+| | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | Switch | ❌ | ❌ | ❌ | ❌ |
 
 ## Building
@@ -83,12 +85,14 @@ If you're on mac or linux use wine but idk if that works
 ## Credits
 * DTZxPorter: Figured out the HashSearch and CalculateSlop functions
 * AdventureT: Texture Extraction code adapted from [IGZModelConverter](https://github.com/AdventureT/IgzModelConverter). Figured out that the games use FNV1A32 on their hashes
-* LG-RZ: Explained certain aspects of IGA files
+* LG-RZ: Explained certain aspects of IGA + IGZ files. Provided final RVTB ReadPackedInt code
 * Drawdler: Drew the logo :)
-* dletozeun: DDS flip function from [disunity](https://github.com/ata4/disunity/pull/43/files)
+* KillzXGaming: Referenced [IGA_PAK.cs](https://github.com/KillzXGaming/Switch-Toolbox/blob/master/File_Format_Library/FileFormats/CrashBandicoot/IGA_PAK.cs) when making this
+* SixLabours: ImageSharp library was used for texture previews and also texture importing
+* Nominom: BCnEncoder was used for texture previews and also texture importing 
 
 ## To Do
 
 * Improve performance by using multithreading
-* Add support for editing igz files
 * Make the table green
+* Bring back text viewing and maybe text editing

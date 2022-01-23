@@ -25,7 +25,7 @@ namespace IGAE_GUI.IGZ
 
 			if(cfg.darkMode)
 			{
-				Themes.SwitchTextEditingFormToDarkTheme(this);
+				//Themes.SwitchTextEditingFormToDarkTheme(this);
 			}
 		}
 

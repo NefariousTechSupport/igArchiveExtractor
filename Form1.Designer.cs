@@ -609,7 +609,7 @@ namespace IGAE_GUI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form_igArchiveExtractor";
-			this.Text = "igArchiveExtractor (1.05b)";
+			this.Text = "igArchiveExtractor (1.05f)";
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);

@@ -39,7 +39,11 @@ namespace IGAE_GUI
 
 			if (BitConverter.ToUInt32(magicNumber, 0) == 0x4947411A) endianness = StreamHelper.Endianness.Big;
 			else if (BitConverter.ToUInt32(magicNumber, 0) == 0x1A414749) endianness = StreamHelper.Endianness.Little;
-			else throw new InvalidOperationException("File is corrupt.");
+			else
+			{
+				fs.Close();
+				throw new InvalidOperationException("File is corrupt.");
+			}
 
 			stream = new StreamHelper(fs, endianness);
 
@@ -90,6 +94,7 @@ namespace IGAE_GUI
 				case IGA_Version.SkylandersSpyrosAdventureWii:
 				case IGA_Version.SkylandersSpyrosAdventureWiiU:
 				case IGA_Version.SkylandersTrapTeam:
+				case IGA_Version.SkylandersImaginatorsPS4:
 					outputEndianess = StreamHelper.Endianness.Little;
 					break;
 				case IGA_Version.SkylandersSwapForce:
@@ -130,9 +135,9 @@ namespace IGAE_GUI
 
 			if(trueName && (Path.GetExtension(name) == ".bld" || Path.GetExtension(name) == ".pak"))
 			{
-				outputFilePath = Path.ChangeExtension(name, null) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
+				outputFilePath = outputDir + "/" + Path.GetFileNameWithoutExtension(name) + "/" +  names[index].Substring(names[index][1] == ':' ? 2 : 0);
 			}
-			else if(!trueName && (Path.GetExtension(name) == ".arc" || Path.GetExtension(name) == ".pak"))
+			else if(!trueName && (Path.GetExtension(name) == ".arc"))
 			{
 				outputFilePath = outputDir + Path.GetFileName(names[index]);
 			}
@@ -145,8 +150,10 @@ namespace IGAE_GUI
 
 			FileStream outputfs = null;
 			outputfs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
-
-			Console.WriteLine(outputfs.Name);	
+			ExtractFile(index, outputfs, out res, false);
+		}
+		public void ExtractFile(uint index, Stream output, out int res, bool leaveOpen = false)
+		{
 			switch (localFileHeaders[index].mode >> 24)
 			{
 				case 0x00:
@@ -186,7 +193,7 @@ namespace IGAE_GUI
 								ms.Write(compressedBytes, 0x00, (int)compressedSize);
 								ms.Seek(0x00, SeekOrigin.Begin);
 								DeflateStream decompressionStream = new DeflateStream(ms, CompressionMode.Decompress, true);
-								decompressionStream.CopyTo(outputfs);
+								decompressionStream.CopyTo(output);
 								decompressionStream.Close();
 							}
 							catch(InvalidDataException)
@@ -196,7 +203,7 @@ namespace IGAE_GUI
 								Console.WriteLine($"Chunk: {stream.BaseStream.Position.ToString("X08")} of size {chunkSize.ToString("X08")}");
 								byte[] uncompressedData = new byte[chunkSize];
 								stream.BaseStream.Read(uncompressedData, 0x00, (int)chunkSize);
-								outputfs.Write(uncompressedData, 0x00, (int)chunkSize);
+								output.Write(uncompressedData, 0x00, (int)chunkSize);
 							}
 
 							chunkCount++;
@@ -215,7 +222,10 @@ namespace IGAE_GUI
 								throw new Exception($"File truncated, {nextChunk.ToString("X08")} does not exist");
 							}
 						}
-						outputfs.Close();
+						if(!leaveOpen)
+						{
+							output.Close();
+						}
 						res = 0;
 					}
 					break;
@@ -242,7 +252,7 @@ namespace IGAE_GUI
 
 							if (((uint)_version & 0x000000FF) <= 0x0B)
 							{
-								compressedSize = stream.ReadUInt16((_version == IGA_Version.SkylandersSpyrosAdventureWii) ? StreamHelper.Endianness.Big : StreamHelper.Endianness.Little);
+								compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
 							}
 							else
 							{
@@ -269,7 +279,7 @@ namespace IGAE_GUI
 
 								try
 								{
-									decoder.Code(ms, outputfs, compressedSize, def_block, null);
+									decoder.Code(ms, output, compressedSize, def_block, null);
 								}
 								catch(Exception e)
 								{
@@ -292,7 +302,7 @@ namespace IGAE_GUI
 								}
 								byte[] uncompressedData = new byte[chunkSize];
 								stream.BaseStream.Read(uncompressedData, 0x00, (int)chunkSize);
-								outputfs.Write(uncompressedData, 0x00, (int)chunkSize);
+								output.Write(uncompressedData, 0x00, (int)chunkSize);
 
 								bytesDecompressed += chunkSize;
 							}
@@ -315,7 +325,10 @@ namespace IGAE_GUI
 							attempts++;
 						}
 
-						outputfs.Close();
+						if(!leaveOpen)
+						{
+							output.Close();
+						}
 						res = 0;
 					}
 					break;
@@ -331,9 +344,12 @@ namespace IGAE_GUI
 
 						byte[] buffer = stream.ReadBytes((int)size);
 
-						outputfs.Write(buffer, 0x00, (int)size);
+						output.Write(buffer, 0x00, (int)size);
 
-						outputfs.Close();
+						if(!leaveOpen)
+						{
+							output.Close();
+						}
 						res = 0;
 					}
 					break;
@@ -343,9 +359,12 @@ namespace IGAE_GUI
 
 						byte[] buffer = stream.ReadBytes((int)localFileHeaders[index].size);
 
-						outputfs.Write(buffer, 0x00, (int)localFileHeaders[index].size);
+						output.Write(buffer, 0x00, (int)localFileHeaders[index].size);
 
-						outputfs.Close();
+						if(!leaveOpen)
+						{
+							output.Close();
+						}
 						res = 0;
 					}
 					break;
@@ -354,7 +373,7 @@ namespace IGAE_GUI
 					break;
 			}
 		}
-		public void Build(string output)
+		public void Build(string output, bool showCompleteBox = false)
 		{
 			string[] inputFiles = new string[numberOfFiles];
 			for(int i = 0; i < numberOfFiles; i++)
@@ -368,9 +387,9 @@ namespace IGAE_GUI
 					inputFiles[i] = Path.GetDirectoryName(name) + names[i].Substring(names[i][1] == ':' ? 2 : 0);
 				}
 			}
-			Build(output, inputFiles);
+			Build(output, inputFiles, showCompleteBox);
 		}
-		public unsafe void Build(string output, string[] inputFiles)
+		public unsafe void Build(string output, string[] inputFiles, bool showCompleteBox = false)
 		{
 			FileStream ofs = new FileStream(output, FileMode.Create, FileAccess.ReadWrite);
 			StreamHelper osh = new StreamHelper(ofs);
@@ -436,7 +455,7 @@ namespace IGAE_GUI
 				osh.BaseStream.Seek(nameOffset, SeekOrigin.Begin);
 				osh.WriteString(localFileHeaders[i].path);
 				osh.BaseStream.WriteByte(0x00);
-				if(_version == IGA_Version.SkylandersSuperChargers)
+				if(_version == IGA_Version.SkylandersSuperChargers || _version == IGA_Version.SkylandersImaginatorsPS4)
 				{
 					string[] dirs = localFileHeaders[i].path.Split(new char[]{'/', '\\'});
 					string trimmedPath = string.Empty;
@@ -455,6 +474,10 @@ namespace IGAE_GUI
 			osh.WriteUInt32WithOffset(nametableLocation, IGA_Structure.headerData[_version][(uint)IGA_HeaderData.NametableLocation]);
 			osh.WriteUInt32WithOffset(nametableLength, IGA_Structure.headerData[_version][(uint)IGA_HeaderData.NametableLength]);
 			osh.Close();
+			if(showCompleteBox)
+			{
+				System.Windows.Forms.MessageBox.Show("Build Complete!");
+			}
 		}
 		
 		//Credit goes to DTZxPorter for this function and HashSearcher

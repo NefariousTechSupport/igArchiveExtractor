@@ -22,9 +22,13 @@ namespace IGAE_GUI
 
 			chkDarkMode.Checked = config.darkMode;
 
-			if(config.darkMode)
+			if (config.darkMode)
 			{
-				Themes.SwitchSettingsFormToDarkTheme(this);
+				foreach(Control control in Controls)
+				{
+					Themes.SetControlToDark(control);
+				}
+				Themes.SetWindowControlToDark(this);
 			}
 		}
 
@@ -34,6 +38,10 @@ namespace IGAE_GUI
 
 			config.Save();
 
+			this.Close();
+		}
+		private void btnCancel_Click(object sender, EventArgs e)
+		{
 			this.Close();
 		}
 	}
