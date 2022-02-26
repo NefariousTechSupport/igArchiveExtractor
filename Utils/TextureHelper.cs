@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace IGAE_GUI.Utils
 {
-	public static class TextureHelper
+	/*public static class TextureHelper
 	{
 		private static readonly byte[] ddsHeader = new byte[0x80]
 		{
@@ -252,5 +252,5 @@ namespace IGAE_GUI.Utils
 					throw new NotImplementedException($"{((uint)format).ToString("X08")} is unsupported");
 			}
 		}
-	}
+	}*/
 }
