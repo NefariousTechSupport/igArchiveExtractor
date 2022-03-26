@@ -25,9 +25,9 @@ namespace IGAE_GUI.IGZ
 		public virtual void Process(StreamHelper sh, IGZ_File parent)
 		{
 			_parent = parent;
-			offset      = (uint)sh.BaseStream.Position;
-
+			sh.BaseStream.Seek(-4, SeekOrigin.Current);
 			magicNumber = sh.ReadUInt32();
+			offset      = (uint)(sh.BaseStream.Position - 4);
 
 			if(magicNumber <= 0x10)		//Old fixups
 			{
@@ -100,7 +100,8 @@ namespace IGAE_GUI.IGZ
 			for(uint i = 0; i < count; i++)
 			{
 				dependancies[i] = sh.ReadString();
-				if(sh.BaseStream.Position % 2 != 0) sh.BaseStream.Position++;
+				while(sh.ReadByte() == 0x00){}
+				sh.BaseStream.Seek(-0x01, SeekOrigin.Current);
 			}
 		}
 
@@ -239,17 +240,16 @@ namespace IGAE_GUI.IGZ
 
 						previousInt = (uint)(previousInt + (unpackedInt * 4) + (parent.version < 9 ? 4 : 0));
 						Console.WriteLine(previousInt.ToString("X08"));
+						if((previousInt & 0x08000000) != 0x00)
+						{
+							previousInt = (uint)(previousInt & ~0x08000000) + parent.descriptors[sectionSpan + 1].offset - parent.descriptors[sectionSpan].offset;
+							sectionSpan++;
+						}
 						offsets[i] = previousInt;
 					}
 				}
 			}
 		}
-	}
-
-	//No idea
-	public class IGZ_RSTT : IGZ_Fixup
-	{
-		//No idea
 	}
 
 	//No idea
@@ -260,12 +260,6 @@ namespace IGAE_GUI.IGZ
 
 	//No idea
 	public class IGZ_ROFS : IGZ_Fixup
-	{
-		//No idea
-	}
-
-	//No idea
-	public class IGZ_ROOT : IGZ_Fixup
 	{
 		//No idea
 	}
@@ -292,11 +286,5 @@ namespace IGAE_GUI.IGZ
 	public class IGZ_RNEX : IGZ_Fixup
 	{
 		//No Idea
-	}
-
-	//No idea
-	public class IGZ_ONAM : IGZ_Fixup
-	{
-		//No idea
 	}
 }

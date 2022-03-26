@@ -54,9 +54,9 @@ namespace IGAE_GUI
 					}
 				}
 				files = new List<IGA_File>();
-					files.Add(new IGA_File(SelectIGAFile.FileName, version));
-				/*try
+				try
 				{
+					files.Add(new IGA_File(SelectIGAFile.FileName, version));
 				}
 				catch(Exception)
 				{
@@ -65,7 +65,7 @@ namespace IGAE_GUI
 					IGZ_GeneralForm igzForm = new IGZ_GeneralForm(igz);
 					igzForm.Show();
 					return;
-				}*/
+				}
 				tmsi_ExtractAll.Enabled = true;
 				treeLocalFiles.Nodes.Clear();
 				List<string> containedFiles = new List<string>();
@@ -214,13 +214,11 @@ namespace IGAE_GUI
 
 			files[igaIndex].ExtractFile((uint)index, igzms, out int res, true);
 
-			//return;
-
 			IGZ_File igz = new IGZ_File(igzms);
 
 			//if(igz.version != 0x06 && igz.version != 0x08 && igz.version != 0x09 ) return;				//temporary line of code cos these two definitely work and other ones are buggy as hell
 
-			IGZ_Editor igzForm = new IGZ_Editor(igz);
+			IGZ_GeneralForm igzForm = new IGZ_GeneralForm(igz);
 			igzForm.Show();
 		}
 
