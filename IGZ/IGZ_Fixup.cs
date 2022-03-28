@@ -180,12 +180,13 @@ namespace IGAE_GUI.IGZ
 			{
 				sizes[i]   = (uint)(sh.ReadUInt32() & 0x00FFFFFF);
 				offsets[i] = sh.ReadUInt32();
-				if(parent.version == 0x05)
+				if(true)
 				{
 					offsets[i] = parent.descriptors[(int)(offsets[i] >> 0x18) + 1].offset + (offsets[i] & 0x0FFFFFF);
 				}
 				else
 				{
+					//This is correct
 					offsets[i] = parent.descriptors[(int)(offsets[i] >> 0x1b) + 1].offset + (offsets[i] & 0x7FFFFFF);
 				}
 			}
