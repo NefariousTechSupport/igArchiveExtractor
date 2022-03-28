@@ -9,13 +9,12 @@ namespace IGAE_GUI.Types
 	public class igObjectList : igObject
 	{
 		public List<igObject> _objects;
+		public uint itemCount;
 		public igObjectList(igObject list)
 		{
 			_container = list._container;
 			offset = list.offset;
 			name = list.name;
-			itemCount = list.itemCount;
-			length = list.length;
 			_objects = new List<igObject>();
 		}
 		public igObject FindObject(uint offset)
@@ -43,14 +42,16 @@ namespace IGAE_GUI.Types
 		}
 		public override void ReadObjectFields()
 		{
+			_container.ebr.BaseStream.Seek(offset + 0x08, SeekOrigin.Begin);
+			itemCount = _container.ebr.ReadUInt32();
 			_container.ebr.BaseStream.Seek(offset + 0x14, SeekOrigin.Begin);
 			for(int i = 0; i < itemCount; i++)
 			{
-				uint potentialOffset = _container.ebr.ReadUInt32();
-				if((potentialOffset & 0x80000000) != 0) continue;
-				fields.Add(potentialOffset);
+				//This is horrible
+				//uint potentialOffset = _container.ebr.ReadUInt32();
+				//if((potentialOffset & 0x80000000) != 0) continue;
+				//_objects = 
 			}
-			itemCount = (uint)fields.Count;
 		}
 	}
 }

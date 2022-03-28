@@ -90,7 +90,7 @@ namespace IGAE_GUI.IGZ
 						IGZ_TSTR tstr = _igz.fixups.First(x => x.magicNumber == 0x54535452) as IGZ_TSTR;
 						for(uint i = 0; i < exnm.count; i++)
 						{
-							fixups.Nodes[fixups.Nodes.Count - 1].Nodes.Add($"{tstr.strings[exnm.types[i]]}: {tstr.strings[exnm.names[i]]}");
+							//fixups.Nodes[fixups.Nodes.Count - 1].Nodes.Add($"{tstr.strings[exnm.types[i]]}: {tstr.strings[exnm.names[i]]}");
 						}
 						break;
 					case 0x52565442:
@@ -176,10 +176,10 @@ namespace IGAE_GUI.IGZ
 				//potentialParentNode = objects.Nodes.Add($"{i.ToString("X04")} : {(rvtb.offsets[i+1]).ToString("X08")} : {objs[i].length.ToString("X08")} => {objectType}");
 				potentialParentNode = objects.Nodes.Add(objs[i].offset.ToString("X04") + ": " + objectType);
 				//Console.WriteLine(i.ToString("X04") + " : " + objs[i].children.Count);
-				for(uint j = 0; j < objs[i].children.Count; j++)
-				{
-					AddObject(objs[i].children.ToArray(), potentialParentNode);
-				}
+				//for(uint j = 0; j < objs[i].children.Count; j++)
+				//{
+				//	AddObject(objs[i].children.ToArray(), potentialParentNode);
+				//}
 			}
 		}
 		
