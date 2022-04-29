@@ -101,25 +101,40 @@ namespace IGAE_GUI.IGZ
 			objectList = igObjectList.ReadObjectList(this);
 			
 			IGZ_RVTB rvtb = fixups.First(x => x.magicNumber == 0x52565442) as IGZ_RVTB;
-			for(int i = 0; i < rvtb.count; i++)
+			for(int i = 1; i < rvtb.count; i++)
 			{
 				//Console.WriteLine($"checking offset {i.ToString("X04")} or {(descriptors[1].offset + rvtb.offsets[i]).ToString("X08")}");
-				if(rvtb.offsets[i] > ebr.BaseStream.Length) break;
-				ebr.BaseStream.Seek(rvtb.offsets[i], SeekOrigin.Begin);
+				ebr.BaseStream.Seek(descriptors[1].offset + rvtb.offsets[i], SeekOrigin.Begin);
 				objectList._objects.Add(igObject.ReadObjectWithoutFields(this));
 			}
-
-			IGZ_TMET tmet = fixups.First(x => x.magicNumber == 0x544D4554) as IGZ_TMET;
-			for(int i = 0; i < rvtb.count; i++)
+			if(version <= 0x09)
 			{
-				if(rvtb.offsets[i] > ebr.BaseStream.Length) break;
-				ebr.BaseStream.Seek(rvtb.offsets[i], SeekOrigin.Begin);
-				//Console.WriteLine($"{(rvtb.offsets[i]).ToString("X08")}: {objectList._objects[i].name}");
-
-				if(tmet.typeNames[objectList._objects[i].name].Equals("igImage2"))
+				IGZ_TMET tmet = fixups.First(x => x.magicNumber == 0x544D4554) as IGZ_TMET;
+				for(int i = 0; i < rvtb.count-1; i++)
 				{
-					objectList._objects[i] = new igImage2(objectList._objects[i]);
-					objectList._objects[i].ReadObjectFields();
+					ebr.BaseStream.Seek(descriptors[1].offset + rvtb.offsets[i+1], SeekOrigin.Begin);
+					Console.WriteLine($"{(rvtb.offsets[i+1] + descriptors[1].offset).ToString("X08")}");
+
+					if(tmet.typeNames[objectList._objects[i].name].Equals("igImage2"))
+					{
+						objectList._objects[i] = new igImage2(objectList._objects[i]);
+						objectList._objects[i].ReadObjectFields();
+					}
+				}
+			}
+			else
+			{
+				IGZ_TSTR tstr = fixups.First(x => x.magicNumber == 0x54535452) as IGZ_TSTR;
+				for(int i = 0; i < rvtb.count-1; i++)
+				{
+					ebr.BaseStream.Seek(descriptors[1].offset + rvtb.offsets[i+1], SeekOrigin.Begin);
+					Console.WriteLine($"{(rvtb.offsets[i+1] + descriptors[1].offset).ToString("X08")}");
+
+					if(tstr.strings[objectList._objects[i].name].Equals("igImage2"))
+					{
+						objectList._objects[i] = new igImage2(objectList._objects[i]);
+						objectList._objects[i].ReadObjectFields();
+					}
 				}
 			}
 		}

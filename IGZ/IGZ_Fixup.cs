@@ -178,17 +178,8 @@ namespace IGAE_GUI.IGZ
 
 			for(uint i = 0; i < count; i++)
 			{
-				sizes[i]   = (uint)(sh.ReadUInt32() & 0x00FFFFFF);
-				offsets[i] = sh.ReadUInt32();
-				if(true)
-				{
-					offsets[i] = parent.descriptors[(int)(offsets[i] >> 0x18) + 1].offset + (offsets[i] & 0x0FFFFFF);
-				}
-				else
-				{
-					//This is correct
-					offsets[i] = parent.descriptors[(int)(offsets[i] >> 0x1b) + 1].offset + (offsets[i] & 0x7FFFFFF);
-				}
+				sizes[i]    = (uint)(sh.ReadUInt32() & ~0x28000000);
+				offsets[i]  = (uint)(sh.ReadUInt32() &  0x00FFFFFF);
 			}
 		}
 	}
@@ -248,8 +239,13 @@ namespace IGAE_GUI.IGZ
 						}
 
 						previousInt = (uint)(previousInt + (unpackedInt * 4) + (parent.version < 9 ? 4 : 0));
-						offsets[i] = parent.descriptors[(int)(previousInt >> 0x1b) + 1].offset + (previousInt & 0x7FFFFFF);
-						//Console.WriteLine($"{previousInt.ToString("X08")} > {offsets[i].ToString("X08")}");
+						Console.WriteLine(previousInt.ToString("X08"));
+						if((previousInt & 0x08000000) != 0x00)
+						{
+							previousInt = (uint)(previousInt & ~0x08000000) + parent.descriptors[sectionSpan + 1].offset - parent.descriptors[sectionSpan].offset;
+							sectionSpan++;
+						}
+						offsets[i] = previousInt;
 					}
 				}
 			}
