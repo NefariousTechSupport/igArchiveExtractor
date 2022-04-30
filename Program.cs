@@ -15,12 +15,16 @@ namespace IGAE_GUI
 		[STAThread]
 		static void Main()
 		{
-			//AllocConsole();
+#if DEBUG
+			AllocConsole();
+#endif
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			//ThreadManager.InitialiseThreads();
 			Application.Run(new Form_igArchiveExtractor(Config.Read()));
-			//FreeConsole();
+#if DEBUG
+			FreeConsole();
+#endif
 		}
 
 		[DllImport("kernel32.dll", SetLastError = true)]

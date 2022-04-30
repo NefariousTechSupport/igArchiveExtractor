@@ -21,7 +21,6 @@ namespace IGAE_GUI.Types
 		uint index;
 		uint textureOffset;
 		uint textureSize;
-		int textureSection;
 
 		public igImage2(igObject basic)
 		{
@@ -62,23 +61,17 @@ namespace IGAE_GUI.Types
 			textureOffset = tmhn.offsets[index];
 			textureSize   = tmhn.sizes[index];
 
-			textureSection = (int)_container.objectSectionSpan + 1;
-			if(_container.version == 0x09)
-			{
-				textureSection++;
-			}
-
 			Console.WriteLine($"Image Found: {width}, {height}, {mipmapCount}, {index}, {format.ToString()}");
 		}
 		public void Extract(Stream output)
 		{
-			Console.WriteLine((_container.descriptors[textureSection].offset + textureOffset).ToString("X08"));
-			_container.ebr.BaseStream.Seek(_container.descriptors[textureSection].offset + textureOffset, SeekOrigin.Begin);
+			Console.WriteLine(textureOffset.ToString("X08"));
+			_container.ebr.BaseStream.Seek(textureOffset, SeekOrigin.Begin);
 			IGAE_GUI.Utils.TextureHelper.Extract(_container.ebr.BaseStream, output, width, height, textureSize, mipmapCount, format, true);
 		}
 		public void Replace(Stream input)
 		{
-			_container.ebr.BaseStream.Seek(_container.descriptors[textureSection].offset + textureOffset, SeekOrigin.Begin);
+			_container.ebr.BaseStream.Seek(textureOffset, SeekOrigin.Begin);
 			IGAE_GUI.Utils.TextureHelper.Replace(input, _container.ebr.BaseStream, width, height, textureSize, mipmapCount, format);
 			input.Close();
 		}
