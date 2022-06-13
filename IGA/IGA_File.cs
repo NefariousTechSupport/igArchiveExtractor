@@ -54,6 +54,7 @@ namespace IGAE_GUI
 			slop = stream.ReadUInt32WithOffset(0x00000018);
 			if(_version == IGA_Version.SkylandersSpyrosAdventureWii)
 			{
+				slop = stream.ReadUInt32WithOffset(0x00000014);
 				chunkAlignment = 0x0800;	//It doesn't store it, i found that funny
 			}
 			nametableLocation = stream.ReadUInt32WithOffset(IGA_Structure.headerData[_version][(uint)IGA_HeaderData.NametableLocation]);
@@ -76,9 +77,9 @@ namespace IGAE_GUI
 				localFileHeaders[i].chunkPropertiesOffset = localFileHeaders[i].mode & 0xFFFFFF;
 
 				//For some reason the 3ds games have mode 0x10000000 as lzma whereas ssf has it as 0x20000000, so yeah this exists to make that work
-				if (_version == IGA_Version.SkylandersSpyrosAdventureWii && this.localFileHeaders[i].mode == 0x10000000)
+				if (_version == IGA_Version.SkylandersSpyrosAdventureWii && (this.localFileHeaders[i].mode & 0x10000000) != 0)
 				{
-					localFileHeaders[i].mode = 0x20000000;
+					localFileHeaders[i].mode += 0x10000000;
 				}
 
 				localFileHeaders[i].index = i;
@@ -154,6 +155,7 @@ namespace IGAE_GUI
 		}
 		public void ExtractFile(uint index, Stream output, out int res, bool leaveOpen = false)
 		{
+			StreamHelper.Endianness compressSizeEndianness = (uint)_version <= 0x04 ? StreamHelper.Endianness.Big : StreamHelper.Endianness.Little;
 			switch (localFileHeaders[index].mode >> 24)
 			{
 				case 0x00:
@@ -179,11 +181,11 @@ namespace IGAE_GUI
 
 								if (((uint)_version & 0x000000FF) <= 0x0B)
 								{
-									compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
+									compressedSize = stream.ReadUInt16(compressSizeEndianness);
 								}
 								else
 								{
-									compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
+									compressedSize = stream.ReadUInt32(compressSizeEndianness);
 								}
 
 								Console.WriteLine($"Chunk: {stream.BaseStream.Position.ToString("X08")} of size {compressedSize.ToString("X08")}");
@@ -252,11 +254,11 @@ namespace IGAE_GUI
 
 							if (((uint)_version & 0x000000FF) <= 0x0B)
 							{
-								compressedSize = stream.ReadUInt16(StreamHelper.Endianness.Little);
+								compressedSize = stream.ReadUInt16(compressSizeEndianness);
 							}
 							else
 							{
-								compressedSize = stream.ReadUInt32(StreamHelper.Endianness.Little);
+								compressedSize = stream.ReadUInt32(compressSizeEndianness);
 							}
 
 							byte[] properties = stream.ReadBytes(5);
@@ -399,7 +401,10 @@ namespace IGAE_GUI
 			osh.WriteUInt32((uint)_version & 0xFF);
 			osh.WriteUInt32(numberOfFiles * (4 + IGA_Structure.headerData[_version][(uint)IGA_HeaderData.LocalHeaderLength]));
 			osh.WriteUInt32(numberOfFiles);
-			osh.WriteUInt32(0x00000800);
+			if(_version != IGA_Version.SkylandersSpyrosAdventureWii)
+			{
+				osh.WriteUInt32(0x00000800);
+			}
 			osh.WriteUInt32(0xFFFFFFFF / numberOfFiles);
 			osh.WriteUInt32(slop);
 			osh.WriteUInt32WithOffset(0x00000000, IGA_Structure.headerData[_version][(uint)IGA_HeaderData.NametableLocation]);
@@ -454,7 +459,10 @@ namespace IGAE_GUI
 				osh.WriteUInt32WithOffset(nameOffset - nametableLocation, nametableLocation + 0x04 * i);
 				osh.BaseStream.Seek(nameOffset, SeekOrigin.Begin);
 				osh.WriteString(localFileHeaders[i].path);
-				osh.BaseStream.WriteByte(0x00);
+				if(_version == IGA_Version.SkylandersSpyrosAdventureWii && i == numberOfFiles - 1)
+				{
+					osh.BaseStream.WriteByte(0x00);
+				}
 				if(_version == IGA_Version.SkylandersSuperChargers || _version == IGA_Version.SkylandersImaginatorsPS4)
 				{
 					string[] dirs = localFileHeaders[i].path.Split(new char[]{'/', '\\'});
@@ -467,7 +475,10 @@ namespace IGAE_GUI
 					osh.WriteString(trimmedPath);
 					osh.BaseStream.WriteByte(0x00);
 				}
-				osh.WriteUInt32(0x00000000);
+				if(_version != IGA_Version.SkylandersSpyrosAdventureWii)
+				{
+					osh.WriteUInt32(0x00000000);
+				}
 				nameOffset = (uint)osh.BaseStream.Position;
 			}
 			nametableLength = (uint)osh.BaseStream.Length - nametableLocation;

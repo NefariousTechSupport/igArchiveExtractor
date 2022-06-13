@@ -36,7 +36,11 @@ namespace IGAE_GUI.Types
 
 		public override void ReadObjectFields()
 		{
-			if(_container.version == 0x09)
+			if(_container.version == 0x05)
+			{
+				_container.ebr.BaseStream.Seek(offset + 0x0C, SeekOrigin.Begin);
+			}
+			else if(_container.version == 0x09)
 			{
 				_container.ebr.BaseStream.Seek(offset + 0x34, SeekOrigin.Begin);
 			}

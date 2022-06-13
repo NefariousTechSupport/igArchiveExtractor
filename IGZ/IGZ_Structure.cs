@@ -21,7 +21,13 @@ namespace IGAE_GUI
 			//Version 4
 			new uint[]{},
 			//Version 5
-			new uint[]{},
+			new uint[]
+			{
+				0x0000056C,			//The location of the attributes
+				0x00000010,			//The location where the chunk descriptors start
+				0x0000001C,			//The location of the start of the tags in the first chunk
+				0x00000000			//Location of texture meta data in chunk 1 (obselete)
+			},
 			//Version 6
 			new uint[]
 			{
