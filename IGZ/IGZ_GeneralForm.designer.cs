@@ -31,6 +31,7 @@ namespace IGAE_GUI.IGZ
 			this.components = new System.ComponentModel.Container();
 			this.treeItems = new System.Windows.Forms.TreeView();
 			this.pbTexturePreview = new System.Windows.Forms.PictureBox();
+			this.cbFilterImages = new System.Windows.Forms.CheckBox();
 			this.btnTextureExtract = new System.Windows.Forms.Button();
 			this.btnTextureReplace = new System.Windows.Forms.Button();
 			this.btnSaveIGZ = new System.Windows.Forms.Button();
@@ -55,6 +56,16 @@ namespace IGAE_GUI.IGZ
 			this.pbTexturePreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pbTexturePreview.BackColor = System.Drawing.Color.Black;
 			this.pbTexturePreview.ClientSize = new System.Drawing.Size(200, 200);
+			//
+			// cbFilterImages
+			//
+			this.cbFilterImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbFilterImages.Location = new System.Drawing.Point(500, 12);
+			this.cbFilterImages.Name = "cbFilterImages";
+			this.cbFilterImages.Text = "Only igImage2s?";
+			this.cbFilterImages.Size = new System.Drawing.Size(100, 23);
+			this.cbFilterImages.TabIndex = 10;
+			this.cbFilterImages.CheckedChanged += new System.EventHandler(ChangeFilter);
 			// 
 			// btnTextureExtract
 			// 
@@ -96,6 +107,7 @@ namespace IGAE_GUI.IGZ
 			this.ClientSize = new System.Drawing.Size(700, 500);
 			this.Controls.Add(this.treeItems);
 			this.Controls.Add(this.pbTexturePreview);
+			this.Controls.Add(this.cbFilterImages);
 			this.Controls.Add(this.btnTextureExtract);
 			this.Controls.Add(this.btnTextureReplace);
 			this.Controls.Add(this.btnSaveIGZ);
@@ -110,6 +122,7 @@ namespace IGAE_GUI.IGZ
 
 		public System.Windows.Forms.TreeView treeItems;
 		public System.Windows.Forms.PictureBox pbTexturePreview;
+		public System.Windows.Forms.CheckBox cbFilterImages;
 		public System.Windows.Forms.Button btnTextureExtract;
 		public System.Windows.Forms.Button btnTextureReplace;
 		public System.Windows.Forms.Button btnSaveIGZ;

@@ -17,6 +17,10 @@ namespace IGAE_GUI.IGZ
 		TreeNode fixups = new TreeNode("Fixups");
 		TreeNode objects = new TreeNode("Object List");
 		IGZ_File _igz;
+
+		List<TreeNode> filtered = new List<TreeNode>();
+		List<TreeNode> unfiltered = new List<TreeNode>();
+
 		public IGZ_GeneralForm(IGZ_File igz)
 		{
 			InitializeComponent();
@@ -117,10 +121,11 @@ namespace IGAE_GUI.IGZ
 				}
 			}
 
-			AddObject(igz.objectList._objects.ToArray(), objects);
+			AddObject(igz.objectList._objects.ToArray());
 
 			treeItems.Nodes.Add(fixups);
 			treeItems.Nodes.Add(objects);
+			objects.Nodes.AddRange(unfiltered.ToArray());
 
 			Config config = Config.Read();
 
@@ -142,9 +147,8 @@ namespace IGAE_GUI.IGZ
 			}
 		}
 
-		void AddObject(igObject[] objs, TreeNode parentNode)
+		void AddObject(igObject[] objs)
 		{
-			TreeNode potentialParentNode = null;
 			IGZ_RVTB rvtb = _igz.fixups.First(x => x.magicNumber == 0x52565442) as IGZ_RVTB;
 			for(int i = 0; i < objs.Length; i++)
 			{
@@ -174,11 +178,15 @@ namespace IGAE_GUI.IGZ
 					}
 				}
 				//potentialParentNode = objects.Nodes.Add($"{i.ToString("X04")} : {(rvtb.offsets[i+1]).ToString("X08")} : {objs[i].length.ToString("X08")} => {objectType}");
-				potentialParentNode = objects.Nodes.Add(objs[i].offset.ToString("X04") + ": " + objectType);
+				unfiltered.Add(new TreeNode(objs[i].offset.ToString("X04") + ": " + objectType));
+				if(objectType == "igImage2")
+                {
+                	filtered.Add(new TreeNode(objs[i].offset.ToString("X04") + ": " + objectType));
+                }
 				//Console.WriteLine(i.ToString("X04") + " : " + objs[i].children.Count);
 				for(uint j = 0; j < objs[i].children.Count; j++)
 				{
-					AddObject(objs[i].children.ToArray(), potentialParentNode);
+					AddObject(objs[i].children.ToArray());
 				}
 			}
 		}
@@ -187,8 +195,14 @@ namespace IGAE_GUI.IGZ
 		{
 			if(treeItems.SelectedNode.Parent == objects)
 			{
-				int objectIndex = treeItems.SelectedNode.Parent.Nodes.IndexOf(treeItems.SelectedNode);
-				if(_igz.objectList._objects[objectIndex].GetType() == typeof(igImage2))
+                Console.WriteLine($"Testing {treeItems.SelectedNode.Text.Split(":")[0]}");
+                int objectOffset = int.Parse(treeItems.SelectedNode.Text.Split(":")[0], System.Globalization.NumberStyles.HexNumber);
+                Console.WriteLine($"offset {objectOffset.ToString("X08")}");
+                //int objectIndex = treeItems.SelectedNode.Parent.Nodes.IndexOf(treeItems.SelectedNode);
+                uint[] offsets = (_igz.fixups.First(x => x.magicNumber == 0x52565442) as IGZ_RVTB).offsets;
+				int objectIndex = Array.FindIndex<uint>(offsets, 0, x => x == objectOffset) - 1;
+                Console.WriteLine($"index {objectIndex} {_igz.objectList._objects[objectIndex].GetType().ToString()}");
+                if(_igz.objectList._objects[objectIndex].GetType() == typeof(igImage2))
 				{
 					Console.WriteLine("igImage2 Selected");
 					MemoryStream msImage = new MemoryStream();
@@ -264,6 +278,19 @@ namespace IGAE_GUI.IGZ
 					ofs.Flush();
 					ofs.Close();
 				}
+			}
+		}
+
+		void ChangeFilter(object sender, EventArgs e)
+		{
+			objects.Nodes.Clear();
+			if(cbFilterImages.Checked)
+			{
+				objects.Nodes.AddRange(filtered.ToArray());
+			}
+			else
+			{
+				objects.Nodes.AddRange(unfiltered.ToArray());
 			}
 		}
 
