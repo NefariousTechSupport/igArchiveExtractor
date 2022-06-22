@@ -43,22 +43,22 @@ If you're on mac or linux use wine but idk if that works
 ### Features & Games:
 | Game | Platform | Extracting IGA Files | Rebuilding IGA Files | Texture Extraction | Texture Replacement |
 |---|---|---|---|---|---|
-| Skylanders Spyro's Adventure | 3DS | ✅ | ❓ | ❌ | ❌ |
-| | Wii | ✅ | ❓ | ❌ | ❌ |
+| Skylanders Spyro's Adventure | 3DS | ❌ | ❌ | ❌ | ❌ |
+| | Wii | ✅ | ❌ | ✅ | ✅ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
-| Skylanders Giants | 3DS | ✅ | ✅ | ❌ | ❌ |
-| | Wii | ✅ | ✅ | ❌ | ❌ |
+| Skylanders Giants | 3DS | ❌ | ❌ | ❌ | ❌ |
+| | Wii | ✅ | ✅ | ✅ | ✅ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | Xbox 360 | ✅ | ✅ | ❓ | ❓ |
-| Skylanders Swap Force | 3DS | ✅ | ❓ | ❌ | ❌ |
-| | Wii | ✅ | ❓ | ❌ | ❌ |
+| Skylanders Swap Force | 3DS | ❌ | ❌ | ❌ | ❌ |
+| | Wii | ✅ | ❓ | ✅ | ✅ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
-| | PS3 | ✅ | ❓ | ✅ | ✅ |
+| | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | PS4 | ✅ | ❓ | ❓ | ❓ |
-| | Xbox 360 | ✅ | ✅ | ❓ | ❓ |
-| Skylanders Trap Team | 3DS | ✅ | ❓ | ❌ | ❌ |
-| | Wii | ✅ | ✅ | ❌ | ❌ |
+| | Xbox 360 | ❌ | ❌ | ❓ | ❓ |
+| Skylanders Trap Team | 3DS | ❌ | ❌ | ❌ | ❌ |
+| | Wii | ✅ | ✅ | ✅ | ✅ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | PS4 | ✅ | ✅ | ❓ | ❓ |
@@ -66,10 +66,10 @@ If you're on mac or linux use wine but idk if that works
 | Skylanders Superchargers | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | PS4 | ✅ | ✅ | ❓ | ❓ |
-| | Xbox 360 | ✅ | ✅ | ❓ | ❌ |
+| | Xbox 360 | ❌ | ❌ | ❓ | ❓ |
 | Skylanders Imaginators | PS4 | ❌ | ❌ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
-| | Xbox 360 | ✅ | ❓ | ❌ | ❌ |
+| | Xbox 360 | ❌ | ❌ | ❌ | ❌ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | Switch | ❌ | ❌ | ❌ | ❌ |
 
