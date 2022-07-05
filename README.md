@@ -67,11 +67,15 @@ If you're on mac or linux use wine but idk if that works
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | PS4 | ✅ | ✅ | ❓ | ❓ |
 | | Xbox 360 | ❌ | ❌ | ❓ | ❓ |
-| Skylanders Imaginators | PS4 | ❌ | ❌ | ❌ | ❌ |
+| | 32 bit iOS | ✅ | ❓ | ❓ | ❓ |
+| | 64 bit iOS | ✅ | ❓ | ❌ | ❌ |
+| Skylanders Imaginators | PS4 | ✅ | ❌ | ❌ | ❌ |
 | | PS3 | ✅ | ✅ | ✅ | ✅ |
 | | Xbox 360 | ❌ | ❌ | ❌ | ❌ |
 | | Wii U | ✅ | ✅ | ❌ | ❌ |
 | | Switch | ✅ | ❌ | ❌ | ❌ |
+
+* select Trap Team Home Console for SSC iOS and select Imaginators PS4 for Imaginators Switch
 
 ## Building
 ### Prerequisites
